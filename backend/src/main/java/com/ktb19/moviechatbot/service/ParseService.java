@@ -1,6 +1,7 @@
 package com.ktb19.moviechatbot.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ktb19.moviechatbot.dto.QueriesDto;
 import com.ktb19.moviechatbot.dto.QueryDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,11 +14,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ParseService {
 
-    public QueryDto parse(String query) {
+    public QueryDto parse(String message) {
 
         try {
 
-            PythonInterpreter.initialize(null, null, new String[]{query});
+            PythonInterpreter.initialize(null, null, new String[]{message});
             PythonInterpreter interpreter = new PythonInterpreter();
             interpreter.execfile("src/main/java/com/ktb19/moviechatbot/ai/test.py");
 
@@ -33,6 +34,17 @@ public class ParseService {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
+
+        return null;
+    }
+
+    public QueryDto parse(QueryDto parsedQuery, QueriesDto additionQueries) {
+
+        //addtionQueries를 python 파일에 보내서, 응답 받기
+
+        //응답을 QueryDto로 mapping
+
+        //QueryDto 중 빈칸을 parsedQuery에서 가져와서 합치기
 
         return null;
     }

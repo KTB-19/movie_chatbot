@@ -18,41 +18,28 @@ import org.springframework.stereotype.Service;
 public class ParseService {
 
     private final PythonInterpreter interpreter;
-    public QueryDto parse(String message) {
+    public QueryDto parse(String message) throws JsonProcessingException {
 
-        try {
-            PyFunction parseQuery = getPythonFunction("src/main/java/com/ktb19/moviechatbot/ai/test1.py", "parseQuery");
-            PyObject json = parseQuery.__call__(new PyUnicode(message));
+        PyFunction parseQuery = getPythonFunction("src/main/java/com/ktb19/moviechatbot/ai/test1.py", "parseQuery");
+        PyObject json = parseQuery.__call__(new PyUnicode(message));
 
-            QueryDto dto = toQueryDto(json);
+        QueryDto dto = toQueryDto(json);
 
-            return dto;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-
-        return new QueryDto();
+        return dto;
     }
 
-    public QueryDto parseAdditional(QueryDto parsedQuery, QueriesDto additionQueries) {
+    public QueryDto parseAdditional(QueryDto parsedQuery, QueriesDto additionQueries) throws JsonProcessingException {
 
-        try {
-            PyFunction parseQueries = getPythonFunction("src/main/java/com/ktb19/moviechatbot/ai/test2.py", "parseQueries");
-            PyObject json = parseQueries.__call__(
-                    new PyUnicode(additionQueries.getMovieNameQuery()),
-                    new PyUnicode(additionQueries.getRegionQuery()),
-                    new PyUnicode(additionQueries.getDateQuery())
-            );
+        PyFunction parseQueries = getPythonFunction("src/main/java/com/ktb19/moviechatbot/ai/test2.py", "parseQueries");
+        PyObject json = parseQueries.__call__(
+                new PyUnicode(additionQueries.getMovieNameQuery()),
+                new PyUnicode(additionQueries.getRegionQuery()),
+                new PyUnicode(additionQueries.getDateQuery())
+        );
 
-            QueryDto dto = toQueryDto(json);
+        QueryDto dto = toQueryDto(json);
 
-            return union(parsedQuery, dto);
-
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-
-        return new QueryDto();
+        return union(parsedQuery, dto);
     }
 
     private PyFunction getPythonFunction(String scriptPath, String functionName) {

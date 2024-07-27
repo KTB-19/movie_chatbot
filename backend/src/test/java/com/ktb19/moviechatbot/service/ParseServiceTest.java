@@ -1,5 +1,6 @@
 package com.ktb19.moviechatbot.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ktb19.moviechatbot.dto.QueriesDto;
 import com.ktb19.moviechatbot.dto.QueryDto;
 import org.assertj.core.api.Assertions;
@@ -33,7 +34,7 @@ class ParseServiceTest {
 
     @Test
     @DisplayName("주어진 메시지를 파싱하여 QueryDto 객체로 반환한다.")
-    void testParse() {
+    void testParse() throws JsonProcessingException {
         // Given
         String message = "test message";
         String jsonString = "{\"movieName\": \"Test Movie\", \"region\": \"Test Region\", \"date\": \"2024-01-01\"}";
@@ -57,7 +58,7 @@ class ParseServiceTest {
 
     @Test
     @DisplayName("추가 쿼리를 파싱하여 기존 parsedQuery와 병합된 QueryDto 객체로 반환한다.")
-    void testParseAdditional() {
+    void testParseAdditional() throws JsonProcessingException {
         // Given
         QueryDto parsedQuery = new QueryDto();
         parsedQuery.setMovieName("Parsed Movie");

@@ -18,14 +18,14 @@ public class MovieController {
 
     @GetMapping("/movie/query")
     public ResponseEntity<?> getParsedQuery(@RequestParam String message) {
-        return ResponseEntity.ok(parseService.parseAdditional(message));
+        return ResponseEntity.ok(parseService.parse(message));
     }
 
     @GetMapping("/movie/running-times")
     public ResponseEntity<?> getRunningTimes(@RequestBody MovieRunningTimeRequest request) {
 
         //parse
-        QueryDto dto = parseService.parseAdditional(request.getParsedQuery(), request.getAdditionQueries());
+        QueryDto query = parseService.parseAdditional(request.getParsedQuery(), request.getAdditionQueries());
 
         //db에서 상영정보 가져오기
 

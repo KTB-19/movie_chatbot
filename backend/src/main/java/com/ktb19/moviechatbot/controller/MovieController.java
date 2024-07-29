@@ -1,0 +1,51 @@
+package com.ktb19.moviechatbot.controller;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ktb19.moviechatbot.dto.MovieRunningTimeRequest;
+import com.ktb19.moviechatbot.dto.QueryDto;
+import com.ktb19.moviechatbot.service.ParseService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@Slf4j
+@RestController
+@RequiredArgsConstructor
+public class MovieController {
+
+    private final ParseService parseService;
+
+    @GetMapping("/movie/query")
+    public ResponseEntity<?> getParsedQuery(@RequestParam String message) {
+
+        try {
+            return ResponseEntity.ok(parseService.parse(message));
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+    @GetMapping("/movie/running-times")
+    public ResponseEntity<?> getRunningTimes(@RequestBody MovieRunningTimeRequest request) {
+
+        try {
+            QueryDto query = parseService.parseAdditional(request.getParsedQuery(), request.getAdditionQueries());
+            log.info("query.getMovieName() = {}", query.getMovieName());
+            log.info("query.getRegion() = {}", query.getRegion());
+            log.info("query.getDate() = {}", query.getDate());
+
+            //queryDto 통해 db에서 상영정보 가져오기
+
+            return ResponseEntity.ok().build();
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+}

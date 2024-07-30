@@ -3,9 +3,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
+import time
 from multiprocessing import Pool
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, InvalidSelectorException, TimeoutException
-import time
 
 def crawling(args):
     index, widearea_name, len_b, division = args
@@ -66,14 +66,16 @@ def crawling(args):
                                 for k in range(1, len(movie_elements) + 1):
                                     try:
                                         title_selector = f"#schedule > li:nth-child({k}) > div.tit"
-                                        title_element = driver.find_elements(By.CSS_SELECTOR, title_selector)
-                                        if title_element is None or len(title_element) == 1:
-                                            continue
-
-                                        title_element = driver.find_elements(By.CSS_SELECTOR, f"#schedule > li:nth-child({k}) > div.tit > a")
+                                        title_element = driver.find_element(By.CSS_SELECTOR, title_selector)
                                         if title_element is None:
                                             continue
+
+                                        title_element = driver.find_element(By.XPATH, f"//*[@id='schedule']/li[{k}]/div[1]/a")
+                                        if title_element is None:
+                                            continue
+
                                         movie_title = title_element.text
+                                        # print(movie_title)
 
                                         time_elements = driver.find_elements(By.CSS_SELECTOR,
                                                                              f"#schedule > li:nth-child({k}) > div.times > label")
@@ -88,7 +90,7 @@ def crawling(args):
                                                 movie_title, movie_time, movie_date
                                             ])
                                     except Exception as e:
-                                        print(f"영화 항목에서 에러 발생: {theater_name}{type(e).__name__}")
+                                        print(f"영화 항목에서 에러 발생: {theater_name} {type(e).__name__}")
                                         continue
                         except Exception as e:
                             print(f"극장 항목에서 에러 발생: {type(e).__name__}")
@@ -100,6 +102,7 @@ def crawling(args):
         print(f"크롤링 중 에러 발생: {type(e).__name__}")
     finally:
         driver.quit()
+    print(division, len(data_list))
     return data_list
 
 def divide():
@@ -107,7 +110,7 @@ def divide():
 
 def init_driver():
     chrome_options = Options()
-    # chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--headless')
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--no-sandbox')
     driver = webdriver.Chrome(options=chrome_options)
@@ -146,7 +149,7 @@ if __name__ == '__main__':
                 chunk_size = (len(basarea_elements) // 10) + (1 if len(basarea_elements) % 10 != 0 else 0)
                 sub_divisions = [l[i:i + chunk_size] for i in range(0, len(l), chunk_size)]
                 args_list = [(i, widearea_name, len(basarea_elements), div) for div in sub_divisions]
-                print(sub_divisions)
+                # print(sub_divisions)
                 with Pool(processes=len(sub_divisions)) as pool:
                     w_element.click()
                     time.sleep(1)

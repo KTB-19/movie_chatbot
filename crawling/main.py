@@ -9,6 +9,5 @@ if __name__ == '__main__':
     for i in divisions:
         data_list.extend(process_division.process_division(i))
 
-    print(data_list)
     print("final: ", len(data_list))
     print("--- %s 초 ---" % (time.time() - start_time))

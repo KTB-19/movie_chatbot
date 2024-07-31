@@ -7,6 +7,7 @@ from selenium.common.exceptions import NoSuchElementException, StaleElementRefer
 import time
 
 def init_driver():
+    # 드라이버 설정
     chrome_options = Options()
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--disable-gpu')
@@ -18,6 +19,8 @@ def init_driver():
     return driver
 
 def safe_find_element(driver, selector, retries=5, title=False):
+    # 에러 발생한 경우 재시도
+    # 에러는 영화상영관이 없거나 상영스케줄이 없는 경우에 발생하기 때문에, 에러 발생해도 큰 문제는 없음
     for _ in range(retries):
         try:
             element = driver.find_element(By.CSS_SELECTOR, selector)
@@ -45,10 +48,13 @@ def crawling(args):
         wideareacd_value = w_element.get_attribute("wideareacd")
         if wideareacd_value:
             widearea_name = w_element.text
+
+            # 광역 재선택(에러 방지를 위해)
             w_element.click()
             time.sleep(1)
             WebDriverWait(driver, 20).until(
                 EC.presence_of_all_elements_located((By.CSS_SELECTOR, '#sBasareaCd > li')))
+
         start = division[0]
         end = division[-1] + 1
         for j in range(start, end):
@@ -64,6 +70,8 @@ def crawling(args):
                 basareacd_value = b_element.get_attribute("basareacd")
                 if basareacd_value:
                     basarea_name = b_element.text
+
+                    # 기초 선택
                     b_element.click()
                     time.sleep(1)
                     WebDriverWait(driver, 20).until(
@@ -85,12 +93,14 @@ def crawling(args):
                             theatercd_value = theater_element.get_attribute("theacd")
                             if theatercd_value:
                                 theater_name = theater_element.text
+
+                                # 영화관 선택
                                 theater_element.click()
                                 time.sleep(1)
                                 WebDriverWait(driver, 20).until(
                                     EC.presence_of_all_elements_located((By.CSS_SELECTOR, '#schedule > li')))
 
-                                print("Theater Name:", theater_name)
+                                # print("Theater Name:", theater_name)
                                 movie_elements = driver.find_elements(By.CSS_SELECTOR, "#schedule > li")
                                 for k in range(1, len(movie_elements) + 1):
                                     try:
@@ -107,6 +117,8 @@ def crawling(args):
                                             movie_time = time_element.text
                                             movie_date = safe_find_element(driver,
                                                                              "#content > div.schedule > div.ovf.step4.on > div > p").text
+
+                                            # 데이터 수집 => 추후 database에 넣는 것으로 변경 예정
                                             data_list.append([
                                                 widearea_name,
                                                 basareacd_value, basarea_name,

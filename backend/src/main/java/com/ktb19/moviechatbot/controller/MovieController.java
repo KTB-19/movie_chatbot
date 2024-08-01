@@ -3,6 +3,7 @@ package com.ktb19.moviechatbot.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ktb19.moviechatbot.dto.MovieRunningTimeRequest;
 import com.ktb19.moviechatbot.dto.QueryDto;
+import com.ktb19.moviechatbot.service.MovieService;
 import com.ktb19.moviechatbot.service.ParseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MovieController {
 
     private final ParseService parseService;
+    private final MovieService movieService;
 
     @GetMapping("/movie/query")
     public ResponseEntity<?> getParsedQuery(@RequestParam String message) {
@@ -41,6 +43,7 @@ public class MovieController {
             log.info("query.getDate() = {}", query.getDate());
 
             //queryDto 통해 db에서 상영정보 가져오기
+            movieService.getRunningTimes(query);
 
             return ResponseEntity.ok().build();
         } catch (JsonProcessingException e) {

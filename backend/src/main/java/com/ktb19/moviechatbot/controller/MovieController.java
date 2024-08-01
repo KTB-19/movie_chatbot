@@ -3,6 +3,7 @@ package com.ktb19.moviechatbot.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ktb19.moviechatbot.dto.MovieRunningTimeRequest;
 import com.ktb19.moviechatbot.dto.QueryDto;
+import com.ktb19.moviechatbot.dto.RunningTimesDto;
 import com.ktb19.moviechatbot.service.MovieService;
 import com.ktb19.moviechatbot.service.ParseService;
 import lombok.RequiredArgsConstructor;
@@ -42,10 +43,9 @@ public class MovieController {
             log.info("query.getRegion() = {}", query.getRegion());
             log.info("query.getDate() = {}", query.getDate());
 
-            //queryDto 통해 db에서 상영정보 가져오기
-            movieService.getRunningTimes(query);
+            RunningTimesDto runningTimesDto = movieService.getRunningTimes(query);
 
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(runningTimesDto);
         } catch (JsonProcessingException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);

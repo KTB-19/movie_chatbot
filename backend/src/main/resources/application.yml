@@ -3,7 +3,7 @@ spring:
     name: moviechatbot
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/moviedatabase?&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3307/moviedatabase?&serverTimezone=Asia/Seoul
     username: root
     password: qlalfqjsgh486
   jpa:
@@ -13,3 +13,5 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    database: mysql

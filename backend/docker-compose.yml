@@ -6,4 +6,4 @@ services:
     container_name: movie-db-test
     restart: always
     ports:
-      - "3306:3306"
+      - "3307:3306"

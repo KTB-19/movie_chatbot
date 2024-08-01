@@ -33,7 +33,7 @@ def process_division(i):
             chunk_size = max((len(basarea_elements) // 10) + (1 if len(basarea_elements) % 10 != 0 else 0), 1)
             sub_divisions = [l[i:i + chunk_size] for i in range(0, len(l), chunk_size)]
             args_list = [(i, widearea_name, len(basarea_elements), div) for div in sub_divisions]
-            data_list = _process_with_multiprocessing(crawling, args_list, len(l))
+            data_list = _process_with_multiprocessing(crawling, args_list, len(sub_divisions))
         driver.quit()
     except (NoSuchElementException, StaleElementReferenceException, InvalidSelectorException, TimeoutException) as e:
         print(f"광역 지역 처리 중 에러 (i={i}): {type(e).__name__}")

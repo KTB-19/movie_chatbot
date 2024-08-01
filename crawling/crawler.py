@@ -51,7 +51,7 @@ def crawling(args):
 
             # 광역 재선택(에러 방지를 위해)
             w_element.click()
-            time.sleep(1)
+            time.sleep(2)
             WebDriverWait(driver, 20).until(
                 EC.presence_of_all_elements_located((By.CSS_SELECTOR, '#sBasareaCd > li')))
 
@@ -73,7 +73,7 @@ def crawling(args):
 
                     # 기초 선택
                     b_element.click()
-                    time.sleep(1)
+                    time.sleep(2)
                     WebDriverWait(driver, 20).until(
                         EC.presence_of_all_elements_located((By.CSS_SELECTOR, '#sTheaCd > li')))
 
@@ -96,7 +96,7 @@ def crawling(args):
 
                                 # 영화관 선택
                                 theater_element.click()
-                                time.sleep(1)
+                                time.sleep(2)
                                 WebDriverWait(driver, 20).until(
                                     EC.presence_of_all_elements_located((By.CSS_SELECTOR, '#schedule > li')))
 
@@ -120,8 +120,7 @@ def crawling(args):
 
                                             # 데이터 수집 => 추후 database에 넣는 것으로 변경 예정
                                             data_list.append([
-                                                widearea_name,
-                                                basareacd_value, basarea_name,
+                                                widearea_name, basarea_name,
                                                 theatercd_value, theater_name,
                                                 movie_title, movie_time, movie_date
                                             ])

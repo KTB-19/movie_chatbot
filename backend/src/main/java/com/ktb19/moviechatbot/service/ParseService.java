@@ -2,6 +2,7 @@ package com.ktb19.moviechatbot.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ktb19.moviechatbot.dto.QueriesDto;
 import com.ktb19.moviechatbot.dto.QueryDto;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +64,7 @@ public class ParseService {
     private QueryDto toQueryDto(PyObject json) throws JsonProcessingException {
 
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         QueryDto dto = mapper.readValue(json.toString(), QueryDto.class);
         log.info("dto.getMovieName() : " + dto.getMovieName());
         log.info("dto.getRegion() : " + dto.getRegion());

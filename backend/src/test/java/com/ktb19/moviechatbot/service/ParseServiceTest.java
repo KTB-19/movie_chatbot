@@ -7,10 +7,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.python.core.PyFunction;
 import org.python.core.PyObject;
 import org.python.core.PyUnicode;
@@ -23,7 +25,7 @@ import static org.mockito.BDDMockito.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class ParseServiceTest {
 
     @Mock
@@ -53,7 +55,7 @@ class ParseServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getMovieName()).isEqualTo("Test Movie");
         assertThat(result.getRegion()).isEqualTo("Test Region");
-        assertThat(result.getDate()).isEqualTo("2024-01-01T09:00:00.000");
+        assertThat(result.getDate()).isEqualTo("2024-01-01");
     }
 
     @Test
@@ -83,6 +85,6 @@ class ParseServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getMovieName()).isEqualTo("Parsed Movie"); // This should remain from parsedQuery
         assertThat(result.getRegion()).isEqualTo("New Region");
-        assertThat(result.getDate()).isEqualTo("2024-02-02T09:00:00.000");
+        assertThat(result.getDate()).isEqualTo("2024-02-02");
     }
 }

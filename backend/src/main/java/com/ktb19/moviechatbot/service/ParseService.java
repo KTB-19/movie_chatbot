@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 public class ParseService {
 
     private final PythonInterpreter interpreter;
-    public QueryDto parse(String message) throws JsonProcessingException {
+    public QueryDto parse(String message) throws JsonProcessingException, NullPointerException {
 
         PyFunction parseQuery = getPythonFunction("src/main/java/com/ktb19/moviechatbot/ai/test1.py", "parseQuery");
         PyObject json = parseQuery.__call__(new PyUnicode(message));
@@ -29,7 +29,7 @@ public class ParseService {
         return dto;
     }
 
-    public QueryDto parseAdditional(QueryDto parsedQuery, QueriesDto additionQueries) throws JsonProcessingException {
+    public QueryDto parseAdditional(QueryDto parsedQuery, QueriesDto additionQueries) throws JsonProcessingException, NullPointerException {
 
         PyFunction parseQueries = getPythonFunction("src/main/java/com/ktb19/moviechatbot/ai/test2.py", "parseQueries");
         PyObject json = parseQueries.__call__(

@@ -1,10 +1,7 @@
 package com.ktb19.moviechatbot.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ktb19.moviechatbot.dto.MovieRunningTimeRequest;
-import com.ktb19.moviechatbot.dto.MovieRunningTimeResponse;
-import com.ktb19.moviechatbot.dto.QueryDto;
-import com.ktb19.moviechatbot.dto.RunningTimesDto;
+import com.ktb19.moviechatbot.dto.*;
 import com.ktb19.moviechatbot.service.MovieService;
 import com.ktb19.moviechatbot.service.ParseService;
 import lombok.RequiredArgsConstructor;
@@ -29,9 +26,15 @@ public class MovieController {
 
         try {
             return ResponseEntity.ok(parseService.parse(message));
-        } catch (JsonProcessingException e) {
+        }
+        catch (JsonProcessingException e) {
+            log.error(e.getClass() + " " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
+                    .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "JSON parsing error"));
+        } catch (NullPointerException e) {
+            log.error(e.getClass() + " " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "PyFunction not found"));
         }
     }
 
@@ -48,8 +51,13 @@ public class MovieController {
 
             return ResponseEntity.ok(new MovieRunningTimeResponse(runningTimesDto.getTimes().size(), runningTimesDto.getTimes()));
         } catch (JsonProcessingException e) {
+            log.error(e.getClass() + " " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
+                    .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "JSON parsing error"));
+        } catch (NullPointerException e) {
+            log.error(e.getClass() + " " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "PyFunction not found"));
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.ktb19.moviechatbot.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ktb19.moviechatbot.dto.QueriesDto;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Service;
 public class ParseService {
 
     private final PythonInterpreter interpreter;
-    public QueryDto parse(String message) throws JsonProcessingException, NullPointerException {
+    public QueryDto parse(String message) {
 
         PyFunction parseQuery = getPythonFunction("src/main/java/com/ktb19/moviechatbot/ai/test1.py", "parseQuery");
         PyObject json = parseQuery.__call__(new PyUnicode(message));
@@ -29,7 +30,7 @@ public class ParseService {
         return dto;
     }
 
-    public QueryDto parseAdditional(QueryDto parsedQuery, QueriesDto additionQueries) throws JsonProcessingException, NullPointerException {
+    public QueryDto parseAdditional(QueryDto parsedQuery, QueriesDto additionQueries) {
 
         PyFunction parseQueries = getPythonFunction("src/main/java/com/ktb19/moviechatbot/ai/test2.py", "parseQueries");
         PyObject json = parseQueries.__call__(
@@ -61,14 +62,22 @@ public class ParseService {
         return result;
     }
 
-    private QueryDto toQueryDto(PyObject json) throws JsonProcessingException {
+    private QueryDto toQueryDto(PyObject json) {
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        QueryDto dto = mapper.readValue(json.toString(), QueryDto.class);
-        log.info("dto.getMovieName() : " + dto.getMovieName());
-        log.info("dto.getRegion() : " + dto.getRegion());
-        log.info("dto.getDate() : " + dto.getDate());
-        return dto;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            QueryDto dto = mapper.readValue(json.toString(), QueryDto.class);
+
+            log.info("dto.getMovieName() : " + dto.getMovieName());
+            log.info("dto.getRegion() : " + dto.getRegion());
+            log.info("dto.getDate() : " + dto.getDate());
+
+            return dto;
+
+        } catch (JsonProcessingException e) {
+            log.error(e.getClass() + " " + e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 }

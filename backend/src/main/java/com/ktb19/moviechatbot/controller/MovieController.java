@@ -2,6 +2,7 @@ package com.ktb19.moviechatbot.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ktb19.moviechatbot.dto.MovieRunningTimeRequest;
+import com.ktb19.moviechatbot.dto.MovieRunningTimeResponse;
 import com.ktb19.moviechatbot.dto.QueryDto;
 import com.ktb19.moviechatbot.dto.RunningTimesDto;
 import com.ktb19.moviechatbot.service.MovieService;
@@ -45,7 +46,7 @@ public class MovieController {
 
             RunningTimesDto runningTimesDto = movieService.getRunningTimes(query);
 
-            return ResponseEntity.ok(runningTimesDto);
+            return ResponseEntity.ok(new MovieRunningTimeResponse(runningTimesDto.getTimes().size(), runningTimesDto.getTimes()));
         } catch (JsonProcessingException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);

@@ -99,15 +99,15 @@ class InfoRepositoryTest {
                 .time(time)
                 .build();
 
-        infoRepository.save(info1);
-        infoRepository.save(info2);
+        Info savedInfo1 = infoRepository.save(info1);
+        Info savedInfo2 = infoRepository.save(info2);
 
         //When
         List<Info> findInfos = infoRepository.findAllByQuery(movie1.getTitle(), theater1.getWideArea(), theater1.getBasicArea(), date);
 
         //Then
         assertThat(findInfos).hasSize(1);
-        assertThat(findInfos.getFirst()).isEqualTo(info1);
+        assertThat(findInfos.getFirst()).isEqualTo(savedInfo1);
 
     }
 
@@ -135,15 +135,15 @@ class InfoRepositoryTest {
                 .time(time)
                 .build();
 
-        infoRepository.save(info1);
-        infoRepository.save(info2);
+        Info savedInfo1 = infoRepository.save(info1);
+        Info savedInfo2 = infoRepository.save(info2);
 
         //When
         List<Info> findInfos = infoRepository.findAllByQuery(movie1.getTitle(), theater1.getWideArea(), theater1.getBasicArea(), date);
 
         //Then
         assertThat(findInfos).hasSize(1);
-        assertThat(findInfos.getFirst()).isEqualTo(info1);
+        assertThat(findInfos.getFirst()).isEqualTo(savedInfo1);
 
     }
 
@@ -172,15 +172,15 @@ class InfoRepositoryTest {
                 .time(time)
                 .build();
 
-        infoRepository.save(info1);
-        infoRepository.save(info2);
+        Info savedInfo1 = infoRepository.save(info1);
+        Info savedInfo2 = infoRepository.save(info2);
 
         //When
         List<Info> findInfos = infoRepository.findAllByQuery(movie1.getTitle(), theater1.getWideArea(), theater1.getBasicArea(), date1);
 
         //Then
         assertThat(findInfos).hasSize(1);
-        assertThat(findInfos.getFirst()).isEqualTo(info1);
+        assertThat(findInfos.getFirst()).isEqualTo(savedInfo1);
 
     }
 
@@ -209,15 +209,15 @@ class InfoRepositoryTest {
                 .time(time2)
                 .build();
 
-        infoRepository.save(info1);
-        infoRepository.save(info2);
+        Info savedInfo1 = infoRepository.save(info1);
+        Info savedInfo2 = infoRepository.save(info2);
 
         //When
         List<Info> findInfos = infoRepository.findAllByQuery(movie1.getTitle(), theater1.getWideArea(), theater1.getBasicArea(), date);
 
         //Then
         assertThat(findInfos).hasSize(2);
-        assertThat(findInfos).contains(info1, info2);
+        assertThat(findInfos).contains(savedInfo1, savedInfo2);
 
     }
 }

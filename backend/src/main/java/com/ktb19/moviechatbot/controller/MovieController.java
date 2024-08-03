@@ -1,12 +1,13 @@
 package com.ktb19.moviechatbot.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ktb19.moviechatbot.dto.*;
+import com.ktb19.moviechatbot.dto.MovieRunningTimeRequest;
+import com.ktb19.moviechatbot.dto.MovieRunningTimeResponse;
+import com.ktb19.moviechatbot.dto.QueryDto;
+import com.ktb19.moviechatbot.dto.RunningTimesDto;
 import com.ktb19.moviechatbot.service.MovieService;
 import com.ktb19.moviechatbot.service.ParseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;

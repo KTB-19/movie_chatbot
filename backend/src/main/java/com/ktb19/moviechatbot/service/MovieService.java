@@ -37,6 +37,11 @@ public class MovieService {
     }
 
     private static String[] parseRegionToAreas(String region) {
-        return region.split(" ");
+        String[] areas = region.split(" ");
+        if (areas.length != 2) {
+            throw new IllegalArgumentException("잘못된 region 형식입니다.");
+        }
+
+        return areas;
     }
 }

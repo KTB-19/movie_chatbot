@@ -1,6 +1,6 @@
 package com.ktb19.moviechatbot.controller;
 
-import com.ktb19.moviechatbot.dto.MovieRunningTimeRequest;
+import com.ktb19.moviechatbot.dto.AdditionalQueryRequest;
 import com.ktb19.moviechatbot.dto.MovieRunningTimeResponse;
 import com.ktb19.moviechatbot.dto.QueryDto;
 import com.ktb19.moviechatbot.dto.RunningTimesDto;
@@ -24,20 +24,19 @@ public class MovieController {
 
     @GetMapping("/movie/query")
     public ResponseEntity<?> getParsedQuery(@RequestParam String message) {
-
         return ResponseEntity.ok(parseService.parse(message));
     }
 
+    @GetMapping("/movie/query/additional")
+    public ResponseEntity<?> getParsedQueryByAdditionalQuery(@RequestBody AdditionalQueryRequest request) {
+        return ResponseEntity.ok(parseService.parseAdditional(request.getParsedQuery(), request.getAdditionQueries()));
+    }
+
     @GetMapping("/movie/running-times")
-    public ResponseEntity<?> getRunningTimes(@RequestBody MovieRunningTimeRequest request) {
+    public ResponseEntity<?> getRunningTimes(@RequestBody QueryDto parsedQuery) {
 
-        QueryDto query = parseService.parseAdditional(request.getParsedQuery(), request.getAdditionQueries());
-        log.info("query.getMovieName() = {}", query.getMovieName());
-        log.info("query.getRegion() = {}", query.getRegion());
-        log.info("query.getDate() = {}", query.getDate());
+        RunningTimesDto dto = movieService.getRunningTimes(parsedQuery);
 
-        RunningTimesDto runningTimesDto = movieService.getRunningTimes(query);
-
-        return ResponseEntity.ok(new MovieRunningTimeResponse(runningTimesDto.getTimes().size(), runningTimesDto.getTimes()));
+        return ResponseEntity.ok(new MovieRunningTimeResponse(dto.getTimes().size(), dto.getTimes()));
     }
 }

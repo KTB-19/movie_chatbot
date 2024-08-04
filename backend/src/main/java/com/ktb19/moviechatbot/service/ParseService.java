@@ -2,7 +2,6 @@ package com.ktb19.moviechatbot.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ktb19.moviechatbot.dto.QueriesDto;
 import com.ktb19.moviechatbot.dto.QueryDto;
 import com.ktb19.moviechatbot.exception.FailParsingPyObjectToJsonException;
@@ -21,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class ParseService {
 
     private final PythonInterpreter interpreter;
+    private final ObjectMapper mapper;
     public QueryDto parse(String message) {
 
         PyFunction parseQuery = getPythonFunction("src/main/java/com/ktb19/moviechatbot/ai/test1.py", "parseQuery");
@@ -69,9 +69,6 @@ public class ParseService {
     }
 
     private QueryDto toQueryDto(PyObject pyObject) {
-
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
 
         try {
             QueryDto dto = mapper.readValue(pyObject.toString(), QueryDto.class);

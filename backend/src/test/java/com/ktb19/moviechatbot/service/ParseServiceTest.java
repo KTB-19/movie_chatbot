@@ -1,14 +1,18 @@
 package com.ktb19.moviechatbot.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ktb19.moviechatbot.dto.QueriesDto;
 import com.ktb19.moviechatbot.dto.QueryDto;
 import com.ktb19.moviechatbot.exception.FailParsingPyObjectToJsonException;
 import com.ktb19.moviechatbot.exception.PyFunctionNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.python.core.PyFunction;
 import org.python.core.PyObject;
@@ -25,9 +29,15 @@ class ParseServiceTest {
 
     @Mock
     private PythonInterpreter pythonInterpreter;
-
+    @Spy
+    private ObjectMapper mapper;
     @InjectMocks
     private ParseService parseService;
+
+    @BeforeEach
+    void setUp() {
+        mapper.registerModule(new JavaTimeModule());
+    }
 
     @Test
     @DisplayName("주어진 메시지를 파싱하여 QueryDto 객체로 반환한다.")

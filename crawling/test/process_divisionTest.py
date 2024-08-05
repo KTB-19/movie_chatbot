@@ -1,6 +1,8 @@
+# File path: test_process_division.py
+
 import unittest
 from unittest.mock import patch, MagicMock
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException, ElementClickInterceptedException, JavascriptException
 import process_division
 
 class TestProcessDivision(unittest.TestCase):
@@ -34,7 +36,7 @@ class TestProcessDivision(unittest.TestCase):
             ['WideareaName', 'basareacd1', 'BasareaName1', 'theacd1', 'TheaterName1', 'MovieTitle1', '10:00', '7월 1일']
         ]
 
-        result = process_division.process_division(1)
+        result = process_division.process_division(1, 1)
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0],
@@ -51,7 +53,7 @@ class TestProcessDivision(unittest.TestCase):
 
         # driver initialization failure
         mock_process_with_multiprocessing.return_value = []
-        result = process_division.process_division(1)
+        result = process_division.process_division(1, 1)
         self.assertEqual(result, [])
 
         # Reset mocks
@@ -61,20 +63,36 @@ class TestProcessDivision(unittest.TestCase):
         # StaleElementReferenceException
         mock_safe_find_element.side_effect = StaleElementReferenceException
         mock_process_with_multiprocessing.return_value = []
-        result = process_division.process_division(1)
+        result = process_division.process_division(1, 1)
         self.assertEqual(result, [])
 
         # NoSuchElementException
         mock_safe_find_element.side_effect = NoSuchElementException
         mock_process_with_multiprocessing.return_value = []
-        result = process_division.process_division(1)
+        result = process_division.process_division(1, 1)
         self.assertEqual(result, [])
 
         # TimeoutException
         mock_WebDriverWait.return_value.until.side_effect = TimeoutException
         mock_process_with_multiprocessing.return_value = []
-        result = process_division.process_division(1)
+        result = process_division.process_division(1, 1)
         self.assertEqual(result, [])
+
+    @patch('process_division.wait_for_element_to_be_clickable')
+    @patch('process_division.WebDriverWait')
+    @patch('process_division.time.sleep', return_value=None)
+    def test_click_date_change(self, mock_sleep, mock_WebDriverWait, mock_wait_for_element_to_be_clickable):
+        driver = MagicMock()
+        mock_wait_for_element_to_be_clickable.return_value = MagicMock()
+
+        # Mocking driver methods for date change
+        mock_wait_for_element_to_be_clickable.return_value.click.side_effect = [None] * 7
+
+        for _ in range(7):
+            mock_wait_for_element_to_be_clickable(driver, '//*[@id="next"]').click()
+            mock_sleep.assert_called_with(1)
+
+        self.assertEqual(mock_wait_for_element_to_be_clickable.return_value.click.call_count, 7)
 
 if __name__ == '__main__':
     unittest.main()

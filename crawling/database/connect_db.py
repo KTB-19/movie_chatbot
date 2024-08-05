@@ -1,10 +1,9 @@
+"""FOR LOCAL DATABASE"""
+
 import pymysql
 # from dotenv import load_dotenv
 # import os
 #
-
-"""FOR LOCAL DATABASE"""
-
 # def create_tables():
 #     load_dotenv()
 #     host = os.getenv('DB_HOST')

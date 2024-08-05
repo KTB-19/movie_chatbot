@@ -5,8 +5,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from crawler import crawling, safe_find_element, init_driver
+from crawler_for7days import crawling_for7days
 
-def process_division(i):
+def process_division(i, initial):
     data_list = []
     try:
         driver = init_driver()
@@ -33,7 +34,10 @@ def process_division(i):
             chunk_size = max((len(basarea_elements) // 10) + (1 if len(basarea_elements) % 10 != 0 else 0), 1)
             sub_divisions = [l[i:i + chunk_size] for i in range(0, len(l), chunk_size)]
             args_list = [(i, widearea_name, len(basarea_elements), div) for div in sub_divisions]
-            data_list = _process_with_multiprocessing(crawling, args_list, len(sub_divisions))
+            if initial:
+                data_list = _process_with_multiprocessing(crawling_for7days, args_list, len(sub_divisions))
+            else:
+                data_list = _process_with_multiprocessing(crawling, args_list, len(sub_divisions))
         driver.quit()
     except (NoSuchElementException, StaleElementReferenceException, InvalidSelectorException, TimeoutException) as e:
         print(f"광역 지역 처리 중 에러 (i={i}): {type(e).__name__}")

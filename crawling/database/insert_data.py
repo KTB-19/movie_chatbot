@@ -27,7 +27,7 @@ def insert_data(data_list):
     user = os.getenv('DB_USER')
     password = os.getenv('DB_PASSWORD')
 
-    conn = pymysql.connect(host=host, user=user, passwd=password, db='testDB', charset='utf8')
+    conn = pymysql.connect(host=host, user=user, passwd=password, charset='utf8', database='moviedatabase')
     cur = conn.cursor()
 
     try:

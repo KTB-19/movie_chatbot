@@ -10,7 +10,10 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class RunningTimesDto {
+public class TheaterRunningTimesDto {
 
+    private String theaterName;
+    private int count;
     private List<Time> times;
+
 }

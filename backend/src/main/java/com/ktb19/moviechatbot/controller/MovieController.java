@@ -1,9 +1,7 @@
 package com.ktb19.moviechatbot.controller;
 
 import com.ktb19.moviechatbot.dto.AdditionalQueryRequest;
-import com.ktb19.moviechatbot.dto.MovieRunningTimeResponse;
 import com.ktb19.moviechatbot.dto.QueryDto;
-import com.ktb19.moviechatbot.dto.RunningTimesDto;
 import com.ktb19.moviechatbot.service.MovieService;
 import com.ktb19.moviechatbot.service.ParseService;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +32,6 @@ public class MovieController {
 
     @GetMapping("/movie/running-times")
     public ResponseEntity<?> getRunningTimes(@RequestBody QueryDto parsedQuery) {
-
-        RunningTimesDto dto = movieService.getRunningTimes(parsedQuery);
-
-        return ResponseEntity.ok(new MovieRunningTimeResponse(dto.getTimes().size(), dto.getTimes()));
+        return ResponseEntity.ok(movieService.getRunningTimes(parsedQuery));
     }
 }

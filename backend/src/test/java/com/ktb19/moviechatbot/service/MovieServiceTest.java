@@ -1,7 +1,8 @@
 package com.ktb19.moviechatbot.service;
 
+import com.ktb19.moviechatbot.dto.InfoDetailsQueryDto;
+import com.ktb19.moviechatbot.dto.MovieRunningTimesDto;
 import com.ktb19.moviechatbot.dto.QueryDto;
-import com.ktb19.moviechatbot.dto.RunningTimesDto;
 import com.ktb19.moviechatbot.entity.Info;
 import com.ktb19.moviechatbot.entity.Movie;
 import com.ktb19.moviechatbot.entity.Theater;
@@ -53,15 +54,15 @@ class MovieServiceTest {
         Info info2 = new Info(2, movie, theater, date, time2);
 
         given(infoRepository.findAllByQuery(eq(movieName), eq(wideArea), eq(basicArea), eq(date)))
-                .willReturn(List.of(info1, info2));
+                .willReturn(List.of(new InfoDetailsQueryDto(info1, movie, theater), new InfoDetailsQueryDto(info2, movie, theater)));
 
         //When
-        RunningTimesDto result = movieService.getRunningTimes(query);
+        MovieRunningTimesDto result = movieService.getRunningTimes(query);
 
         //Then
-        assertThat(result.getTimes()).hasSize(2);
-        assertThat(result.getTimes()).contains(time1, time2);
-
+        assertThat(result.getCount()).isEqualTo(1);
+        assertThat(result.getTheaterRunningTimes().getFirst().getCount()).isEqualTo(2);
+        assertThat(result.getTheaterRunningTimes().getFirst().getTimes()).contains(time1, time2);
     }
 
     @Test

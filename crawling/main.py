@@ -1,7 +1,7 @@
 import time
 from apscheduler.triggers.date import DateTrigger
 import process_division
-import database.insert_data, database.delete_db
+import database.insert_db, database.delete_db
 import schedule
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime

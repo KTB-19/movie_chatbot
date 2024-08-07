@@ -12,55 +12,38 @@ def job():
 
     # 어제의 데이터 삭제
     database.delete_db.delete_data()
+    print("deleted yesterday's data from database")
+
+    print("start crawling")
 
     for i in divisions:
         data_list.extend(process_division.process_division(i, initial=1))
 
     print("final: ", len(data_list))
-    print("--- %s 초 ---" % (time.time() - start_time))
-
     database.insert_db.insert_data(data_list)
+    print("inserted into database(for 7 days)")
 
-    print("--- %s 초 ---" % (time.time() - start_time))
 
 def job_for7days():
     data_list = []
     divisions = [i for i in range(1, 18)]
 
+    print("start crawling")
+
     for i in divisions:
         data_list.extend(process_division.process_division(i, initial=7))
 
     print("final: ", len(data_list))
-    print("--- %s 초 ---" % (time.time() - start_time))
-
     database.insert_db.insert_data(data_list)
-
-    print("--- %s 초 ---" % (time.time() - start_time))
-
+    print("inserted into database")
 
 
 if __name__ == '__main__':
-    start_time = time.time()
-    data_list = []
 
-    # 7일치 크롤을 위한 스케줄러 생성(1회만 실행 후 종료)
-    scheduler = BackgroundScheduler()
+    # 최초 1회 실행
+    job_for7days()
 
-    # 실행 시간 설정
-    """변경해야 하는 부분. 최초 크롤링에 대한 시간 설정"""
-    run_time = datetime(2024, 8, 7, 19, 6)
-
-    scheduler.add_job(job_for7days, trigger=DateTrigger(run_date=run_time))
-    scheduler.start()
-
-    while True:
-        pending_jobs = scheduler.get_jobs()
-        if not pending_jobs:
-            break
-        time.sleep(1)
-
-
-    # 매일 오전 9시마다
+    # 매일 오전 9시마다 실행
     schedule.every().day.at("19:07").do(job)
 
     while True:

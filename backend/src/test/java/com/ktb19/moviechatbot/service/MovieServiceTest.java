@@ -1,12 +1,12 @@
 package com.ktb19.moviechatbot.service;
 
-import com.ktb19.moviechatbot.dto.InfoDetailsQueryDto;
+import com.ktb19.moviechatbot.dto.MovieInfoDetailsQueryDto;
 import com.ktb19.moviechatbot.dto.MovieRunningTimesDto;
 import com.ktb19.moviechatbot.dto.QueryDto;
-import com.ktb19.moviechatbot.entity.Info;
+import com.ktb19.moviechatbot.entity.MovieInfo;
 import com.ktb19.moviechatbot.entity.Movie;
 import com.ktb19.moviechatbot.entity.Theater;
-import com.ktb19.moviechatbot.repository.InfoRepository;
+import com.ktb19.moviechatbot.repository.MovieInfoRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +29,7 @@ class MovieServiceTest {
     @InjectMocks
     MovieService movieService;
     @Mock
-    InfoRepository infoRepository;
+    MovieInfoRepository movieInfoRepository;
 
     @Test
     @DisplayName("QueryDto의 movieName, region, date에 해당하는 times를 db에서 조회하여 반환한다")
@@ -50,11 +50,11 @@ class MovieServiceTest {
         Time time1 = Time.valueOf("18:00:00");
         Time time2 = Time.valueOf("20:00:00");
 
-        Info info1 = new Info(1, movie, theater, date, time1);
-        Info info2 = new Info(2, movie, theater, date, time2);
+        MovieInfo movieInfo1 = new MovieInfo(1, movie, theater, date, time1);
+        MovieInfo movieInfo2 = new MovieInfo(2, movie, theater, date, time2);
 
-        given(infoRepository.findAllByQuery(eq(movieName), eq(wideArea), eq(basicArea), eq(date)))
-                .willReturn(List.of(new InfoDetailsQueryDto(info1, movie, theater), new InfoDetailsQueryDto(info2, movie, theater)));
+        given(movieInfoRepository.findAllByQuery(eq(movieName), eq(wideArea), eq(basicArea), eq(date)))
+                .willReturn(List.of(new MovieInfoDetailsQueryDto(movieInfo1, movie, theater), new MovieInfoDetailsQueryDto(movieInfo2, movie, theater)));
 
         //When
         MovieRunningTimesDto result = movieService.getRunningTimes(query);

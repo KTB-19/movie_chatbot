@@ -3,8 +3,8 @@ package com.ktb19.moviechatbot.service;
 import com.ktb19.moviechatbot.dto.MovieRunningTimesDto;
 import com.ktb19.moviechatbot.dto.QueryDto;
 import com.ktb19.moviechatbot.dto.TheaterRunningTimesDto;
-import com.ktb19.moviechatbot.dto.InfoDetailsQueryDto;
-import com.ktb19.moviechatbot.repository.InfoRepository;
+import com.ktb19.moviechatbot.dto.MovieInfoDetailsQueryDto;
+import com.ktb19.moviechatbot.repository.MovieInfoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ import static java.util.stream.Collectors.*;
 @RequiredArgsConstructor
 public class MovieService {
 
-    private final InfoRepository infoRepository;
+    private final MovieInfoRepository movieInfoRepository;
 
     public MovieRunningTimesDto getRunningTimes(QueryDto query) {
 
@@ -28,7 +28,7 @@ public class MovieService {
         String wideArea = areas[0];
         String basicArea = areas[1];
 
-        List<InfoDetailsQueryDto> dto =  infoRepository.findAllByQuery(
+        List<MovieInfoDetailsQueryDto> dto =  movieInfoRepository.findAllByQuery(
                 query.getMovieName(),
                 wideArea,
                 basicArea,
@@ -36,7 +36,7 @@ public class MovieService {
         );
 
         Map<String, List<Time>> timesPerTheaterNameMap = dto.stream()
-                .collect(groupingBy(d -> d.getTheater().getName(), mapping(d -> d.getInfo().getTime(), toList())));
+                .collect(groupingBy(d -> d.getTheater().getName(), mapping(d -> d.getMovieInfo().getTime(), toList())));
         log.info("timesPerTheaterNameMap : " + timesPerTheaterNameMap);
 
         List<TheaterRunningTimesDto> theaterRunningTimesDtos = timesPerTheaterNameMap.entrySet().stream()

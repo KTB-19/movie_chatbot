@@ -1,7 +1,7 @@
 package com.ktb19.moviechatbot.repository;
 
-import com.ktb19.moviechatbot.dto.InfoDetailsQueryDto;
-import com.ktb19.moviechatbot.entity.Info;
+import com.ktb19.moviechatbot.dto.MovieInfoDetailsQueryDto;
+import com.ktb19.moviechatbot.entity.MovieInfo;
 import com.ktb19.moviechatbot.entity.Movie;
 import com.ktb19.moviechatbot.entity.Theater;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,10 +20,10 @@ import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class InfoRepositoryTest {
+class MovieMovieInfoRepositoryTest {
 
     @Autowired
-    InfoRepository infoRepository;
+    MovieInfoRepository movieInfoRepository;
 
     @Autowired
     MovieRepository movieRepository;
@@ -54,7 +54,7 @@ class InfoRepositoryTest {
     void saveAndFindByIdTest() {
 
         //Given
-        Info info = Info.builder()
+        MovieInfo movieInfo = MovieInfo.builder()
                 .id(1)
                 .movie(movie1)
                 .theater(theater1)
@@ -62,17 +62,17 @@ class InfoRepositoryTest {
                 .time(Time.valueOf("12:00:00"))
                 .build();
 
-        infoRepository.save(info);
+        movieInfoRepository.save(movieInfo);
 
         //When
-        Optional<Info> foundInfo = infoRepository.findById(Long.valueOf(info.getId()));
+        Optional<MovieInfo> foundInfo = movieInfoRepository.findById(Long.valueOf(movieInfo.getId()));
 
         //Then
         assertThat(foundInfo).isPresent();
         assertThat(foundInfo.get().getMovie()).isEqualTo(movie1);
         assertThat(foundInfo.get().getTheater()).isEqualTo(theater1);
-        assertThat(foundInfo.get().getDate()).isEqualTo(info.getDate());
-        assertThat(foundInfo.get().getTime()).isEqualTo(info.getTime());
+        assertThat(foundInfo.get().getDate()).isEqualTo(movieInfo.getDate());
+        assertThat(foundInfo.get().getTime()).isEqualTo(movieInfo.getTime());
     }
 
     @Test
@@ -83,7 +83,7 @@ class InfoRepositoryTest {
         LocalDate date = LocalDate.of(2024, 8, 1);
         Time time = Time.valueOf("12:00:00");
 
-        Info info1 = Info.builder()
+        MovieInfo movieInfo1 = MovieInfo.builder()
                 .id(1)
                 .movie(movie1)
                 .theater(theater1)
@@ -91,7 +91,7 @@ class InfoRepositoryTest {
                 .time(time)
                 .build();
 
-        Info info2 = Info.builder()
+        MovieInfo movieInfo2 = MovieInfo.builder()
                 .id(2)
                 .movie(movie2)
                 .theater(theater1)
@@ -99,15 +99,15 @@ class InfoRepositoryTest {
                 .time(time)
                 .build();
 
-        Info savedInfo1 = infoRepository.save(info1);
-        Info savedInfo2 = infoRepository.save(info2);
+        MovieInfo savedMovieInfo1 = movieInfoRepository.save(movieInfo1);
+        MovieInfo savedMovieInfo2 = movieInfoRepository.save(movieInfo2);
 
         //When
-        List<InfoDetailsQueryDto> result = infoRepository.findAllByQuery(movie1.getTitle(), theater1.getWideArea(), theater1.getBasicArea(), date);
+        List<MovieInfoDetailsQueryDto> result = movieInfoRepository.findAllByQuery(movie1.getTitle(), theater1.getWideArea(), theater1.getBasicArea(), date);
 
         //Then
         assertThat(result).hasSize(1);
-        assertThat(result.getFirst().getInfo()).isEqualTo(savedInfo1);
+        assertThat(result.getFirst().getMovieInfo()).isEqualTo(savedMovieInfo1);
         assertThat(result.getFirst().getMovie()).isEqualTo(movie1);
         assertThat(result.getFirst().getTheater()).isEqualTo(theater1);
 
@@ -121,7 +121,7 @@ class InfoRepositoryTest {
         LocalDate date = LocalDate.of(2024, 8, 1);
         Time time = Time.valueOf("12:00:00");
 
-        Info info1 = Info.builder()
+        MovieInfo movieInfo1 = MovieInfo.builder()
                 .id(1)
                 .movie(movie1)
                 .theater(theater1)
@@ -129,7 +129,7 @@ class InfoRepositoryTest {
                 .time(time)
                 .build();
 
-        Info info2 = Info.builder()
+        MovieInfo movieInfo2 = MovieInfo.builder()
                 .id(2)
                 .movie(movie1)
                 .theater(theater2)
@@ -137,15 +137,15 @@ class InfoRepositoryTest {
                 .time(time)
                 .build();
 
-        Info savedInfo1 = infoRepository.save(info1);
-        Info savedInfo2 = infoRepository.save(info2);
+        MovieInfo savedMovieInfo1 = movieInfoRepository.save(movieInfo1);
+        MovieInfo savedMovieInfo2 = movieInfoRepository.save(movieInfo2);
 
         //When
-        List<InfoDetailsQueryDto> result = infoRepository.findAllByQuery(movie1.getTitle(), theater1.getWideArea(), theater1.getBasicArea(), date);
+        List<MovieInfoDetailsQueryDto> result = movieInfoRepository.findAllByQuery(movie1.getTitle(), theater1.getWideArea(), theater1.getBasicArea(), date);
 
         //Then
         assertThat(result).hasSize(1);
-        assertThat(result.getFirst().getInfo()).isEqualTo(savedInfo1);
+        assertThat(result.getFirst().getMovieInfo()).isEqualTo(savedMovieInfo1);
         assertThat(result.getFirst().getMovie()).isEqualTo(movie1);
         assertThat(result.getFirst().getTheater()).isEqualTo(theater1);
 
@@ -160,7 +160,7 @@ class InfoRepositoryTest {
         LocalDate date2 = LocalDate.of(2024, 8, 2);
         Time time = Time.valueOf("12:00:00");
 
-        Info info1 = Info.builder()
+        MovieInfo movieInfo1 = MovieInfo.builder()
                 .id(1)
                 .movie(movie1)
                 .theater(theater1)
@@ -168,7 +168,7 @@ class InfoRepositoryTest {
                 .time(time)
                 .build();
 
-        Info info2 = Info.builder()
+        MovieInfo movieInfo2 = MovieInfo.builder()
                 .id(2)
                 .movie(movie1)
                 .theater(theater1)
@@ -176,15 +176,15 @@ class InfoRepositoryTest {
                 .time(time)
                 .build();
 
-        Info savedInfo1 = infoRepository.save(info1);
-        Info savedInfo2 = infoRepository.save(info2);
+        MovieInfo savedMovieInfo1 = movieInfoRepository.save(movieInfo1);
+        MovieInfo savedMovieInfo2 = movieInfoRepository.save(movieInfo2);
 
         //When
-        List<InfoDetailsQueryDto> result = infoRepository.findAllByQuery(movie1.getTitle(), theater1.getWideArea(), theater1.getBasicArea(), date1);
+        List<MovieInfoDetailsQueryDto> result = movieInfoRepository.findAllByQuery(movie1.getTitle(), theater1.getWideArea(), theater1.getBasicArea(), date1);
 
         //Then
         assertThat(result).hasSize(1);
-        assertThat(result.getFirst().getInfo()).isEqualTo(savedInfo1);
+        assertThat(result.getFirst().getMovieInfo()).isEqualTo(savedMovieInfo1);
         assertThat(result.getFirst().getMovie()).isEqualTo(movie1);
         assertThat(result.getFirst().getTheater()).isEqualTo(theater1);
 
@@ -199,7 +199,7 @@ class InfoRepositoryTest {
         Time time1 = Time.valueOf("12:00:00");
         Time time2 = Time.valueOf("13:30:00");
 
-        Info info1 = Info.builder()
+        MovieInfo movieInfo1 = MovieInfo.builder()
                 .id(1)
                 .movie(movie1)
                 .theater(theater1)
@@ -207,7 +207,7 @@ class InfoRepositoryTest {
                 .time(time1)
                 .build();
 
-        Info info2 = Info.builder()
+        MovieInfo movieInfo2 = MovieInfo.builder()
                 .id(2)
                 .movie(movie1)
                 .theater(theater1)
@@ -215,16 +215,16 @@ class InfoRepositoryTest {
                 .time(time2)
                 .build();
 
-        Info savedInfo1 = infoRepository.save(info1);
-        Info savedInfo2 = infoRepository.save(info2);
+        MovieInfo savedMovieInfo1 = movieInfoRepository.save(movieInfo1);
+        MovieInfo savedMovieInfo2 = movieInfoRepository.save(movieInfo2);
 
         //When
-        List<InfoDetailsQueryDto> result = infoRepository.findAllByQuery(movie1.getTitle(), theater1.getWideArea(), theater1.getBasicArea(), date);
+        List<MovieInfoDetailsQueryDto> result = movieInfoRepository.findAllByQuery(movie1.getTitle(), theater1.getWideArea(), theater1.getBasicArea(), date);
 
         //Then
         assertThat(result).hasSize(2);
-        assertThat(result.getFirst().getInfo()).isEqualTo(savedInfo1);
-        assertThat(result.getLast().getInfo()).isEqualTo(savedInfo2);
+        assertThat(result.getFirst().getMovieInfo()).isEqualTo(savedMovieInfo1);
+        assertThat(result.getLast().getMovieInfo()).isEqualTo(savedMovieInfo2);
 
     }
 }

@@ -10,10 +10,10 @@ import java.sql.Time;
 import java.time.LocalDate;
 
 @Entity
-@Table
+@Table(name = "info")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Info {
+public class MovieInfo {
 
     @Id
     @Column(name = "info_id")
@@ -31,7 +31,7 @@ public class Info {
     private Time time;
 
     @Builder
-    public Info(Integer id, Movie movie, Theater theater, LocalDate date, Time time) {
+    public MovieInfo(Integer id, Movie movie, Theater theater, LocalDate date, Time time) {
         this.id = id;
         this.movie = movie;
         this.theater = theater;

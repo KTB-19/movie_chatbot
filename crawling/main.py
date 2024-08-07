@@ -19,7 +19,7 @@ def job():
     print("final: ", len(data_list))
     print("--- %s 초 ---" % (time.time() - start_time))
 
-    # database.connect_db.insert_data(data_list)
+    database.connect_db.insert_data(data_list)
 
     print("--- %s 초 ---" % (time.time() - start_time))
 
@@ -33,7 +33,7 @@ def job_for7days():
     print("final: ", len(data_list))
     print("--- %s 초 ---" % (time.time() - start_time))
 
-    # database.connect_db.insert_data(data_list)
+    database.connect_db.insert_data(data_list)
 
     print("--- %s 초 ---" % (time.time() - start_time))
 
@@ -47,6 +47,7 @@ if __name__ == '__main__':
     scheduler = BackgroundScheduler()
 
     # 실행 시간 설정
+    """변경해야 하는 부분. 최초 크롤링에 대한 시간 설정"""
     run_time = datetime(2024, 8, 7, 10, 53)
 
     scheduler.add_job(job_for7days, trigger=DateTrigger(run_date=run_time))
@@ -57,11 +58,11 @@ if __name__ == '__main__':
             pass
     except (KeyboardInterrupt, SystemExit):
         scheduler.shutdown()
-    #
-    #
-    # # 매일 오전 9시마다
-    # schedule.every().day.at("09:00").do(job)
-    #
-    # while True:
-    #     schedule.run_pending()
-    #     time.sleep(1)
+
+
+    # 매일 오전 9시마다
+    schedule.every().day.at("09:00").do(job)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)

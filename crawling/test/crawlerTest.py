@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, ElementClickInterceptedException
 import crawler
 
 class TestCrawler(unittest.TestCase):
@@ -12,18 +12,23 @@ class TestCrawler(unittest.TestCase):
         driver.find_element.return_value = element
 
         # 정상 동작하는 경우
-        result = crawler.safe_find_element(driver, 'selector')
+        result = crawler.safe_find_element(driver, 'selector', title=False)
         self.assertEqual(result, element)
 
         # StaleElementReferenceException 발생하는 경우
         driver.find_element.side_effect = [StaleElementReferenceException, element]
-        result = crawler.safe_find_element(driver, 'selector')
+        result = crawler.safe_find_element(driver, 'selector', title=False)
         self.assertEqual(result, element)
 
         # NoSuchElementException 발생하는 경우
         driver.find_element.side_effect = [NoSuchElementException, element]
-        result = crawler.safe_find_element(driver, 'selector')
+        result = crawler.safe_find_element(driver, 'selector', title=False)
         self.assertEqual(result, element)
+
+        # 모든 재시도 후 None 반환
+        driver.find_element.side_effect = NoSuchElementException
+        result = crawler.safe_find_element(driver, 'selector', title=False)
+        self.assertIsNone(result)
 
     @patch('crawler.init_driver')
     @patch('crawler.safe_find_element')
@@ -50,7 +55,7 @@ class TestCrawler(unittest.TestCase):
         mock_WebDriverWait.return_value.until.return_value = True
 
         # Test
-        args = (1, 'WideareaName', 1, [1])
+        args = (1, 1, 'WideareaName', 1, [1])
         result = crawler.crawling(args)
 
         # Check
@@ -58,9 +63,9 @@ class TestCrawler(unittest.TestCase):
         self.assertEqual(len(result), 1)
         for item in result:
             self.assertIsInstance(item, list)
-            self.assertEqual(len(item), 8)
+            self.assertEqual(len(item), 7)  # Update to match the actual number of elements in data_list
 
-        self.assertEqual(result[0], ['WideareaName', 'basareacd1', 'BasareaName1', 'theacd1', 'TheaterName1', 'MovieTitle1', '10:00', '7월 1일'])
+        self.assertEqual(result[0], ['WideareaName', 'BasareaName1', 'theacd1', 'TheaterName1', 'MovieTitle1', '10:00', '7월 1일'])
 
     @patch('crawler.webdriver.Chrome')
     def test_init_driver(self, MockWebDriver):

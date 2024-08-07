@@ -28,7 +28,7 @@ def job_for7days():
     divisions = [i for i in range(1, 18)]
 
     for i in divisions:
-        data_list.extend(process_division.process_division(i, initial=6))
+        data_list.extend(process_division.process_division(i, initial=7))
 
     print("final: ", len(data_list))
     print("--- %s 초 ---" % (time.time() - start_time))
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     scheduler = BackgroundScheduler()
 
     # 실행 시간 설정
-    run_time = datetime(2024, 8, 5, 17, 18)
+    run_time = datetime(2024, 8, 7, 10, 53)
 
     scheduler.add_job(job_for7days, trigger=DateTrigger(run_date=run_time))
     scheduler.start()
@@ -57,11 +57,11 @@ if __name__ == '__main__':
             pass
     except (KeyboardInterrupt, SystemExit):
         scheduler.shutdown()
-
-
-    # 매일 오전 9시마다
-    schedule.every().day.at("09:00").do(job)
-
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    #
+    #
+    # # 매일 오전 9시마다
+    # schedule.every().day.at("09:00").do(job)
+    #
+    # while True:
+    #     schedule.run_pending()
+    #     time.sleep(1)

@@ -31,7 +31,10 @@ def process_division(i, initial):
             # 선택한 광역 단체에 해당하는 기초 단체 목록의 길이에 따라 프로세스 분배
             # 최대 가용한 cpu 수와 기초단체 목록 길이에 따라 chuck size 변경
             l = [i for i in range(1, len(basarea_elements) + 1)]
-            chunk_size = max((len(basarea_elements) // 9) + (1 if len(basarea_elements) % 9 != 0 else 0), 1)
+
+            # 최대 가용한 cpu 수 설정
+            my_cpu_count = 9
+            chunk_size = max((len(basarea_elements) // my_cpu_count) + (1 if len(basarea_elements) % my_cpu_count != 0 else 0), 1)
             sub_divisions = [l[i:i + chunk_size] for i in range(0, len(l), chunk_size)]
             args_list = [(initial, i, widearea_name, len(basarea_elements), div) for div in sub_divisions]
             data_list.extend(_process_with_multiprocessing(crawling, args_list, len(sub_divisions)))

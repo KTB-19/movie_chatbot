@@ -1,3 +1,6 @@
+
+.env
+
 backend/.gradle/
 backend/.DS_Store
 build/
@@ -12,3 +15,4 @@ build/
 out/
 
 .jython_cache
+

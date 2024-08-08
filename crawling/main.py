@@ -44,7 +44,7 @@ if __name__ == '__main__':
     job_for7days()
 
     # 매일 오전 9시마다 실행
-    schedule.every().day.at("19:07").do(job)
+    schedule.every().day.at("09:00").do(job)
 
     while True:
         schedule.run_pending()

@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MovieRunningTimeRequest {
+public class AdditionalQueryRequest {
 
     private QueryDto parsedQuery;
     private QueriesDto additionQueries;

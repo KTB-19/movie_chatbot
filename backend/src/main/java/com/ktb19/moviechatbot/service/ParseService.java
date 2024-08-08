@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ktb19.moviechatbot.dto.QueriesDto;
 import com.ktb19.moviechatbot.dto.QueryDto;
+import com.ktb19.moviechatbot.exception.FailParsingPyObjectToJsonException;
+import com.ktb19.moviechatbot.exception.PyFunctionNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.python.core.PyFunction;
@@ -18,17 +20,18 @@ import org.springframework.stereotype.Service;
 public class ParseService {
 
     private final PythonInterpreter interpreter;
-    public QueryDto parse(String message) throws JsonProcessingException {
+    private final ObjectMapper mapper;
+    public QueryDto parse(String message) {
 
         PyFunction parseQuery = getPythonFunction("src/main/java/com/ktb19/moviechatbot/ai/test1.py", "parseQuery");
-        PyObject json = parseQuery.__call__(new PyUnicode(message));
+        PyObject jsonPyObject = parseQuery.__call__(new PyUnicode(message));
 
-        QueryDto dto = toQueryDto(json);
+        QueryDto dto = toQueryDto(jsonPyObject);
 
         return dto;
     }
 
-    public QueryDto parseAdditional(QueryDto parsedQuery, QueriesDto additionQueries) throws JsonProcessingException {
+    public QueryDto parseAdditional(QueryDto parsedQuery, QueriesDto additionQueries) {
 
         PyFunction parseQueries = getPythonFunction("src/main/java/com/ktb19/moviechatbot/ai/test2.py", "parseQueries");
         PyObject json = parseQueries.__call__(
@@ -45,8 +48,13 @@ public class ParseService {
     private PyFunction getPythonFunction(String scriptPath, String functionName) {
 
         interpreter.execfile(scriptPath);
+        PyFunction pyFunction = interpreter.get(functionName, PyFunction.class);
 
-        return interpreter.get(functionName, PyFunction.class);
+        if (pyFunction == null) {
+            throw new PyFunctionNotFoundException(functionName);
+        }
+
+        return pyFunction;
     }
 
     private QueryDto union(QueryDto parsedQuery, QueryDto dto) {
@@ -60,13 +68,19 @@ public class ParseService {
         return result;
     }
 
-    private QueryDto toQueryDto(PyObject json) throws JsonProcessingException {
+    private QueryDto toQueryDto(PyObject pyObject) {
 
-        ObjectMapper mapper = new ObjectMapper();
-        QueryDto dto = mapper.readValue(json.toString(), QueryDto.class);
-        log.info("dto.getMovieName() : " + dto.getMovieName());
-        log.info("dto.getRegion() : " + dto.getRegion());
-        log.info("dto.getDate() : " + dto.getDate());
-        return dto;
+        try {
+            QueryDto dto = mapper.readValue(pyObject.toString(), QueryDto.class);
+
+            log.info("dto.getMovieName() : " + dto.getMovieName());
+            log.info("dto.getRegion() : " + dto.getRegion());
+            log.info("dto.getDate() : " + dto.getDate());
+
+            return dto;
+
+        } catch (JsonProcessingException e) {
+            throw new FailParsingPyObjectToJsonException(pyObject.toString());
+        }
     }
 }

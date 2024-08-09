@@ -1,0 +1,27 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body, html {
+    height: 100%;
+  }
+
+  .chat-container {
+    display: flex;
+  }
+  
+  .chat-header {
+    flex: 1;
+    display: flex;
+  }
+
+  .chat-reaction {
+    flex: 8;
+    display: flex;
+  }
+  
+  .chat-input {
+    display: flex;
+  }

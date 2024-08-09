@@ -1,3 +1,23 @@
+
+.env
+
+backend/.gradle/
+backend/.DS_Store
+build/
+.DS_Store
+*.bin
+*.lock
+
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+
+.jython_cache
+
+
+
 # Local .terraform directories
 **/.terraform/*
 # .tfstate files

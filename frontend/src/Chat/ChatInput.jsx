@@ -1,15 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import './ChatInput.css';
 
-function ChatInput() {
-    const [inputValue, setInputValue] = useState('');
+function ChatInput({ inputValue, setInputValue, sendInputValue }) {
     const textareaRef = useRef(null);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         // 백엔드로 보내기
+
         // 중간 버블창에 띄우기
-        setInputValue(''); // 제출 후 인풋 값 초기화
+        sendInputValue(inputValue);
+        
+        setInputValue('');
     };
 
     useEffect(() => {

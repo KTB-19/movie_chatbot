@@ -12,6 +12,7 @@ def init_driver():
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage') # Docker 환경 용 - Bryan
     driver = webdriver.Chrome(options=chrome_options)
     driver.get('https://www.kobis.or.kr/kobis/business/mast/thea/findTheaterSchedule.do')
     # 페이지 로드 완료 대기

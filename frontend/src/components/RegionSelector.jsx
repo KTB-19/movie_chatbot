@@ -335,19 +335,22 @@ const RegionSelector = () => {
 
     const handleWideAreaChange = (e) => {
         setWideArea(e.target.value);
+        setBasicArea("");
     };
-
-    useEffect(() => {
-        setBasicAreas(areas.find((area) => area.wideArea === wideArea)?.basicArea || []);
-    }, [wideArea]);
 
     const handleBasicAreaChange = (e) => {
         setBasicArea(e.target.value);
     };
 
+    useEffect(() => {
+        setBasicAreas(areas.find((area) => area.wideArea === wideArea)?.basicArea || []);
+        console.log("wideArea : ", wideArea);
+        console.log("basicArea : ", basicArea);
+    }, [wideArea, basicArea]);
+
     return (
         <div id="region-selector">
-            <h2 className="region-label">지역 선택</h2>
+            {/*<h2 className="region-label">지역 선택</h2>*/}
             <div className="region-container">
                 <Form.Select value={wideArea} onChange={handleWideAreaChange} className="wide-area">
                     <option value="">지역</option>

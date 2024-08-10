@@ -1,6 +1,7 @@
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Form from 'react-bootstrap/Form';
+import {HomeContext} from "./HomeContext";
 
 const areas = [
     {
@@ -329,6 +330,7 @@ const areas = [
 
 const RegionSelector = () => {
 
+    const { movieInfo, setMovieInfo } = useContext(HomeContext);
     const [wideArea, setWideArea] = useState("");
     const [basicArea, setBasicArea] = useState("");
     const [basicAreas, setBasicAreas] = useState([]);
@@ -344,6 +346,7 @@ const RegionSelector = () => {
 
     useEffect(() => {
         setBasicAreas(areas.find((area) => area.wideArea === wideArea)?.basicArea || []);
+        setMovieInfo({ ...movieInfo, region: (wideArea + " " + basicArea).trim() });
         console.log("wideArea : ", wideArea);
         console.log("basicArea : ", basicArea);
     }, [wideArea, basicArea]);

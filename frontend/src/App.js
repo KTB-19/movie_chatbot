@@ -1,9 +1,12 @@
 import './App.css';
 import Aside from "./components/Aside";
+import {Home} from "./components/HomeContext";
 
 function App() {
   return (
-      <Aside></Aside>
+      <Home>
+        <Aside />
+      </Home>
   );
 }
 

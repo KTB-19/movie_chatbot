@@ -1,0 +1,26 @@
+.aside {
+    width: 30%;
+    height: 100vh;
+    background-color: #0f1e46;
+    text-align: center;
+}
+.logo-container {
+    display: flex;
+    justify-content: center;
+}
+.logo {
+    display: flex;
+    height: 15vh;
+    width: 90%;
+    justify-content: center;
+    align-items: center;
+    border-bottom: solid #394667;
+}
+.regionSelector {
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+}
+.dateSelector {
+    margin-top: 10vh;
+    margin-bottom: 10vh;
+}

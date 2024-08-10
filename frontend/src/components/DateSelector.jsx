@@ -2,7 +2,7 @@ import CustomDatePicker from "./CustomDatePicker";
 
 const DateSelector = () => {
     return (
-        <div className="dateSelector">
+        <div className="date-selector">
             <CustomDatePicker />
         </div>
     );

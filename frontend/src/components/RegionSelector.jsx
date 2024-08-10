@@ -1,4 +1,6 @@
 import {useEffect, useState} from "react";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Form from 'react-bootstrap/Form';
 
 const areas = [
     {
@@ -344,23 +346,26 @@ const RegionSelector = () => {
     };
 
     return (
-        <div className="regionSelector">
-            <select value={wideArea} onChange={handleWideAreaChange}>
-                <option value="">지역을 선택해주세요</option>
-                {areas.map((area) => (
-                    <option key={area.wideArea} value={area.wideArea}>
-                        {area.wideArea}
-                    </option>
-                ))}
-            </select>
-            <select value={basicArea} onChange={handleBasicAreaChange}>
-                <option value="">시,군,구를 선택해주세요</option>
-                {basicAreas.map((area) => (
-                    <option key={area} value={area}>
-                        {area}
-                    </option>
-                ))}
-            </select>
+        <div id="region-selector">
+            <h2 className="region-label">지역 선택</h2>
+            <div className="region-container">
+                <Form.Select value={wideArea} onChange={handleWideAreaChange} className="wide-area">
+                    <option value="">지역</option>
+                    {areas.map((area) => (
+                        <option key={area.wideArea} value={area.wideArea}>
+                            {area.wideArea}
+                        </option>
+                    ))}
+                </Form.Select>
+                <Form.Select value={basicArea} onChange={handleBasicAreaChange} className="basic-area">
+                    <option value="">시,군,구</option>
+                    {basicAreas.map((area) => (
+                        <option key={area} value={area}>
+                            {area}
+                        </option>
+                    ))}
+                </Form.Select>
+            </div>
         </div>
     );
 };

@@ -16,10 +16,31 @@
     align-items: center;
     border-bottom: solid #394667;
 }
-.regionSelector {
-    margin-top: 10vh;
-    margin-bottom: 10vh;
+.date-selector {
+    padding-top: 6vh;
 }
-.dateSelector {
-    padding: 5vh;
+
+#region-selector {
+    margin-left: 5%;
+    margin-right: 5%;
+    padding-top: 5vh;
+    padding-bottom: 5vh;
+    border-bottom: solid #394667;
+}
+#region-selector > .region-label {
+    color: white;
+    margin-bottom: 5vh;
+}
+#region-selector > .region-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#region-selector > .region-container > .wide-area {
+    width: 40%;
+    margin: 4%;
+}
+#region-selector > .region-container > .basic-area {
+    width: 40%;
+    margin: 4%;
 }

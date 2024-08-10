@@ -17,10 +17,9 @@
     border-bottom: solid #394667;
 }
 .regionSelector {
-    margin-top: 5vh;
-    margin-bottom: 5vh;
-}
-.dateSelector {
     margin-top: 10vh;
     margin-bottom: 10vh;
+}
+.dateSelector {
+    padding: 5vh;
 }

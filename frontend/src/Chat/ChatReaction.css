@@ -1,20 +1,57 @@
 .chat-reaction-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
+    flex-grow: 1;
+    overflow-y: auto;
     padding: 10px;
     box-sizing: border-box;
-    overflow-y: auto; /* 스크롤 */
 }
 
-.chat-reaction-box {
-    background-color: #FCE8E7;
+.chat-message-pair {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.chat-question {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 5px;
+}
+
+.chat-question-box {
+    background-color: #FCE8E7; 
     color: black;
     padding: 10px;
     border-radius: 10px;
-    max-width: 300px;
-    word-wrap: break-word; 
-    position: absolute;
-    top: 10px;
-    left: 10px;
+    max-width: 60%;
+    word-wrap: break-word;
+    margin-right: 10px;
 }
+
+.chat-answer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 5px;
+}
+
+.chat-answer-box {
+    background-color: #D5DAE7;
+    color: black;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 60%;
+    word-wrap: break-word;
+    margin-left: 10px;
+}
+
+.chat-icon-q {
+    font-size: x-large;
+    color: #ffb4b0; 
+}
+.chat-icon-a {
+    font-size: x-large;
+    color: #89a2e1;
+}
+
+

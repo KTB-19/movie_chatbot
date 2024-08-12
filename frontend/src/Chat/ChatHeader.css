@@ -1,8 +1,5 @@
-@import url("https://statics.goorm.io/fonts/GoormSansCode/v1.0.0/GoormSansCode.min.css");
-
 .chatHeader {
     align-content: flex-start;
-    font-family: "Goorm Sans Code", sans-serif;
     font-style: normal;
     font-size: xx-large;
     font-weight: bolder;

@@ -1,12 +1,23 @@
 import React from "react";
 import './ChatReaction.css';
+import { LiaRobotSolid } from "react-icons/lia";
+import { LuUser } from "react-icons/lu";
 
-function ChatReaction({ inputValue }) {
+function ChatReaction({ inputValues, outputValues }) {
     return (
         <div className="chat-reaction-container">
-            <div className="chat-reaction-box">
-                {inputValue}
-            </div>
+            {inputValues.map((input, index) => (
+                <div key={index} className="chat-message-pair">
+                    <div className="chat-question">
+                        <div className="chat-question-box">{input}</div>
+                        <LuUser className="chat-icon-q" />
+                    </div>
+                    <div className="chat-answer">
+                        <LiaRobotSolid className="chat-icon-a" />
+                        <div className="chat-answer-box">{outputValues[index] || ''}</div>
+                    </div>
+                </div>
+            ))}
         </div>
     );
 }

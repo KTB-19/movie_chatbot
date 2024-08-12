@@ -2,10 +2,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import './ChatInput.css';
 
-function ChatInput({ inputValue, setInputValue, getOutputValue, sendOutputValue }) {
+function ChatInput({ inputValues, setInputValue, getOutputValue, sendOutputValue }) {
     const [currentInput, setCurrentInput] = useState('');
-    const textareaRef = useRef(null);
+    const textareaRef = useRef();
 
+    // 사용자가 input submit 이후
     const handleSubmit = (e) => {
         e.preventDefault();
         if (currentInput !== "") {
@@ -16,6 +17,7 @@ function ChatInput({ inputValue, setInputValue, getOutputValue, sendOutputValue 
         }
     };
 
+    // input 창 스크롤
     useEffect(() => {
         if (textareaRef.current) {
             textareaRef.current.style.height = 'auto';

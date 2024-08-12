@@ -3,6 +3,8 @@ import './ChatReaction.css';
 import { LiaRobotSolid } from "react-icons/lia";
 import { LuUser } from "react-icons/lu";
 
+
+// input과 output을 세트로 나열
 function ChatReaction({ inputValues, outputValues }) {
     return (
         <div className="chat-reaction-container">

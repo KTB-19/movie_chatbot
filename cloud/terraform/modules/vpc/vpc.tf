@@ -85,6 +85,6 @@ resource "aws_eip" "movie-eip" {
 # Nat Gateway
 resource "aws_nat_gateway" "movie-nat-gw" {
   allocation_id = aws_eip.movie-eip.id
-  subnet_id = aws_subnet.public[0].id
+  subnet_id = aws_subnet.public[1].id
   connectivity_type = "public"
 }

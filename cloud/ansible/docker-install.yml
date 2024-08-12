@@ -1,0 +1,28 @@
+---
+- name: Install Docker on Amazon Linux
+  hosts: all_servers
+  become: yes  # root 권한
+  
+  tasks:
+    - name: Update the yum package index
+      yum:
+        name: "*"
+        state: latestd
+        update_cache: yes
+
+    - name: Install Docker
+      yum:
+        name: docker
+        state: present
+
+    - name: Ensure Docker is started
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add the ec2-user to the docker group
+      user:
+        name: ec2-user
+        groups: docker
+        append: yes

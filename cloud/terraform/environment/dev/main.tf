@@ -20,23 +20,43 @@ terraform {
   required_version = ">= 1.2.0"
 }
 
-
 module "vpc" {
   source               = "../../modules/vpc"
   vpc_cidr             = "192.168.0.0/16"
-  public_subnet_cidr   = "192.168.1.0/24"
-  private_subnet_cidr  = "192.168.2.0/24"
   environment          = terraform.workspace
   public_subnet_count  = 2
   private_subnet_count = 2
 }
 
-module "ec2" {
+
+## 인스턴스
+
+module "front" {
   source             = "../../modules/instance"
   ami_id             = "ami-0c2acfcb2ac4d02a0"
   instance_type      = "t2.micro"
-  ssh_key_name       = "Bryan"
+  ssh_key_name       = "kakao-tech-bootcamp"
   subnet_id          = module.vpc.public_subnet_ids[0]
+  security_groups_id = [aws_security_group.ssh.id]
+  workspace          = "${terraform.workspace}-front"
+}
+
+module "backend" {
+  source             = "../../modules/instance"
+  ami_id             = "ami-0c2acfcb2ac4d02a0"
+  instance_type      = "t2.small"
+  ssh_key_name       = "kakao-tech-bootcamp"
+  subnet_id          = module.vpc.private_subnet_ids[0]
+  security_groups_id = [aws_security_group.ssh.id]
+  workspace          = "${terraform.workspace}-backend"
+}
+
+module "crawling" {
+  source             = "../../modules/instance"
+  ami_id             = "ami-0c2acfcb2ac4d02a0"
+  instance_type      = "t2.xlarge"
+  ssh_key_name       = "kakao-tech-bootcamp"
+  subnet_id          = module.vpc.public_subnet_ids[1]
   security_groups_id = [aws_security_group.ssh.id]
   workspace          = "${terraform.workspace}-crawling"
 }
@@ -45,12 +65,13 @@ module "db" {
   source             = "../../modules/instance"
   ami_id             = "ami-0c2acfcb2ac4d02a0"
   instance_type      = "t2.small"
-  ssh_key_name       = "Bryan"
-  subnet_id          = module.vpc.private_subnet_ids[0]
-  security_groups_id = [aws_security_group.mysql.id]
+  ssh_key_name       = "kakao-tech-bootcamp"
+  subnet_id          = module.vpc.private_subnet_ids[1]
+  security_groups_id = [aws_security_group.mysql.id, aws_security_group.ssh.id]
   workspace          = "${terraform.workspace}-db"
 }
 
+# 보안 그룹
 resource "aws_security_group" "ssh" {
   vpc_id = module.vpc.vpc_id
   ingress {
@@ -81,7 +102,7 @@ resource "aws_security_group" "mysql" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   ingress {
     from_port   = 3306
     to_port     = 3306
@@ -99,12 +120,4 @@ resource "aws_security_group" "mysql" {
   tags = {
     Name = "moive-${terraform.workspace}-sg-mysql"
   }
-}
-
-output "crawling" {
-  value = module.ec2.instance_public_ip
-}
-
-output "db" {
-  value = module.db.instance_public_ip
 }

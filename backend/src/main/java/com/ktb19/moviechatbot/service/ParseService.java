@@ -21,9 +21,9 @@ public class ParseService {
 
     private final PythonInterpreter interpreter;
     private final ObjectMapper mapper;
-    public QueryDto parse(String message) {
 
-        PyFunction parseQuery = getPythonFunction("src/main/java/com/ktb19/moviechatbot/ai/test1.py", "parseQuery");
+    public QueryDto parse(String message) {
+        PyFunction parseQuery = getPythonFunction("/app/ai/test1.py", "parseQuery");
         PyObject jsonPyObject = parseQuery.__call__(new PyUnicode(message));
 
         QueryDto dto = toQueryDto(jsonPyObject);
@@ -33,7 +33,7 @@ public class ParseService {
 
     public QueryDto parseAdditional(QueryDto parsedQuery, QueriesDto additionQueries) {
 
-        PyFunction parseQueries = getPythonFunction("src/main/java/com/ktb19/moviechatbot/ai/test2.py", "parseQueries");
+        PyFunction parseQueries = getPythonFunction("/app/ai/test2.py", "parseQueries");
         PyObject json = parseQueries.__call__(
                 new PyUnicode(additionQueries.getMovieNameQuery()),
                 new PyUnicode(additionQueries.getRegionQuery()),

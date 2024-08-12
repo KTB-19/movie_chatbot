@@ -51,7 +51,7 @@ class ParseServiceTest {
 
         given(pythonInterpreter.get(anyString(), eq(PyFunction.class))).willReturn(mockFunction);
         given(mockFunction.__call__(any(PyObject.class))).willReturn(mockPyObject);
-        willDoNothing().given(pythonInterpreter).execfile("src/main/java/com/ktb19/moviechatbot/ai/test1.py");
+//        willDoNothing().given(pythonInterpreter).execfile("src/main/java/com/ktb19/moviechatbot/ai/test1.py");
 
         // When
         QueryDto result = parseService.parse(message);
@@ -90,7 +90,7 @@ class ParseServiceTest {
 
         given(pythonInterpreter.get(anyString(), eq(PyFunction.class))).willReturn(mockFunction);
         given(mockFunction.__call__(any(PyObject.class))).willReturn(mockPyObject);
-        willDoNothing().given(pythonInterpreter).execfile("src/main/java/com/ktb19/moviechatbot/ai/test1.py");
+//        willDoNothing().given(pythonInterpreter).execfile("src/main/java/com/ktb19/moviechatbot/ai/test1.py");
 
         //When
         //Then

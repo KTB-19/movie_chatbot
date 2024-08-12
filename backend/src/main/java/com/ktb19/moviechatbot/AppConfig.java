@@ -11,6 +11,7 @@ public class AppConfig {
 
     @Bean
     public PythonInterpreter pythonInterpreter() {
+        System.setProperty("python.import.site", "false");
         PythonInterpreter.initialize(null, null, new String[0]);
         return new PythonInterpreter();
     }

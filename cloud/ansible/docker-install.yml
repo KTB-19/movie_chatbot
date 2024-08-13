@@ -7,7 +7,7 @@
     - name: Update the yum package index
       yum:
         name: "*"
-        state: latestd
+        state: latest
         update_cache: yes
 
     - name: Install Docker

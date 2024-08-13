@@ -1,0 +1,26 @@
+---
+- hosts: all_servers
+  become: yes
+  tasks:
+    - name: Install Docker
+      ansible.builtin.package:
+        name: docker
+        state: present
+
+    - name: Pull Node Exporter Docker image
+      ansible.builtin.docker_image:
+        name: quay.io/prometheus/node-exporter
+        tag: latest
+        source: pull
+
+    - name: Run Node Exporter container
+      ansible.builtin.docker_container:
+        name: node_exporter
+        image: quay.io/prometheus/node-exporter:latest
+        state: started
+        restart_policy: always
+        network_mode: host
+        pid_mode: host
+        volumes:
+          - /:/host:ro,rslave
+        command: --path.rootfs=/host

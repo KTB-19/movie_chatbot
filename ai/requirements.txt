@@ -3,3 +3,17 @@ uvicorn
 python-dotenv
 pydantic
 pydantic-settings
+
+git+https://github.com/SKTBrain/KoBERT.git#egg=kobert_tokenizer&subdirectory=kobert_hf
+langchain
+transformers
+sentence-transformers
+faiss-cpu
+langchain-community
+langchain_openai
+python-Levenshtein
+datasets
+torch
+jamo
+konlpy
+sentencepiece

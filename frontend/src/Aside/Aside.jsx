@@ -1,6 +1,7 @@
 import DateSelector from "./DateSelector";
 import RegionSelector from "./RegionSelector";
 import "./Aside.css";
+
 const Aside = () => {
     return (
         <div className="aside">
@@ -15,3 +16,4 @@ const Aside = () => {
     );
 };
 export default Aside;
+

@@ -1,0 +1,46 @@
+.aside {
+    width: 30%;
+    height: 100vh;
+    background-color: #0f1e46;
+    text-align: center;
+}
+.logo-container {
+    display: flex;
+    justify-content: center;
+}
+.logo {
+    display: flex;
+    height: 15vh;
+    width: 90%;
+    justify-content: center;
+    align-items: center;
+    border-bottom: solid #394667;
+}
+.date-selector {
+    padding-top: 5vh;
+}
+
+#region-selector {
+    margin-left: 5%;
+    margin-right: 5%;
+    padding-top: 3vh;
+    padding-bottom: 3vh;
+    border-bottom: solid #394667;
+}
+#region-selector > .region-label {
+    color: white;
+    margin-bottom: 5vh;
+}
+#region-selector > .region-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#region-selector > .region-container > .wide-area {
+    width: 40%;
+    margin: 4%;
+}
+#region-selector > .region-container > .basic-area {
+    width: 40%;
+    margin: 4%;
+}

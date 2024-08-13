@@ -1,13 +1,13 @@
-import React from "react";
+import './App.css';
+import Aside from "./Aside/Aside";
 import Chat from "./Chat/Chat";
-import "./App.css";
-import { AppProvider } from "./AppContext";
+import {AppProvider} from "./AppContext";
 
 function App() {
     return (
         <AppProvider>
             <div className="ratioContainer">
-                <div className="sidebar">Sidebar</div>
+                <div className="sidebar"><Aside /></div>
                 <Chat />
             </div>
         </AppProvider>

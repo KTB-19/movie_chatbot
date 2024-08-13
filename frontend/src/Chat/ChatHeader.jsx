@@ -3,7 +3,7 @@ import './ChatHeader.css';
 
 function ChatHeader() {
     return (
-        <p className="chatHeader">Chat</p>
+        <div className="chatHeader">Chat</div>
     )
 }
 

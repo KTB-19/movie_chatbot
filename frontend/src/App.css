@@ -27,7 +27,7 @@ body, html {
 }
 
 .chat-container {
-  flex: 3;
+  flex: 4;
   background-color: white;
   border-radius: 30px;
   margin: 15px;

@@ -32,4 +32,9 @@ public class MovieController {
     public ResponseEntity<?> getRunningTimes(@RequestBody QueryDto parsedQuery) {
         return ResponseEntity.ok(movieService.getRunningTimes(parsedQuery));
     }
+
+    @GetMapping("/test")
+    public ResponseEntity<?> getChatGPTResponse(@RequestParam String message) {
+        return ResponseEntity.ok(parseService.getChatGPTResponse(message));
+    }
 }

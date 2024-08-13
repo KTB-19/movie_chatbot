@@ -83,4 +83,13 @@ public class ParseService {
             throw new FailParsingPyObjectToJsonException(pyObject.toString());
         }
     }
+
+    public String getChatGPTResponse(String prompt) {
+        PythonInterpreter interpreter = new PythonInterpreter();
+
+        interpreter.execfile("src/main/java/com/ktb19/moviechatbot/ai/test3.py");
+
+        PyObject result = interpreter.eval(String.format("get_chatgpt_response('%s')", prompt));
+        return result.toString();
+    }
 }

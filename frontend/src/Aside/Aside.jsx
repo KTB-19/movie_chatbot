@@ -1,6 +1,6 @@
 import DateSelector from "./DateSelector";
 import RegionSelector from "./RegionSelector";
-import "../styles/home.css";
+import "./Aside.css";
 const Aside = () => {
     return (
         <div className="aside">

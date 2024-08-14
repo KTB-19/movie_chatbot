@@ -11,13 +11,12 @@
 # !pip install transformers datasets torch
 # !pip install jamo
 # !pip install konlpy
-
+# !pip install openai
 from kobert_tokenizer import KoBERTTokenizer
 import torch
 from transformers import BertModel
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
-import os
 import json
 from datetime import datetime
 import pytz
@@ -27,13 +26,18 @@ from langchain_core.output_parsers import StrOutputParser
 import Levenshtein
 from jamo import h2j, j2h, j2hcj
 from konlpy.tag import Okt
-
+from openai import OpenAI
+import openai
 import os
 from dotenv import load_dotenv
 # OPENAI_API_KEY
 load_dotenv()
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY1')
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+os.environ["`OPENAI_API_KEY`"] = OPENAI_API_KEY
+
+client = openai.OpenAI(
+    api_key = os.environ.get("OPENAI_API_KEY"),
+)
 
 # KoBERT 토크나이저와 모델 초기화
 tokenizer = KoBERTTokenizer.from_pretrained('skt/kobert-base-v1')
@@ -190,19 +194,6 @@ def process_documents_and_question(documents, question):
     return json.dumps(responseDict)
 
 
-
-
-
-
-
-
-
-# process_documents_and_question 함수 호출
-json_response = process_documents_and_question(documents, question)
-
-# JSON 문자열을 파이썬 딕셔너리로 파싱
-entities = json.loads(json_response)
-
 # 사용자에게 돌려줄 답변 생성
 def generate_response(entities):
     # 페르소나, 시스템 프롬프트 생성
@@ -297,14 +288,8 @@ def generate_response(entities):
 # "민요 첼로",
 # "다큐 황은정 : 스마트폰이 뭐길래"
 # ]
-#
-#
-# #%%
-# question = "울버린 토요일 5시에 보고 싶어"
-# result = process_documents_and_question(documents, question)
-# #%%
-# question = "데드풀 토요일 5시에 보고 싶어"
 
+# question = "데드풀 토요일 5시에 보고 싶어"
 
 # 함수 실행 예시
 #result = process_documents_and_question(documents, question)
@@ -312,3 +297,90 @@ def generate_response(entities):
 #json_response = generate_response(entities)
 #parsed_response = json.loads(json_response)
 #print(parsed_response)
+
+
+# AI 정확도 평가 및 테스트(주의 토큰 소모가 클수있음.)
+'''
+def finaltest(question,documents):
+  print("question:",question)
+  result = process_documents_and_question(documents, question)
+  entities = json.loads(result)
+  print("entities:",entities)
+  json_response = generate_response(entities)
+  parsed_response = json.loads(json_response)
+  print("final:",parsed_response)
+
+
+answer_key = [
+    "울버린 이번 주 토요일 5시에 보고 싶어",  # 완전한 질문 (영화 : 포함, 장소: 없음, 시간 포함, 날짜 포함)
+    "늘봄가든 내일 저녁에 볼 수 있을까?",  # 시간 누락 (영화 : 포함, 장소: 없음, 시간 : 없음, 날짜 포함)
+    "빅토리 오늘 서울 연수구에서 어디서 상영하나요?",  # 시간 누락 (영화 : 포함, 장소: 포함, 시간 : 없음, 날짜 포함)
+    "세븐틴 투어 일요일 3시에 볼 수 있어?",  # 완전한 질문 (영화 : 포함, 장소: 없음, 시간 포함, 날짜 포함)
+    "코난 이번 주말에 부산 부산대 근처에서 상영하는 곳 있어?",  # 시간 누락 (영화 : 포함, 장소: 포함, 시간 : 없음, 날짜 포함)
+    "에이리언 오늘 저녁에 대구 동성로에서 상영하는 곳 있나요?",  # 시간 누락 (영화 : 포함, 장소: 포함, 시간 : 없음, 날짜 포함)
+    "토끼 이번 주 토요일 오후 2시에 보고 싶어",  # 완전한 질문 (영화 : 포함, 장소: 없음, 시간 포함, 날짜 포함)
+    "쥬라기캅스 내일 오전 11시에 인천 연수구에서 어디서 볼 수 있나요?",  # 완전한 질문 (영화 : 포함, 장소: 포함, 시간 포함, 날짜 포함)
+    "행복의 나라 오늘 오후 5시에 상영하나요?",  # 완전한 질문 (영화 : 포함, 장소: 없음, 시간 포함, 날짜 포함)
+    "슈퍼배드 이번 주 금요일에 광주 충장로에서 보고 싶어",  # 시간 누락 (영화 : 포함, 장소: 포함, 시간 : 없음, 날짜 포함)
+    "이준호 콘서트 다음 주 화요일 7시에 대전 둔산동에서 보고 싶어",  # 장소 추가 (영화 : 포함, 장소: 포함, 시간 포함, 날짜 포함)
+    "사랑의 하츄핑 이번 주 목요일 수원 영통구에서 볼 수 있어?",  # 시간, 장소 추가 (영화 : 포함, 장소: 포함, 시간 : 없음, 날짜 포함)
+    "우마무스메 주말에 부산 해운대에서 볼 수 있는 시간 있나요?",  # 장소 추가 (영화 : 포함, 장소: 포함, 시간 포함, 날짜 포함)
+    "옥토넛 오늘 오후에 서울 강남구에서 어디서 상영해?",  # 시간 누락 (영화 : 포함, 장소: 포함, 시간 : 없음, 날짜 포함)
+    "이매지너리 다음 주 월요일 제주도 서귀포에서 상영하나요?",  # 시간, 장소 추가 (영화 : 포함, 장소: 포함, 시간 : 없음, 날짜 포함)
+    "2023 영탁 콘서트 이번 주 일요일 오후 5시에 상영하나요?",  # 완전한 질문 (영화 : 포함, 장소: 없음, 시간 포함, 날짜 포함)
+    "헬로카봇 올스타 주말에 대전 둔산동에서 보고 싶어",  # 시간, 날짜 누락 (영화 : 포함, 장소: 포함, 시간 : 없음, 날짜 없음)
+    "탈출 프로젝트 오늘 저녁 9시에 상영하나요?",  # 완전한 질문 (영화 : 포함, 장소: 없음, 시간 포함, 날짜 포함)
+    "봇치 더 록 이번 주 금요일 오후 4시에 서울 강남구에서 상영하는 곳 있나요?",  # 장소 추가 (영화 : 포함, 장소: 포함, 시간 포함, 날짜 포함)
+    "도라에몽 다음 주 수요일 강남에서 보고 싶어",  # 시간 누락 (영화 : 포함, 장소: 포함, 시간 : 없음, 날짜 포함)
+    "스파이더맨 주말에 서울 홍대에서 상영하는 곳 있나요?",  # 시간, 장소 추가 (영화 : 없음, 장소: 포함, 시간 포함, 날짜 포함)
+    "어벤져스 다음 주 목요일 부산 서면에서 상영하나요?",  # 시간, 장소 추가 (영화 : 없음, 장소: 포함, 시간 포함, 날짜 포함)
+    "해리포터 금요일 저녁 8시에 볼 수 있는 곳?",  # 완전한 질문 (영화 : 없음, 장소: 없음, 시간 포함, 날짜 포함)
+    "인셉션 오늘 저녁에 강남 신촌에서 상영하나요?",  # 장소 추가 (영화 : 없음, 장소: 포함, 시간 포함, 날짜 포함)
+    "아이언맨 3 오늘 오후 6시에 보고 싶어",  # 완전한 질문 (영화 : 없음, 장소: 없음, 시간 포함, 날짜 포함)
+    "겨울왕국 내일 오전에 대구 수성구에서 볼 수 있는 곳?",  # 장소 추가 (영화 : 없음, 장소: 포함, 시간 없음, 날짜 포함)
+    "토이스토리 오후 3시에 상영하는 곳 있나요?",  # 날짜 누락 (영화 : 없음, 장소: 없음, 시간 : 포함, 날짜 없음)
+    "라라랜드 다음 주 화요일 오후에 서울 서울대 근처에서 상영하나요?",  # 시간 누락 (영화 : 없음, 장소: 포함, 시간 없음, 날짜 포함)
+    "타이타닉 오늘 오후 2시에 부산 해운대에서 어디서 볼 수 있나요?",  # 장소 추가 (영화 : 없음, 장소: 포함, 시간 포함, 날짜 포함)
+    "퍼시픽림 오늘 밤 9시에 볼 수 있는 곳 있나요?"  # 완전한 질문 (영화 : 없음, 장소: 없음, 시간 포함, 날짜 포함)
+]
+annotations_with_titles = [
+    "완전한 질문 (영화: 데드풀과 울버린, 장소: 없음, 시간 포함, 날짜 포함)",
+    "시간 누락 (영화: 늘봄가든, 장소: 없음, 시간: 없음, 날짜 포함)",
+    "시간 누락 (영화: 빅토리, 장소: 포함 - 서울 연수구, 시간: 없음, 날짜 포함)",
+    "완전한 질문 (영화: 세븐틴 투어 ‘팔로우’ 어게인 투 시네마, 장소: 없음, 시간 포함, 날짜 포함)",
+    "시간 누락 (영화: 명탐정 코난: 100만 달러의 펜타그램, 장소: 포함 - 부산 부산대, 시간: 없음, 날짜 포함)",
+    "시간 누락 (영화: 에이리언: 로물루스, 장소: 포함 - 대구 동성로, 시간: 없음, 날짜 포함)",
+    "완전한 질문 (영화: 토끼는 어디로 갔나요?, 장소: 없음, 시간 포함, 날짜 포함)",
+    "완전한 질문 (영화: 쥬라기캅스 극장판: 전설의 고대생물을 찾아라, 장소: 포함 - 인천 연수구, 시간 포함, 날짜 포함)",
+    "완전한 질문 (영화: 행복의 나라, 장소: 없음, 시간 포함, 날짜 포함)",
+    "시간 누락 (영화: 슈퍼배드 4, 장소: 포함 - 광주 충장로, 시간: 없음, 날짜 포함)",
+    "장소 추가 (영화: 이준호 콘서트 : 다시 만나는 날, 장소: 포함 - 대전 둔산동, 시간 포함, 날짜 포함)",
+    "시간, 장소 추가 (영화: 사랑의 하츄핑, 장소: 포함 - 수원 영통구, 시간: 없음, 날짜 포함)",
+    "장소 추가 (영화: 우마무스메 프리티 더비 새로운 시대의 문, 장소: 포함 - 부산 해운대, 시간 포함, 날짜 포함)",
+    "시간 누락 (영화: 바다 탐험대 옥토넛 어보브 앤 비욘드 : 바다가 위험해, 장소: 포함 - 서울 강남구, 시간: 없음, 날짜 포함)",
+    "시간, 장소 추가 (영화: 이매지너리, 장소: 포함 - 제주도 서귀포, 시간: 없음, 날짜 포함)",
+    "완전한 질문 (영화: 2023 영탁 단독 콘서트 : 탁쇼2, 장소: 없음, 시간 포함, 날짜 포함)",
+    "시간, 날짜 누락 (영화: 헬로카봇 올스타 스페셜, 장소: 포함 - 대전 둔산동, 시간: 없음, 날짜 없음)",
+    "완전한 질문 (영화: 탈출: 프로젝트 사일런스, 장소: 없음, 시간 포함, 날짜 포함)",
+    "장소 추가 (영화: 극장총집편 봇치 더 록! 전편, 장소: 포함 - 서울 강남구, 시간 포함, 날짜 포함)",
+    "시간 누락 (영화: 극장판 도라에몽: 진구의 지구 교향곡, 장소: 포함 - 강남, 시간: 없음, 날짜 포함)",
+    "시간, 장소 추가 (영화: 없음, 장소: 포함 - 서울 홍대, 시간 포함, 날짜 포함)",
+    "시간, 장소 추가 (영화: 없음, 장소: 포함 - 부산 서면, 시간 포함, 날짜 포함)",
+    "완전한 질문 (영화: 없음, 장소: 없음, 시간 포함, 날짜 포함)",
+    "장소 추가 (영화: 없음, 장소: 포함 - 신촌, 시간 포함, 날짜 포함)",
+    "완전한 질문 (영화: 없음, 장소: 없음, 시간 포함, 날짜 포함)",
+    "장소 추가 (영화: 없음, 장소: 포함 - 대구 수성구, 시간 없음, 날짜 포함)",
+    "날짜 누락 (영화: 없음, 장소: 없음, 시간: 포함, 날짜 없음)",
+    "시간 누락 (영화: 없음, 장소: 포함 - 서울 서울대, 시간 없음, 날짜 포함)",
+    "장소 추가 (영화: 없음, 장소: 포함 - 부산 해운대, 시간 포함, 날짜 포함)",
+    "완전한 질문 (영화: 없음, 장소: 없음, 시간 포함, 날짜 포함)"
+]
+
+questions=[answer_key,annotations_with_titles]
+
+for N in range(30):
+  print("---------------------------------------------------------------------------")
+  print(questions[1][N])
+  finaltest(questions[0][N],documents)
+  print("---------------------------------------------------------------------------")
+'''

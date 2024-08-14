@@ -231,3 +231,81 @@ def process_documents_and_question(documents, question):
 # #%%
 # question = "데드풀 토요일 5시에 보고 싶어"
 # result = process_documents_and_question(documents, question)
+
+
+
+
+# process_documents_and_question 함수 호출
+json_response = process_documents_and_question(documents, question)
+
+# JSON 문자열을 파이썬 딕셔너리로 파싱
+entities = json.loads(json_response)
+
+# 클라이언트 초기화
+client = openai
+
+
+# 사용자에게 돌려줄 답변 생성
+def generate_response(entities):
+    # 페르소나, 시스템 프롬프트 생성
+    system_message = (
+        "당신은 사용자에게 영화관을 추천해주는 고객지원 챗봇 '무비빔밥'입니다."
+        "사용자의 입력을 바탕으로 적절한 응답을 생성하세요."
+        "사용자가 필요한 모든 엔티티(영화 이름, 지역, 날짜, 시간)를 제공한 경우 확인 질문을 생성하세요. "
+        "예를 들어, 사용자가 영화 이름, 지역, 날짜, 시간을 제공했다면, 다음과 같이 응답하세요: "
+        "'[date](에) [time]에 [region]에서 [movieName]을(를) 보시고 싶으신 게 맞으신가요?' "
+        "만약 어떤 엔티티가 누락되었다면, 해당 정보를 요청하는 질문을 생성하세요. "
+        "예를 들어, 지역 정보가 누락된 경우 '어느 지역에서 영화를 보고 싶으신가요?'라고 물어보세요. "
+        "영화 이름이 불명확하거나 불완전한 경우, 이를 확인하는 질문을 생성하세요. "
+        "항상 예매를 완료하기 위해 필요한 모든 정보를 수집하는 것을 목표로 하세요."
+        "단, 사용자에게 영화 예매를 도와주겠다는 응답은 하지 마세요."
+    )
+
+    if all(entities.values()):
+        # 모든 엔티티가 채워진 경우
+        user_message = f"{entities['date']} {entities['time']}에 {entities['region']}에서 {entities['movieName']}을(를) 보시고 싶으신 게 맞으신가요?"
+    else:
+        # 누락된 엔티티가 있는 경우
+        missing_entities = []
+        if not entities.get("movieName"):
+            missing_entities.append("영화 제목을")
+        if not entities.get("region"):
+            missing_entities.append("지역을")
+        if not entities.get("date"):
+            missing_entities.append("날짜를")
+        if not entities.get("time"):
+            missing_entities.append("시간을")
+
+        if missing_entities:
+            user_message = f"관람하고 싶은 {' '.join(missing_entities)} 말씀해 주세요."
+
+
+    # openai API 호출
+    try:
+        completion = client.chat.completions.create(
+            model='gpt-3.5-turbo-0125',
+            messages=[
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": user_message},
+            ],
+            temperature=1.0
+        )
+        chatbot_response = completion.choices[0].message.content
+    except Exception as e:
+        response = f"오류 발생: {e}"
+
+
+    # 불필요한 origin, similar 엔티티 제거
+    entities = {k: v for k, v in entities.items() if k in ['movieName', 'region', 'date', 'time']}
+    # entities에 response 추가
+    entities['response'] = chatbot_response
+
+    # json 형태로 변환하여 return
+    return json.dumps(entities, ensure_ascii=False)
+
+
+
+# 함수 실행 예시
+#json_response = generate_response(entities)
+#parsed_response = json.loads(json_response)
+#print(parsed_response)

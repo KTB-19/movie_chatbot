@@ -5,12 +5,15 @@ from app.services.queryAiProcess import process_documents_and_question
 router = APIRouter()
 
 @router.get("/infos")
-def get_infos():
-
-    result = process_documents_and_question(documents, "this is question")
+def get_infos(question: str = ""):
+    print("get_infos start")
+    print(documents)
+    print("question : " + question)
+    result = process_documents_and_question(documents, question)
     print(result)
+    print("get_infos end")
 
-    return ""
+    return result
 
 
 documents = [
@@ -21,9 +24,6 @@ documents = [
     "명탐정 코난: 100만 달러의 펜타그램",
     "2023 심규선 단독 콘서트 : 우리 앞의 세계",
     "에이리언: 로물루스",
-    "공즉시색 3",
-    "정사 : 이모대신 제가",
-    "섹스 동호회",
     "토끼는 어디로 갔나요?",
     "쥬라기캅스 극장판: 전설의 고대생물을 찾아라",
     "행복의 나라",
@@ -37,15 +37,12 @@ documents = [
     "바다 탐험대 옥토넛 어보브 앤 비욘드 : 바다가 위험해",
     "이매지너리",
     "탈주",
-    "재벌집 여비서-고자아들을 부탁해",
     "2023 영탁 단독 콘서트 : 탁쇼2",
     "헬로카봇 올스타 스페셜",
     "탈출: 프로젝트 사일런스",
     "극장총집편 봇치 더 록! 전편",
     "플라이 미 투 더 문",
     "볼빨간사춘기: 메리 고 라운드 더 무비",
-    "미안하다 사정했다",
-    "내 아내는 섹스 중독",
     "블랙핑크 월드투어 [본 핑크] 인 시네마",
     "이솝이야기",
     "박정희: 경제대국을 꿈꾼 남자",

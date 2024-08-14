@@ -1,3 +1,18 @@
+#%%
+# 필요 의존성 설치
+# !pip install 'git+https://github.com/SKTBrain/KoBERT.git#egg=kobert_tokenizer&subdirectory=kobert_hf'
+# !pip install langchain
+# !pip install transformers
+# !pip install sentence-transformers
+# !pip install faiss-cpu
+# !pip install -q langchain langchain-community
+# !pip install langchain_openai
+# !pip install python-Levenshtein
+# !pip install transformers datasets torch
+# !pip install jamo
+# !pip install konlpy
+from turtledemo.penrose import start
+
 from kobert_tokenizer import KoBERTTokenizer
 import torch
 from transformers import BertModel
@@ -13,6 +28,12 @@ from langchain_core.output_parsers import StrOutputParser
 import Levenshtein
 from jamo import h2j, j2h, j2hcj
 from konlpy.tag import Okt
+# import jpype
+#
+# jvm_path = "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home/lib/libjli.dylib"
+# if not jpype.isJVMStarted():
+#     print("jpype start")
+#     jpype.startJVM(jvm_path)
 
 # KoBERT 토크나이저와 모델 초기화
 tokenizer = KoBERTTokenizer.from_pretrained('skt/kobert-base-v1')
@@ -30,6 +51,7 @@ class KoBERTEmbeddings(HuggingFaceEmbeddings):
 
 # FAISS 벡터화 함수
 def FAISS_vectorize_documents(documents, embeddings_model):
+    print("FAISS_vectorize_documents start")
     vector_store = FAISS.from_texts(documents, embedding=embeddings_model)
     return vector_store
 
@@ -140,9 +162,11 @@ def process_documents_and_question(documents, question):
         'today': today,
         'weekday': weekday
     })
+    print("response1 : " + response1)
 
     responseDict = json.loads(response1)
-    print(responseDict)
+    print("responseDict : " + responseDict)
+
     if responseDict["similar"] is None:
         movieNameQuery = jamodict_search(responseDict["movieName"],jamodict)
         response2 = chain2.invoke({
@@ -164,57 +188,3 @@ def process_documents_and_question(documents, question):
         responseDict["similar"] = responseReDict["movieName"]
         responseDict["movieName"] = responseReDict["movieName"]
     return json.dumps(responseDict)
-
-
-
-
-# 사용 예시
-# documents = [
-#     "데드풀과 울버린",
-# "늘봄가든",
-# "빅토리",
-# "세븐틴 투어 ‘팔로우’ 어게인 투 시네마",
-# "명탐정 코난: 100만 달러의 펜타그램",
-# "2023 심규선 단독 콘서트 : 우리 앞의 세계",
-# "에이리언: 로물루스",
-# "공즉시색 3",
-# "정사 : 이모대신 제가",
-# "섹스 동호회",
-# "토끼는 어디로 갔나요?",
-# "쥬라기캅스 극장판: 전설의 고대생물을 찾아라",
-# "행복의 나라",
-# "트위스터스",
-# "슈퍼배드 4",
-# "이준호 콘서트 : 다시 만나는 날",
-# "사랑의 하츄핑",
-# "우마무스메 프리티 더비 새로운 시대의 문",
-# "하이퍼포커스 : 투모로우바이투게더 브이알 콘서트",
-# "베베핀 플레이타임",
-# "바다 탐험대 옥토넛 어보브 앤 비욘드 : 바다가 위험해",
-# "이매지너리",
-# "탈주",
-# "재벌집 여비서-고자아들을 부탁해",
-# "2023 영탁 단독 콘서트 : 탁쇼2",
-# "헬로카봇 올스타 스페셜",
-# "탈출: 프로젝트 사일런스",
-# "극장총집편 봇치 더 록! 전편",
-# "플라이 미 투 더 문",
-# "볼빨간사춘기: 메리 고 라운드 더 무비",
-# "미안하다 사정했다",
-# "내 아내는 섹스 중독",
-# "블랙핑크 월드투어 [본 핑크] 인 시네마",
-# "이솝이야기",
-# "박정희: 경제대국을 꿈꾼 남자",
-# "극장판 도라에몽: 진구의 지구 교향곡",
-# "2024 박은빈 팬 콘서트 <은빈노트 : 디바>",
-# "민요 첼로",
-# "다큐 황은정 : 스마트폰이 뭐길래"
-# ]
-#
-#
-# #%%
-# question = "울버린 토요일 5시에 보고 싶어"
-# result = process_documents_and_question(documents, question)
-# #%%
-# question = "데드풀 토요일 5시에 보고 싶어"
-# result = process_documents_and_question(documents, question)

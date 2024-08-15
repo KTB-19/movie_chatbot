@@ -1,19 +1,24 @@
 from fastapi import APIRouter
 
+from app.models.info import Info
 from app.services.queryAiProcess import process_documents_and_question
+from app.services.test1 import get_response
 
 router = APIRouter()
 
 @router.get("/infos")
-def get_infos(question: str = ""):
+def get_infos(question: str = "") -> Info:
     print("get_infos start")
+
     print(documents)
     print("question : " + question)
-    result = process_documents_and_question(documents, question)
-    print(result)
+
+    response : Info = Info(**get_response(documents, question))
+    print(response)
+
     print("get_infos end")
 
-    return result
+    return response
 
 
 documents = [

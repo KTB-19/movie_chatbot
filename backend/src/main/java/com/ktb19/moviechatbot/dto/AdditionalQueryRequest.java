@@ -8,5 +8,5 @@ import lombok.Setter;
 public class AdditionalQueryRequest {
 
     private QueryDto parsedQuery;
-    private QueriesDto additionQueries;
+    private String message;
 }

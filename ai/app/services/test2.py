@@ -1,4 +1,4 @@
-def get_response_additional(documents, parsedQuery, additionQueries) :
+def get_response_additional(documents, parsedQuery, question) :
     return {
         'movieName': '2023 심규선 단독 콘서트 : 우리 앞의 세계',
         'region': None,

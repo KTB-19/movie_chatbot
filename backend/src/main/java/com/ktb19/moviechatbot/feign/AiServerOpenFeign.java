@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface AiServerOpenFeign {
 
     @GetMapping("/infos")
-    AiInfosResponse getInfos(@RequestParam String question);
+    AiInfosResponse getInfos(@RequestParam String message);
 
     @PostMapping("/infos/additional")
     AiInfosResponse getInfosAdditional(@RequestBody AdditionalQueryRequest request);

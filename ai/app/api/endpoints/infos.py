@@ -9,11 +9,11 @@ router = APIRouter()
 
 
 @router.get("/infos")
-def get_infos(question: str = "") -> Info:
+def get_infos(message: str = "") -> Info:
     print("get_infos start")
-    print(question)
+    print(message)
 
-    response: Info = Info(**get_response(documents, question))
+    response: Info = Info(**get_response(documents, message))
     print(response)
 
     return response
@@ -23,9 +23,9 @@ def get_infos(question: str = "") -> Info:
 def get_infos_additional(request: AdditionalInfosRequest) -> Info:
     print("get_infos_additional start")
     print(request.parsedQuery)
-    print(request.additionQueries)
+    print(request.message)
 
-    response: Info = Info(**get_response_additional(documents, request.parsedQuery, request.additionQueries))
+    response: Info = Info(**get_response_additional(documents, request.parsedQuery, request.message))
     print(response)
 
     return response

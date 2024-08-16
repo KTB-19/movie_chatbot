@@ -9,12 +9,6 @@ class QueryDto(BaseModel):
     date: Optional[str]
 
 
-class QueriesDto(BaseModel):
-    movieNameQuery: Optional[str]
-    regionQuery: Optional[str]
-    dateQuery: Optional[str]
-
-
 class AdditionalInfosRequest(BaseModel):
     parsedQuery: QueryDto
-    additionQueries: QueriesDto
+    message: str

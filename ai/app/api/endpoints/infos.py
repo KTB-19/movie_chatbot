@@ -1,22 +1,32 @@
 from fastapi import APIRouter
 
+from app.api.dto.additionalInfosRequest import AdditionalInfosRequest
 from app.models.info import Info
-from app.services.queryAiProcess import process_documents_and_question
 from app.services.test1 import get_response
+from app.services.test2 import get_response_additional
 
 router = APIRouter()
+
 
 @router.get("/infos")
 def get_infos(question: str = "") -> Info:
     print("get_infos start")
+    print(question)
 
-    print(documents)
-    print("question : " + question)
-
-    response : Info = Info(**get_response(documents, question))
+    response: Info = Info(**get_response(documents, question))
     print(response)
 
-    print("get_infos end")
+    return response
+
+
+@router.get("/infos/additional")
+def get_infos_additional(request: AdditionalInfosRequest) -> Info:
+    print("get_infos_additional start")
+    print(request.parsedQuery)
+    print(request.additionQueries)
+
+    response: Info = Info(**get_response_additional(documents, request.parsedQuery, request.additionQueries))
+    print(response)
 
     return response
 

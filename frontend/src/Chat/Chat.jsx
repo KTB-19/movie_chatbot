@@ -57,7 +57,7 @@ function Chat() {
         // 2. /movie/query/additional
         // 3. /movie/running-times
 
-
+        
         if (movieName && region && date) {
             // 3. /movie/running-times
             endpoint = "/movie/running-times";
@@ -70,7 +70,8 @@ function Chat() {
             // 1. /movie/query
             endpoint = "/movie/query";
         }
-        console.log(endpoint)
+        console.log(movieName, date, region);
+        console.log("endpoint", endpoint);
         try {
             const response = await fetch(endpoint, {
                 method: "POST",

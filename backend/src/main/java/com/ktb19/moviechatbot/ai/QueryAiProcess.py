@@ -35,7 +35,7 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 client = openai.OpenAI(
-    api_key = os.environ.get("OPENAI_API_KEY"),
+    api_key = OPENAI_API_KEY,
 )
 
 # KoBERT 토크나이저와 모델 초기화

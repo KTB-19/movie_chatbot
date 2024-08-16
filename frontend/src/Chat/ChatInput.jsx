@@ -1,19 +1,18 @@
-// ChatInput.js
 import React, { useEffect, useRef, useState } from "react";
 import './ChatInput.css';
 
-function ChatInput({ inputValues, setInputValue, getOutputValue, sendOutputValue }) {
-    const [currentInput, setCurrentInput] = useState('');
+function ChatInput({ inputValues, sendInputValue, getOutputValue, sendOutputValue }) {
+    const [currentInput, setCurrentInput] = useState('');  // 초기 상태를 빈 문자열로 설정
     const textareaRef = useRef();
 
     // 사용자가 input submit 이후
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (currentInput !== "") {
-            const outputValue = getOutputValue();
+            const outputValue = await getOutputValue(currentInput);  // 비동기 처리
             sendOutputValue(outputValue);
-            setInputValue(currentInput);
-            setCurrentInput('');
+            sendInputValue(currentInput);
+            setCurrentInput('');  // 입력 후 필드를 초기화
         }
     };
 

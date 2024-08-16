@@ -25,7 +25,7 @@ public class MovieController {
 
     @GetMapping("/movie/query/additional")
     public ResponseEntity<?> getParsedQueryByAdditionalQuery(@RequestBody AdditionalQueryRequest request) {
-        return ResponseEntity.ok(parseService.parseAdditional(request.getParsedQuery(), request.getAdditionQueries()));
+        return ResponseEntity.ok(parseService.parseAdditional(request));
     }
 
     @GetMapping("/movie/running-times")

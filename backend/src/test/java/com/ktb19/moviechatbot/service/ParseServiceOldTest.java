@@ -25,14 +25,14 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-class ParseServiceTest {
+class ParseServiceOldTest {
 
     @Mock
     private PythonInterpreter pythonInterpreter;
     @Spy
     private ObjectMapper mapper;
     @InjectMocks
-    private ParseService parseService;
+    private ParseService_Old parseServiceOld;
 
     @BeforeEach
     void setUp() {
@@ -54,7 +54,7 @@ class ParseServiceTest {
         willDoNothing().given(pythonInterpreter).execfile("src/main/java/com/ktb19/moviechatbot/ai/test1.py");
 
         // When
-        QueryDto result = parseService.parse(message);
+        QueryDto result = parseServiceOld.parse(message);
 
         // Then
         assertThat(result).isNotNull();
@@ -73,7 +73,7 @@ class ParseServiceTest {
 
         //When
         //Then
-        assertThatThrownBy(() -> parseService.parse(message))
+        assertThatThrownBy(() -> parseServiceOld.parse(message))
                 .isInstanceOf(PyFunctionNotFoundException.class);
     }
 
@@ -94,7 +94,7 @@ class ParseServiceTest {
 
         //When
         //Then
-        assertThatThrownBy(() -> parseService.parse(message))
+        assertThatThrownBy(() -> parseServiceOld.parse(message))
                 .isInstanceOf(FailParsingPyObjectToJsonException.class);
     }
 
@@ -119,7 +119,7 @@ class ParseServiceTest {
         given(pythonInterpreter.get(anyString(), eq(PyFunction.class))).willReturn(mockFunction);
 
         // When
-        QueryDto result = parseService.parseAdditional(parsedQuery, additionQueries);
+        QueryDto result = parseServiceOld.parseAdditional(parsedQuery, additionQueries);
 
         // Then
         assertThat(result).isNotNull();
@@ -144,7 +144,7 @@ class ParseServiceTest {
 
         //When
         //Then
-        assertThatThrownBy(() -> parseService.parseAdditional(parsedQuery, additionQueries))
+        assertThatThrownBy(() -> parseServiceOld.parseAdditional(parsedQuery, additionQueries))
                 .isInstanceOf(PyFunctionNotFoundException.class);
     }
 
@@ -170,7 +170,7 @@ class ParseServiceTest {
 
         //When
         //Then
-        assertThatThrownBy(() -> parseService.parseAdditional(parsedQuery, additionQueries))
+        assertThatThrownBy(() -> parseServiceOld.parseAdditional(parsedQuery, additionQueries))
                 .isInstanceOf(FailParsingPyObjectToJsonException.class);
     }
 }

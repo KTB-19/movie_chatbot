@@ -19,7 +19,7 @@ def get_infos(question: str = "") -> Info:
     return response
 
 
-@router.get("/infos/additional")
+@router.post("/infos/additional")
 def get_infos_additional(request: AdditionalInfosRequest) -> Info:
     print("get_infos_additional start")
     print(request.parsedQuery)

@@ -12,6 +12,7 @@
 # !pip install jamo
 # !pip install konlpy
 # !pip install openai
+pip install kiwi
 from kobert_tokenizer import KoBERTTokenizer
 import torch
 from transformers import BertModel
@@ -30,6 +31,7 @@ from openai import OpenAI
 import openai
 import os
 from dotenv import load_dotenv
+from kiwipiepy import Kiwi
 # OPENAI_API_KEY
 load_dotenv()
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
@@ -79,12 +81,25 @@ def jamo_to_hangul(jamo_text):
     return j2h(jamo_text)
 
 # 문서들을 자모 사전으로 변환하는 함수
+# def documents_to_jamodict(documents):
+#     okt = Okt()
+#     jamodict = {}
+#     for doc in documents:
+#         docnouns = [""]  # 첫 번째 항목은 모든 명사를 합친 문자열
+#         for noun in okt.nouns(doc):
+#             jamo_noun = hangul_to_jamo(noun)
+#             docnouns[0] += jamo_noun
+#             docnouns.append(jamo_noun)
+#         jamodict[doc] = docnouns
+#     return jamodict
+
+# 문서들을 자모 사전으로 변환하는 함수
 def documents_to_jamodict(documents):
-    okt = Okt()
+    kiwi = Kiwi()
     jamodict = {}
     for doc in documents:
         docnouns = [""]  # 첫 번째 항목은 모든 명사를 합친 문자열
-        for noun in okt.nouns(doc):
+        for noun in kiwi.nouns(doc):
             jamo_noun = hangul_to_jamo(noun)
             docnouns[0] += jamo_noun
             docnouns.append(jamo_noun)

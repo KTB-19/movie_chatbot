@@ -8,3 +8,4 @@ sentencepiece
 sqlalchemy
 aiomysql
 greenlet
+cryptography

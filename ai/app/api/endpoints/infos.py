@@ -1,6 +1,8 @@
 from fastapi import APIRouter
+from sqlalchemy import text
 
 from app.api.dto.additionalInfosRequest import AdditionalInfosRequest
+from app.db.database import engine
 from app.models.info import Info
 from app.services.test1 import get_response
 from app.services.test2 import get_response_additional
@@ -9,27 +11,40 @@ router = APIRouter()
 
 
 @router.get("/infos")
-def get_infos(message: str = "") -> Info:
+async def get_infos(message: str = "") -> Info:
     print("get_infos start")
     print(message)
 
-    response: Info = Info(**get_response(documents, message))
+    movies = await read_movies()
+    print(movies)
+
+    response: Info = Info(**get_response(movies, message))
     print(response)
 
     return response
 
 
 @router.post("/infos/additional")
-def get_infos_additional(request: AdditionalInfosRequest) -> Info:
+async def get_infos_additional(request: AdditionalInfosRequest) -> Info:
     print("get_infos_additional start")
     print(request.parsedQuery)
     print(request.message)
 
-    response: Info = Info(**get_response_additional(documents, request.parsedQuery, request.message))
+    movies = await read_movies()
+    print(movies)
+
+    response: Info = Info(**get_response_additional(movies, request.parsedQuery, request.message))
     print(response)
 
     return response
 
+
+async def read_movies():
+    query = text("SELECT title FROM movie")
+    async with engine.connect() as conn:
+        result = await conn.execute(query)
+        movies = [row[0] for row in result.fetchall()]
+    return movies
 
 documents = [
     "데드풀과 울버린",

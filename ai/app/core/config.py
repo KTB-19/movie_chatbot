@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "ParseAI"
-    # DATABASE_URL: str = "sqlite:///./test.db"
+    DATABASE_URL: str = "mysql+aiomysql://root:qlalfqjsgh486@localhost:3306/moviedatabase"
 
     class Config:
         env_file = ".env"

@@ -1,6 +1,7 @@
 package com.ktb19.moviechatbot.controller;
 
 import com.ktb19.moviechatbot.dto.AdditionalQueryRequest;
+import com.ktb19.moviechatbot.dto.MovieRunningTimesRequest;
 import com.ktb19.moviechatbot.dto.QueryDto;
 import com.ktb19.moviechatbot.service.MovieService;
 import com.ktb19.moviechatbot.service.ParseService;
@@ -29,7 +30,7 @@ public class MovieController {
     }
 
     @GetMapping("/movie/running-times")
-    public ResponseEntity<?> getRunningTimes(@RequestBody QueryDto parsedQuery) {
+    public ResponseEntity<?> getRunningTimes(@RequestBody MovieRunningTimesRequest parsedQuery) {
         return ResponseEntity.ok(movieService.getRunningTimes(parsedQuery));
     }
 }

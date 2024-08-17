@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,7 +60,7 @@ class MovieMovieInfoRepositoryTest {
                 .movie(movie1)
                 .theater(theater1)
                 .date(LocalDate.now())
-                .time(Time.valueOf("12:00:00"))
+                .time(LocalTime.of(12, 0))
                 .build();
 
         movieInfoRepository.save(movieInfo);
@@ -81,7 +82,7 @@ class MovieMovieInfoRepositoryTest {
 
         //Given
         LocalDate date = LocalDate.of(2024, 8, 1);
-        Time time = Time.valueOf("12:00:00");
+        LocalTime time = LocalTime.of(12, 0);
 
         MovieInfo movieInfo1 = MovieInfo.builder()
                 .id(1)
@@ -119,7 +120,7 @@ class MovieMovieInfoRepositoryTest {
 
         //Given
         LocalDate date = LocalDate.of(2024, 8, 1);
-        Time time = Time.valueOf("12:00:00");
+        LocalTime time = LocalTime.of(12, 0);
 
         MovieInfo movieInfo1 = MovieInfo.builder()
                 .id(1)
@@ -158,7 +159,7 @@ class MovieMovieInfoRepositoryTest {
         //Given
         LocalDate date1 = LocalDate.of(2024, 8, 1);
         LocalDate date2 = LocalDate.of(2024, 8, 2);
-        Time time = Time.valueOf("12:00:00");
+        LocalTime time = LocalTime.of(12, 0);
 
         MovieInfo movieInfo1 = MovieInfo.builder()
                 .id(1)
@@ -196,8 +197,8 @@ class MovieMovieInfoRepositoryTest {
 
         //Given
         LocalDate date = LocalDate.of(2024, 8, 1);
-        Time time1 = Time.valueOf("12:00:00");
-        Time time2 = Time.valueOf("13:30:00");
+        LocalTime time1 = LocalTime.of(12, 0);
+        LocalTime time2 = LocalTime.of(13, 0);
 
         MovieInfo movieInfo1 = MovieInfo.builder()
                 .id(1)

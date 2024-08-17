@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 
 @Getter
@@ -14,6 +15,6 @@ public class TheaterRunningTimesDto {
 
     private String theaterName;
     private int count;
-    private List<Time> times;
+    private List<LocalTime> times;
 
 }

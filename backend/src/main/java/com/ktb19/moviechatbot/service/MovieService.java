@@ -1,15 +1,13 @@
 package com.ktb19.moviechatbot.service;
 
-import com.ktb19.moviechatbot.dto.MovieRunningTimesDto;
-import com.ktb19.moviechatbot.dto.QueryDto;
-import com.ktb19.moviechatbot.dto.TheaterRunningTimesDto;
-import com.ktb19.moviechatbot.dto.MovieInfoDetailsQueryDto;
+import com.ktb19.moviechatbot.dto.*;
 import com.ktb19.moviechatbot.repository.MovieInfoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +20,7 @@ public class MovieService {
 
     private final MovieInfoRepository movieInfoRepository;
 
-    public MovieRunningTimesDto getRunningTimes(QueryDto query) {
+    public MovieRunningTimesDto getRunningTimes(MovieRunningTimesRequest query) {
 
         String[] areas = parseRegionToAreas(query.getRegion());
         String wideArea = areas[0];
@@ -35,7 +33,7 @@ public class MovieService {
                 query.getDate()
         );
 
-        Map<String, List<Time>> timesPerTheaterNameMap = dto.stream()
+        Map<String, List<LocalTime>> timesPerTheaterNameMap = dto.stream()
                 .collect(groupingBy(d -> d.getTheater().getName(), mapping(d -> d.getMovieInfo().getTime(), toList())));
         log.info("timesPerTheaterNameMap : " + timesPerTheaterNameMap);
 

@@ -2,6 +2,7 @@ package com.ktb19.moviechatbot.service;
 
 import com.ktb19.moviechatbot.dto.MovieInfoDetailsQueryDto;
 import com.ktb19.moviechatbot.dto.MovieRunningTimesDto;
+import com.ktb19.moviechatbot.dto.MovieRunningTimesRequest;
 import com.ktb19.moviechatbot.dto.QueryDto;
 import com.ktb19.moviechatbot.entity.MovieInfo;
 import com.ktb19.moviechatbot.entity.Movie;
@@ -41,15 +42,15 @@ class MovieServiceTest {
         String basicArea = "basic";
         LocalDate date = LocalDate.of(2024, 8, 4);
 
-        QueryDto query = new QueryDto();
+        MovieRunningTimesRequest query = new MovieRunningTimesRequest();
         query.setMovieName(movieName);
         query.setRegion(wideArea + " " + basicArea);
         query.setDate(date);
 
         Movie movie = new Movie(1, movieName);
         Theater theater = new Theater(1, "test Theater", wideArea, basicArea);
-        Time time1 = Time.valueOf("18:00:00");
-        Time time2 = Time.valueOf("20:00:00");
+        LocalTime time1 = LocalTime.of(18, 0);
+        LocalTime time2 = LocalTime.of(20, 0);
 
         MovieInfo movieInfo1 = new MovieInfo(1, movie, theater, date, time1);
         MovieInfo movieInfo2 = new MovieInfo(2, movie, theater, date, time2);
@@ -70,7 +71,7 @@ class MovieServiceTest {
     @DisplayName("QueryDto의 region을 split 했을 때, 2개로 나눠지지 않으면 IllegalArgumentException을 던진다")
     void getRunningTimes_region_format_exception() {
         //Given
-        QueryDto query = new QueryDto();
+        MovieRunningTimesRequest query = new MovieRunningTimesRequest();
         query.setMovieName("test movieName");
         query.setRegion("경기도구리시");
         query.setDate(LocalDate.of(2024, 8, 4));
@@ -85,13 +86,13 @@ class MovieServiceTest {
     @DisplayName("QueryDto의 region을 split 했을 때, 첫번째 띄어쓰기를 기준으로 split되어야한다.")
     void getRunningTimes_split_only_first() {
         //Given
-        QueryDto query = new QueryDto();
+        MovieRunningTimesRequest query = new MovieRunningTimesRequest();
         query.setMovieName("test movieName");
         query.setRegion("경상남도 창원시 마산합포구");
         query.setDate(LocalDate.of(2024, 8, 4));
 
-        Time time1 = Time.valueOf("11:00:00");
-        Time time2 = Time.valueOf("13:00:00");
+        LocalTime time1 = LocalTime.of(13, 0);
+        LocalTime time2 = LocalTime.of(18, 0);
 
         Movie movie = new Movie(1, "test movieName");
         Theater theater = new Theater(1, "창원CGV", "경상남도", "창원시 마산합포구");

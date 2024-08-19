@@ -24,12 +24,15 @@ public class QueryDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
     private LocalTime time;
 
+    private String response;
+
     public static QueryDto of(AiInfosResponse aiInfosResponse) {
         return new QueryDto(
                 aiInfosResponse.getMovieName(),
                 aiInfosResponse.getRegion(),
                 LocalDate.parse(aiInfosResponse.getDate()),
-                LocalTime.parse(aiInfosResponse.getTime())
+                LocalTime.parse(aiInfosResponse.getTime()),
+                aiInfosResponse.getResponse()
         );
     }
 }

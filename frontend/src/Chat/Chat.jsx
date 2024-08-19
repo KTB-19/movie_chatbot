@@ -11,8 +11,8 @@ function Chat() {
     const [outputValues, setOutputValues] = useState([]);
 
     const scrollRef = useRef();
-    const { movieName, region, date, setMovieName, setRegion, setDate } = useContext(AppContext); // AppContext에서 상태와 업데이트 함수들을 가져옴
-    // setRegion('Seoul Gangnam-gu');
+    const { movieName, region, date, time, setMovieName, setRegion, setDate, setTime } = useContext(AppContext); // AppContext에서 상태와 업데이트 함수들을 가져옴
+
     // input과 output 세션 스토리지에서 불러오기
     useEffect(() => {
         const savedInputValues = JSON.parse(sessionStorage.getItem("inputValues")) || [];
@@ -45,33 +45,38 @@ function Chat() {
     };
 
     // 요청 경우 나누기
-    // app context의 세 값 확인 후 세 값이 다 null 이 아니면 3,
+    // app context의 네 값 확인 후 네 값이 다 null 이 아니면 3,
     // 1개 혹은 2개 부족하면 2,
-    // 세 값이 다 null 혹은 by default 1
+    // 네 값이 다 null 혹은 by default 1
 
     const getOutputValue = async (currentInput) => {
+        // setRegion("Seoul Gangnam-gu");
         let endpoint;
         let body;
-        
+        let initialRequestWas3 = false;
+    
         // 날짜 형식 변환
         const formatDate = (date) => {
             const d = new Date(date);
             const month = '' + (d.getMonth() + 1);
             const day = '' + d.getDate();
             const year = d.getFullYear();
-        
+    
             return [year, month.padStart(2, '0'), day.padStart(2, '0')].join('-');
         };
     
+        // 초기 요청 경우 나누기
         if (movieName && region && date) {
             // 3. /movie/running-times (POST)
+            initialRequestWas3 = true;
             endpoint = `/api/v1/movie/running-times`;
             body = {
                 movieName,
                 region,
-                date: formatDate(date)
+                date: formatDate(date),
+                time
             };
-        } else if (movieName || date || region) {
+        } else if (movieName || region || date) {
             // 2. /movie/query/additional (POST)
             endpoint = `/api/v1/movie/query/additional`;
             body = { message: currentInput };
@@ -97,9 +102,38 @@ function Chat() {
             if (data.movieName) setMovieName(data.movieName);
             if (data.region) setRegion(data.region);
             if (data.date) setDate(data.date);
-            
-            console.log(movieName, region, date);
-            return data;
+            if (data.time) setTime(data.time);
+    
+            console.log(movieName, region, date, time);
+    
+            // 초기 요청이 3번이 아니었고, 모든 엔티티가 존재하는지 다시 확인
+            if (!initialRequestWas3 && data.movieName && data.region && data.date) {
+                // 모든 엔티티가 존재하면, 다시 3 실행
+                endpoint = `/api/v1/movie/running-times`;
+                body = {
+                    movieName: movieName,
+                    region: region,
+                    date: formatDate(date),
+                    time: time
+                };
+                console.log('Re-fetching with all entities:', endpoint);
+    
+                const finalResponse = await fetch(endpoint, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(body),
+                });
+    
+                const finalData = await finalResponse.json();
+
+                sendOutputValue(finalData.message);
+                return finalData.message;
+            }
+    
+            sendOutputValue(data.message);
+            return data.message;
     
         } catch (error) {
             console.error("Error fetching movie data:", error);
@@ -107,9 +141,6 @@ function Chat() {
         }
     };
     
-    
-    
-
     // ChatInput에서 inputValue를 받고
     // inputValue를 ChatReaction에 전달 & inputValue로 outputValue를 받아와서 ChatReaction에 전달
     return (

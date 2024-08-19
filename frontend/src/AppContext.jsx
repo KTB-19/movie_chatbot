@@ -6,6 +6,7 @@ const AppProvider = ({ children }) => {
     const [movieName, setMovieName] = useState('');
     const [region, setRegion] = useState('');
     const [date, setDate] = useState('');
+    const [time, setTime] = useState('');
 
 
     return (

@@ -27,16 +27,24 @@ public class MovieService {
 
         List<MovieInfoDetailsQueryDto> dto = getMovieInfoDetails(query, areas);
 
-        Map<String, List<LocalTime>> timesPerTheaterNameMap = dto.stream()
-                .collect(groupingBy(d -> d.getTheater().getName(), mapping(d -> d.getMovieInfo().getTime(), toList())));
+        Map<String, List<LocalTime>> timesPerTheaterNameMap = groupByTheater(dto);
         log.info("timesPerTheaterNameMap : " + timesPerTheaterNameMap);
 
-        List<TheaterRunningTimesDto> theaterRunningTimesDtos = timesPerTheaterNameMap.entrySet().stream()
-                .map(e -> new TheaterRunningTimesDto(e.getKey(), e.getValue().size(), e.getValue()))
-                .toList();
+        List<TheaterRunningTimesDto> theaterRunningTimesDtos = mappingToDto(timesPerTheaterNameMap);
         log.info("theaterRunningTimesDtos : " + theaterRunningTimesDtos);
 
         return new MovieRunningTimesDto(theaterRunningTimesDtos.size(), theaterRunningTimesDtos);
+    }
+
+    private static String[] parseRegionToAreas(String region) {
+        String[] areas = region.split(" ", 2);
+        if (areas.length != 2) {
+            throw new IllegalArgumentException("잘못된 region 형식입니다.");
+        }
+
+        return Arrays.stream(areas)
+                .map(String::trim)
+                .toArray(String[]::new);
     }
 
     private List<MovieInfoDetailsQueryDto> getMovieInfoDetails(MovieRunningTimesRequest query, String[] areas) {
@@ -58,14 +66,18 @@ public class MovieService {
         );
     }
 
-    private static String[] parseRegionToAreas(String region) {
-        String[] areas = region.split(" ", 2);
-        if (areas.length != 2) {
-            throw new IllegalArgumentException("잘못된 region 형식입니다.");
-        }
+    private Map<String, List<LocalTime>> groupByTheater(List<MovieInfoDetailsQueryDto> dto) {
+        return dto.stream()
+                .collect(
+                        groupingBy(
+                                d -> d.getTheater().getName(),
+                                mapping(d -> d.getMovieInfo().getTime(), toList())
+                        ));
+    }
 
-        return Arrays.stream(areas)
-                .map(String::trim)
-                .toArray(String[]::new);
+    private List<TheaterRunningTimesDto> mappingToDto(Map<String, List<LocalTime>> timesPerTheaterNameMap) {
+        return timesPerTheaterNameMap.entrySet().stream()
+                .map(e -> new TheaterRunningTimesDto(e.getKey(), e.getValue().size(), e.getValue()))
+                .toList();
     }
 }

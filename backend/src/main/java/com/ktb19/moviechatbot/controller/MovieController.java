@@ -35,12 +35,12 @@ public class MovieController {
         return ResponseEntity.ok(parseService.parse(message));
     }
 
-    @GetMapping("/movie/query/additional")
+    @PostMapping("/movie/query/additional")
     public ResponseEntity<?> getParsedQueryByAdditionalQuery(@RequestBody @Valid AdditionalQueryRequest request) {
         return ResponseEntity.ok(parseService.parseAdditional(request));
     }
 
-    @GetMapping("/movie/running-times")
+    @PostMapping("/movie/running-times")
     public ResponseEntity<?> getRunningTimes(@RequestBody @Valid MovieRunningTimesRequest parsedQuery) {
         return ResponseEntity.ok(movieService.getRunningTimes(parsedQuery));
     }

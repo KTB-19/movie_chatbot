@@ -208,42 +208,65 @@ def process_documents_and_question(documents, question):
     return json.dumps(responseDict)
 
 
-# 사용자에게 돌려줄 답변 생성
-def generate_response(entities):
-    # 페르소나, 시스템 프롬프트 생성
-    system_message = (
-        "당신은 사용자에게 영화관을 추천해주는 고객지원 챗봇 '무비빔밥'입니다."
-        "사용자의 입력을 바탕으로 적절한 응답을 생성하세요."
-        "사용자가 필요한 모든 엔티티(영화 이름, 지역, 날짜, 시간)를 제공한 경우 확인 질문을 생성하세요. "
-        "예를 들어, 사용자가 영화 이름, 지역, 날짜, 시간을 제공했다면, 다음과 같이 응답하세요: "
-        "'[date](에) [time]에 [region]에서 [movieName]을(를) 보시고 싶으신 게 맞으신가요?' "
-        "만약 어떤 엔티티가 누락되었다면, 해당 정보를 요청하는 질문을 생성하세요. "
-        "예를 들어, 지역 정보가 누락된 경우 '어느 지역에서 영화를 보고 싶으신가요?'라고 물어보세요. "
-        "영화 이름이 불명확하거나 불완전한 경우, 이를 확인하는 질문을 생성하세요. "
-        "항상 예매를 완료하기 위해 필요한 모든 정보를 수집하는 것을 목표로 하세요."
-        "단, 사용자에게 영화 예매를 도와주겠다는 응답은 하지 마세요."
-    )
 
-    if all(entities.values()):
-        # 모든 엔티티가 채워진 경우
-        user_message = f"{entities['date']} {entities['time']}에 {entities['region']}에서 {entities['movieName']}을(를) 보시고 싶으신 게 맞으신가요?"
+from datetime import datetime
+
+# 날짜, 시간 형식 변경
+def format_date_time(date, time):
+    formatted_date = date
+    formatted_time = time
+
+    if date:
+        try:
+            date_obj = datetime.strptime(date, '%m/%d')
+            current_year = datetime.now().year
+            formatted_date = date_obj.replace(year=current_year).strftime('%Y-%m-%d')
+        except ValueError:
+            # 날짜 형식이 예상과 다를 경우 원래 값 유지
+            pass
+
+    if time:
+        try:
+            time_obj = datetime.strptime(time, '%H시')
+            formatted_time = time_obj.strftime('%H:%M')
+        except ValueError:
+            # 시간 형식이 예상과 다를 경우 원래 값 유지
+            pass
+
+    return formatted_date, formatted_time
+
+
+# 입력한 정보가 정확한지 확인
+def check_entities(entities):
+    entity_info = [
+        ("movieName", "영화 제목"),
+        ("region", "지역"),
+        ("date", "날짜"),
+        ("time", "시간")
+    ]
+
+    missing_entities = []
+    for key, message in entity_info:
+        if not entities.get(key):
+            missing_entities.append(message)
+
+    # 엔티티가 2개 이상 누락된 경우
+    if missing_entities:
+        if len(missing_entities) >= 2:
+            missing_str = ' 와 '.join(missing_entities)
+            user_message = f"관람하고 싶은 {missing_str}을 말씀해 주세요."
+        else:
+            user_message = f"관람하고 싶은 {missing_entities[0]}을 말씀해 주세요."
     else:
-        # 누락된 엔티티가 있는 경우
-        missing_entities = []
-        if not entities.get("movieName"):
-            missing_entities.append("영화 제목을")
-        if not entities.get("region"):
-            missing_entities.append("지역을")
-        if not entities.get("date"):
-            missing_entities.append("날짜를")
-        if not entities.get("time"):
-            missing_entities.append("시간을")
+        # 엔티티가 모두 채워진 경우 확인 문장 출력
+        entities['date'], entities['time'] = format_date_time(entities['date'], entities['time'])   # 날짜, 시간 형식 변경 적용
+        user_message = f"{entities['date']} {entities['time']}에 {entities['region']}에서 {entities['movieName']}을(를) 보시고 싶으신 게 맞으신가요?"
 
-        if missing_entities:
-            user_message = f"관람하고 싶은 {' '.join(missing_entities)} 말씀해 주세요."
+    return user_message, entities
 
 
-    # openai API 호출
+# api 호출
+def api_call(system_message, user_message):
     try:
         completion = client.chat.completions.create(
             model='gpt-3.5-turbo-0125',
@@ -253,18 +276,38 @@ def generate_response(entities):
             ],
             temperature=1.0
         )
-        chatbot_response = completion.choices[0].message.content
+        return completion.choices[0].message.content
     except Exception as e:
-        response = f"오류 발생: {e}"
+        return f"오류 발생: {e}"
 
+
+# api 시스템 메시지 설정
+def generate_response(entities):
+    system_message = (
+        "당신은 사용자에게 영화관을 추천해주는 고객지원 챗봇 '무비빔밥'입니다."
+        "사용자의 입력을 바탕으로 적절한 응답을 생성하세요."
+        "사용자가 필요한 모든 엔티티(영화 이름, 지역, 날짜, 시간)를 제공한 경우 확인 질문을 생성하세요. "
+        "예를 들어, 사용자가 영화 이름, 지역, 날짜, 시간을 제공했다면, 다음과 같이 응답하세요: "
+        "'{date}(에) {time}에 {region}에서 {movieName}을(를) 보시고 싶으신 게 맞으신가요?' "
+        "만약 어떤 엔티티가 누락되었다면, 해당 정보를 요청하는 질문을 생성하세요. "
+        "예를 들어, 지역 정보가 누락된 경우 '어느 지역에서 영화를 보고 싶으신가요?'라고 물어보세요. "
+        "영화 이름이 불명확하거나 불완전한 경우, 이를 확인하는 질문을 생성하세요. "
+        "항상 예매를 완료하기 위해 필요한 모든 정보를 수집하는 것을 목표로 하세요."
+        "단, 사용자에게 영화 예매를 도와주겠다는 응답은 하지 마세요."
+    )
+
+    user_message, entities = check_entities(entities)
+    chatbot_response = api_call(system_message, user_message)
 
     # 불필요한 origin, similar 엔티티 제거
-    entities = {k: v for k, v in entities.items() if k in ['movieName', 'region', 'date', 'time']}
+    entities = {k: entities[k] for k in ['movieName', 'region', 'date', 'time'] if k in entities}
     # entities에 response 추가
     entities['response'] = chatbot_response
 
     # json 형태로 변환하여 return
     return json.dumps(entities, ensure_ascii=False)
+
+
 
 # 사용 예시
 # documents = [

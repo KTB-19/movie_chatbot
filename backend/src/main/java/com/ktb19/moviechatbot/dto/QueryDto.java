@@ -24,7 +24,7 @@ public class QueryDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
     private LocalTime time;
 
-    private String response;
+    private String message;
 
     public static QueryDto of(AiInfosResponse aiInfosResponse) {
         return new QueryDto(

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Time;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +52,8 @@ public class MovieService {
             throw new IllegalArgumentException("잘못된 region 형식입니다.");
         }
 
-        return areas;
+        return Arrays.stream(areas)
+                .map(String::trim)
+                .toArray(String[]::new);
     }
 }

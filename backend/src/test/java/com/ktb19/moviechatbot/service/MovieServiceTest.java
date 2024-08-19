@@ -118,4 +118,41 @@ class MovieServiceTest {
         assertThat(result.getTheaterRunningTimes().getFirst().getTimes()).contains(time1, time2);
 
     }
+
+    @Test
+    @DisplayName("QueryDto의 region을 split 했을 때, trim 적용되어야 한다.")
+    void getRunningTimes_trim() {
+        //Given
+        MovieRunningTimesRequest query = new MovieRunningTimesRequest();
+        query.setMovieName("test movieName");
+        query.setRegion("경상남도  창원시 마산합포구  ");
+        query.setDate(LocalDate.of(2024, 8, 4));
+
+        LocalTime time1 = LocalTime.of(13, 0);
+        LocalTime time2 = LocalTime.of(18, 0);
+
+        Movie movie = new Movie(1, "test movieName");
+        Theater theater = new Theater(1, "창원CGV", "경상남도", "창원시 마산합포구");
+        MovieInfo movieInfo1 = new MovieInfo(1, movie, theater, query.getDate(), time1);
+        MovieInfo movieInfo2 = new MovieInfo(1, movie, theater, query.getDate(), time2);
+
+        given(movieInfoRepository.findAllByQuery(
+                eq(query.getMovieName()),
+                eq("경상남도"),
+                eq("창원시 마산합포구"),
+                eq(query.getDate())
+        )).willReturn(List.of(
+                new MovieInfoDetailsQueryDto(movieInfo1, movie, theater),
+                new MovieInfoDetailsQueryDto(movieInfo2, movie, theater)
+        ));
+
+        //When
+        MovieRunningTimesDto result = movieService.getRunningTimes(query);
+
+        //Then
+        assertThat(result.getCount()).isEqualTo(1);
+        assertThat(result.getTheaterRunningTimes().getFirst().getCount()).isEqualTo(2);
+        assertThat(result.getTheaterRunningTimes().getFirst().getTimes()).contains(time1, time2);
+
+    }
 }

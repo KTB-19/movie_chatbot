@@ -34,7 +34,7 @@ class MovieServiceTest {
     MovieInfoRepository movieInfoRepository;
 
     @Test
-    @DisplayName("QueryDto의 movieName, region, date에 해당하는 times를 db에서 조회하여 반환한다")
+    @DisplayName("time이 null이면, QueryDto의 movieName, region, date에 해당하는 times를 db에서 조회하여 반환한다")
     void getRunningTimes() {
         //Given
         String movieName = "test movieName";
@@ -46,6 +46,7 @@ class MovieServiceTest {
         query.setMovieName(movieName);
         query.setRegion(wideArea + " " + basicArea);
         query.setDate(date);
+        query.setTime(null);
 
         Movie movie = new Movie(1, movieName);
         Theater theater = new Theater(1, "test Theater", wideArea, basicArea);
@@ -65,6 +66,41 @@ class MovieServiceTest {
         assertThat(result.getCount()).isEqualTo(1);
         assertThat(result.getTheaterRunningTimes().getFirst().getCount()).isEqualTo(2);
         assertThat(result.getTheaterRunningTimes().getFirst().getTimes()).contains(time1, time2);
+    }
+
+    @Test
+    @DisplayName("time이 null이 아니면, time이상의 times를 db에서 조회하여 반환한다")
+    void getRunningTimes_with_time() {
+        //Given
+        String movieName = "test movieName";
+        String wideArea = "wide";
+        String basicArea = "basic";
+        LocalDate date = LocalDate.of(2024, 8, 4);
+
+        MovieRunningTimesRequest query = new MovieRunningTimesRequest();
+        query.setMovieName(movieName);
+        query.setRegion(wideArea + " " + basicArea);
+        query.setDate(date);
+        query.setTime(LocalTime.of(19, 0));
+
+        Movie movie = new Movie(1, movieName);
+        Theater theater = new Theater(1, "test Theater", wideArea, basicArea);
+        LocalTime time1 = LocalTime.of(18, 0);
+        LocalTime time2 = LocalTime.of(20, 0);
+
+        MovieInfo movieInfo1 = new MovieInfo(1, movie, theater, date, time1);
+        MovieInfo movieInfo2 = new MovieInfo(2, movie, theater, date, time2);
+
+        given(movieInfoRepository.findAllByQueryAfterTime(eq(movieName), eq(wideArea), eq(basicArea), eq(date), eq(LocalTime.of(19, 0))))
+                .willReturn(List.of(new MovieInfoDetailsQueryDto(movieInfo2, movie, theater)));
+
+        //When
+        MovieRunningTimesDto result = movieService.getRunningTimes(query);
+
+        //Then
+        assertThat(result.getCount()).isEqualTo(1);
+        assertThat(result.getTheaterRunningTimes().getFirst().getCount()).isEqualTo(1);
+        assertThat(result.getTheaterRunningTimes().getFirst().getTimes()).contains(time2);
     }
 
     @Test

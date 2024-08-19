@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -21,7 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class MovieMovieInfoRepositoryTest {
+class MovieInfoRepositoryTest {
 
     @Autowired
     MovieInfoRepository movieInfoRepository;
@@ -227,5 +226,57 @@ class MovieMovieInfoRepositoryTest {
         assertThat(result.getFirst().getMovieInfo()).isEqualTo(savedMovieInfo1);
         assertThat(result.getLast().getMovieInfo()).isEqualTo(savedMovieInfo2);
 
+    }
+
+    @Test
+    @DisplayName("주어진 time 이상의 row들을 반환한다.")
+    void findAllByQueryAfterTime() {
+        //Given
+        LocalDate date = LocalDate.of(2024, 8, 1);
+        LocalTime time1 = LocalTime.of(12, 0);
+        LocalTime time2 = LocalTime.of(13, 30);
+        LocalTime time3 = LocalTime.of(15, 0);
+
+        MovieInfo movieInfo1 = MovieInfo.builder()
+                .id(1)
+                .movie(movie1)
+                .theater(theater1)
+                .date(date)
+                .time(time1)
+                .build();
+
+        MovieInfo movieInfo2 = MovieInfo.builder()
+                .id(2)
+                .movie(movie1)
+                .theater(theater1)
+                .date(date)
+                .time(time2)
+                .build();
+
+        MovieInfo movieInfo3 = MovieInfo.builder()
+                .id(3)
+                .movie(movie1)
+                .theater(theater1)
+                .date(date)
+                .time(time3)
+                .build();
+
+
+        MovieInfo savedMovieInfo1 = movieInfoRepository.save(movieInfo1);
+        MovieInfo savedMovieInfo2 = movieInfoRepository.save(movieInfo2);
+        MovieInfo savedMovieInfo3 = movieInfoRepository.save(movieInfo3);
+
+        //When
+        List<MovieInfoDetailsQueryDto> result = movieInfoRepository.findAllByQueryAfterTime(
+                movie1.getTitle(),
+                theater1.getWideArea(),
+                theater1.getBasicArea(),
+                date,
+                LocalTime.of(13, 30));
+
+        //Then
+        assertThat(result).hasSize(2);
+        assertThat(result.getFirst().getMovieInfo()).isEqualTo(savedMovieInfo2);
+        assertThat(result.getLast().getMovieInfo()).isEqualTo(savedMovieInfo3);
     }
 }

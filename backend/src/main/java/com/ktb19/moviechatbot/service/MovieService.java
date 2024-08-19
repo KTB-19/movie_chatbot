@@ -24,15 +24,8 @@ public class MovieService {
     public MovieRunningTimesDto getRunningTimes(MovieRunningTimesRequest query) {
 
         String[] areas = parseRegionToAreas(query.getRegion());
-        String wideArea = areas[0];
-        String basicArea = areas[1];
 
-        List<MovieInfoDetailsQueryDto> dto =  movieInfoRepository.findAllByQuery(
-                query.getMovieName(),
-                wideArea,
-                basicArea,
-                query.getDate()
-        );
+        List<MovieInfoDetailsQueryDto> dto = getMovieInfoDetails(query, areas);
 
         Map<String, List<LocalTime>> timesPerTheaterNameMap = dto.stream()
                 .collect(groupingBy(d -> d.getTheater().getName(), mapping(d -> d.getMovieInfo().getTime(), toList())));
@@ -44,6 +37,25 @@ public class MovieService {
         log.info("theaterRunningTimesDtos : " + theaterRunningTimesDtos);
 
         return new MovieRunningTimesDto(theaterRunningTimesDtos.size(), theaterRunningTimesDtos);
+    }
+
+    private List<MovieInfoDetailsQueryDto> getMovieInfoDetails(MovieRunningTimesRequest query, String[] areas) {
+        if (query.getTime() == null) {
+            return movieInfoRepository.findAllByQuery(
+                    query.getMovieName(),
+                    areas[0],
+                    areas[1],
+                    query.getDate()
+            );
+        }
+
+        return movieInfoRepository.findAllByQueryAfterTime(
+                query.getMovieName(),
+                areas[0],
+                areas[1],
+                query.getDate(),
+                query.getTime()
+        );
     }
 
     private static String[] parseRegionToAreas(String region) {

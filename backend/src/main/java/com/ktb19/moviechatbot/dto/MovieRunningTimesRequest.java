@@ -1,12 +1,11 @@
 package com.ktb19.moviechatbot.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -25,10 +24,9 @@ public class MovieRunningTimesRequest {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     @NotBlank
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:MM", timezone = "Asia/Seoul")
     private LocalTime time;
 
     public static MovieRunningTimesRequest of(AiInfosResponse aiInfosResponse) {

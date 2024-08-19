@@ -51,6 +51,14 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(GlobalErrorCode.SERVER_ERROR));
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        log.warn("HttpMessageNotReadableException 잘못된 입력 JSON Format", e);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(GlobalErrorCode.BAD_REQUEST));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleOtherException(Exception e) {
         log.error("Exception", e);

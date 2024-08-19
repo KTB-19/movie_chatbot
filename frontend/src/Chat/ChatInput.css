@@ -37,16 +37,39 @@
 .chat-input button {
     flex: 1;
     padding: 0 10px;
+    color: white;
     border: none;
-    background-color: #D9D9D9;
-    color: black;
     border-radius: 15px;
     cursor: pointer;
     height: 50px; 
     box-sizing: border-box;
 }
 
-.chat-input button:hover {
-    background-color: #F08D86;
-    color: white;
+/* currentInput 값이 없을 때 */
+.chat-input button.disabled {
+    background-color: #D9D9D9;
 }
+
+/* currentInput 값이 있을 때 */
+.chat-input button.enabled {
+    background-color: black;
+}
+
+/* 버튼에 커서가 올라갔을 때 */
+.chat-input button.enabled:hover {
+    background-color: #F08D86;
+}
+
+
+.blinking-cursor {
+    font-weight: 100;
+    font-size: 24px;
+    color: black;
+    animation: blink 1s infinite;
+}
+
+/* @keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+} */

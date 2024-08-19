@@ -1,18 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
+import { FaArrowUp } from "react-icons/fa6";
 import './ChatInput.css';
 
 function ChatInput({ inputValues, sendInputValue, getOutputValue, sendOutputValue }) {
-    const [currentInput, setCurrentInput] = useState('');  // 초기 상태를 빈 문자열로 설정
+    const [currentInput, setCurrentInput] = useState(''); 
     const textareaRef = useRef();
 
     // 사용자가 input submit 이후
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (currentInput !== "") {
-            const outputValue = await getOutputValue(currentInput);  // 비동기 처리
+            const outputValue = await getOutputValue(currentInput);
             sendOutputValue(outputValue);
             sendInputValue(currentInput);
-            setCurrentInput('');  // 입력 후 필드를 초기화
+            setCurrentInput(''); 
         }
     };
 
@@ -33,7 +34,12 @@ function ChatInput({ inputValues, sendInputValue, getOutputValue, sendOutputValu
                     onChange={(e) => setCurrentInput(e.target.value)} 
                     placeholder="메시지를 입력하세요..."
                 />
-                <button type="submit">보내기</button>
+                <button 
+                    type="submit" 
+                    className={currentInput === '' ? 'disabled' : 'enabled'}
+                >
+                    <FaArrowUp />
+                </button>
             </form>
         </div>
     );

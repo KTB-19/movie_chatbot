@@ -5,6 +5,7 @@ import com.ktb19.moviechatbot.dto.MovieRunningTimesRequest;
 import com.ktb19.moviechatbot.dto.QueryDto;
 import com.ktb19.moviechatbot.service.MovieService;
 import com.ktb19.moviechatbot.service.ParseService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class MovieController {
     }
 
     @GetMapping("/movie/running-times")
-    public ResponseEntity<?> getRunningTimes(@RequestBody MovieRunningTimesRequest parsedQuery) {
+    public ResponseEntity<?> getRunningTimes(@RequestBody @Valid MovieRunningTimesRequest parsedQuery) {
         return ResponseEntity.ok(movieService.getRunningTimes(parsedQuery));
     }
 }

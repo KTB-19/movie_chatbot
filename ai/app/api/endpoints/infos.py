@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from sqlalchemy import text
 
-from app.api.dto.additionalInfosRequest import AdditionalInfosRequest
+from app.api.dto.additional_infos_request import AdditionalInfosRequest
 from app.db.database import engine
 from app.models.info import Info
 from app.services.test1 import get_response

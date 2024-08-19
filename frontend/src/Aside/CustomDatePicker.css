@@ -14,13 +14,17 @@
     border-radius: 50%;
 }
 
-/* 오늘의 날짜 클릭했을 때 */
-.react-datepicker__day--today.react-datepicker__day--selected {
-    background-color: #ff69b4; 
+/* 오늘의 날짜가 선택된 경우 */
+.react-datepicker__day--today.react-datepicker__day--selected,
+.react-datepicker__day--today.react-datepicker__day--selected:hover,
+.react-datepicker__day--today.react-datepicker__day--keyboard-selected {
+    background-color: #ff69b4;
     color: white;
     border-radius: 50%;
+    font-weight: bold; /* 오늘의 날짜임을 강조하기 위해 추가 */
 }
 
+/* hover 시 효과 */
 .react-datepicker__day:hover {
     background-color: #ffe6f2;
     color: #ff69b4;

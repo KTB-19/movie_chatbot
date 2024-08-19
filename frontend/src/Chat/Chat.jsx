@@ -79,7 +79,13 @@ function Chat() {
         } else if (movieName || region || date) {
             // 2. /movie/query/additional (POST)
             endpoint = `/api/v1/movie/query/additional`;
-            body = { message: currentInput };
+            body = { 
+                movieName,
+                region,
+                date: formatDate(date),
+                time,
+                message: currentInput 
+            };
         } else {
             // 1. /movie/query (GET)
             endpoint = `/api/v1/movie/query?message=${encodeURIComponent(currentInput)}`;

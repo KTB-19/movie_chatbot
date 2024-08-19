@@ -329,17 +329,21 @@ const areas = [
 ]
 
 const RegionSelector = () => {
-
-    const { region, setRegion } = useContext(AppContext)
+    const { region, setRegion } = useContext(AppContext);
     const [wideArea, setWideArea] = useState("");
     const [basicArea, setBasicArea] = useState("");
     const [basicAreas, setBasicAreas] = useState([]);
 
+    // wideArea 변경 시 해당하는 basicArea 목록 업데이트
     const handleWideAreaChange = (e) => {
         const selectedWideArea = e.target.value;
         setWideArea(selectedWideArea);
         setBasicArea("");
-        sessionStorage.setItem("wideArea", selectedWideArea); 
+        sessionStorage.setItem("wideArea", selectedWideArea);
+
+        // 선택된 wideArea에 맞는 basicAreas 설정
+        const area = areas.find(area => area.wideArea === selectedWideArea);
+        setBasicAreas(area ? area.basicArea : []);
     };
 
     const handleBasicAreaChange = (e) => {
@@ -355,13 +359,15 @@ const RegionSelector = () => {
         
         if (savedWideArea) {
             setWideArea(savedWideArea);
-            setBasicAreas(areas.find((area) => area.wideArea === savedWideArea)?.basicArea || []);
+            const area = areas.find((area) => area.wideArea === savedWideArea);
+            setBasicAreas(area ? area.basicArea : []);
         }
         if (savedBasicArea) {
             setBasicArea(savedBasicArea);
         }
     }, []);
 
+    // wideArea 또는 basicArea 변경 시 region 업데이트
     useEffect(() => {
         const fullRegion = (wideArea + " " + basicArea).trim();
         setRegion(fullRegion);
@@ -370,7 +376,6 @@ const RegionSelector = () => {
 
     return (
         <div id="region-selector">
-            {/*<h2 className="region-label">지역 선택</h2>*/}
             <div className="region-container">
                 <Form.Select value={wideArea} onChange={handleWideAreaChange} className="wide-area">
                     <option value="">지역</option>
@@ -392,5 +397,5 @@ const RegionSelector = () => {
         </div>
     );
 };
-export default RegionSelector;
 
+export default RegionSelector;

@@ -56,7 +56,7 @@ function Chat() {
     }, [manualMessage, outputValues, setManual]);
 
     // 요청 경우 나누기
-    // app context의 네 값 확인 후 네 값이 다 null 이 아니면 3,
+    // app context의 세 값 확인 후 세 값이 다 null 이 아니면 3,
     // 1개 혹은 2개 부족하면 2,
     // 네 값이 다 null 혹은 by default 1
     const getOutputValue = async (currentInput) => {

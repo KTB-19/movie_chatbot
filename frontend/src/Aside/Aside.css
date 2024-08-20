@@ -17,11 +17,15 @@
 }
 .logo {
     display: flex;
-    height: 15vh;
+    height: 18vh;
     width: 100%;
     justify-content: center;
     align-items: center;
     border-bottom: solid #394667;
+}
+.logo img {
+    max-height: 70%;
+    max-width: 70%;
 }
 .date-selector {
     padding-top: 10%;

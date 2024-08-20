@@ -4,8 +4,6 @@ import { LiaRobotSolid } from "react-icons/lia";
 import { LuUser } from "react-icons/lu";
 
 function ChatReaction({ inputValues, outputValues }) {
-    console.log(inputValues, outputValues);
-
     return (
         <div className="chat-reaction-container">
             {outputValues.map((output, index) => (

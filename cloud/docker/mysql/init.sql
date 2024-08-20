@@ -23,3 +23,7 @@ CREATE TABLE IF NOT EXISTS info (
     FOREIGN KEY (movie_id) REFERENCES movie(movie_id),
     FOREIGN KEY (theater_id) REFERENCES theater(theater_id)
 );
+
+CREATE USER 'exporter'@'%' IDENTIFIED BY 'qlalfqjsgh486' WITH MAX_USER_CONNECTIONS 3;
+GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO 'exporter'@'%';
+flush privileges;

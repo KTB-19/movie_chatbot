@@ -8,9 +8,10 @@ const AppProvider = ({ children }) => {
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
 
+    const [manualMessage, setManual] = useState('');
 
     return (
-        <AppContext.Provider value={{ movieName, setMovieName, region, setRegion, date, setDate }}>
+        <AppContext.Provider value={{ movieName, setMovieName, region, setRegion, date, setDate, time, setTime, manualMessage, setManual }}>
             {children}
         </AppContext.Provider>
     );

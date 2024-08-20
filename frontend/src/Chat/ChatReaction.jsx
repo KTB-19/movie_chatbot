@@ -3,23 +3,26 @@ import './ChatReaction.css';
 import { LiaRobotSolid } from "react-icons/lia";
 import { LuUser } from "react-icons/lu";
 
-// input과 output을 세트로 나열
 function ChatReaction({ inputValues, outputValues }) {
+    console.log(inputValues, outputValues);
+
     return (
         <div className="chat-reaction-container">
-            {inputValues.map((input, index) => (
+            {outputValues.map((output, index) => (
                 <div key={index} className="chat-message-pair">
-                    <div className="chat-question">
-                        <div className="chat-question-box">{input}</div>
-                        <LuUser className="chat-icon-q" />
-                    </div>
+                    {/* inputValues와 outputValues의 인덱스가 맞지 않는 경우 처리 */}
+                    {index > 0 && inputValues[index - 1] && (
+                        <div className="chat-question">
+                            <div className="chat-question-box">{inputValues[index - 1]}</div>
+                            <LuUser className="chat-icon-q" />
+                        </div>
+                    )}
                     <div className="chat-answer">
                         <LiaRobotSolid className="chat-icon-a" />
                         <div className="chat-answer-box">
-                            {/* 객체인 경우 JSON.stringify로 변환하여 렌더링 */}
-                            {typeof outputValues[index] === 'object' && outputValues[index] !== null
-                                ? <pre>{JSON.stringify(outputValues[index], null, 2)}</pre>
-                                : outputValues[index] || ''}
+                            {typeof output === 'object' && output !== null
+                                ? <pre>{JSON.stringify(output, null, 2)}</pre>
+                                : output || ''}
                         </div>
                     </div>
                 </div>

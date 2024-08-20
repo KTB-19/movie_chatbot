@@ -11,7 +11,7 @@ function Chat() {
     const [outputValues, setOutputValues] = useState([]);
 
     const scrollRef = useRef();
-    const { movieName, region, date, time, setMovieName, setRegion, setDate, setTime } = useContext(AppContext); // AppContext에서 상태와 업데이트 함수들을 가져옴
+    const { movieName, region, date, time, setMovieName, setRegion, setDate, setTime, manualMessage, setManual } = useContext(AppContext);
 
     // input과 output 세션 스토리지에서 불러오기
     useEffect(() => {
@@ -32,6 +32,7 @@ function Chat() {
         }
     };
 
+
     const sendInputValue = (value) => {
         const newInputValues = [...inputValues, value];
         setInputValues(newInputValues);
@@ -44,11 +45,20 @@ function Chat() {
         sessionStorage.setItem("outputValues", JSON.stringify(newOutputValues));
     };
 
+
+    // 매뉴얼 메시지 보내기
+    useEffect(() => {
+        if (manualMessage) {
+            const newOutputValues = [...outputValues, manualMessage];
+            setOutputValues(newOutputValues);
+            setManual('');
+        }
+    }, [manualMessage, outputValues, setManual]);
+
     // 요청 경우 나누기
     // app context의 네 값 확인 후 네 값이 다 null 이 아니면 3,
     // 1개 혹은 2개 부족하면 2,
     // 네 값이 다 null 혹은 by default 1
-
     const getOutputValue = async (currentInput) => {
         // setRegion("Seoul Gangnam-gu");
         let endpoint;
@@ -103,6 +113,11 @@ function Chat() {
             });
     
             const data = await response.json();
+
+            if (initialRequestWas3) {
+                sendOutputValue(data.theaterRunningTimes);
+                return data.theaterRunningTimes;
+            }
     
             // 응답으로 받은 데이터로 상태를 업데이트
             if (data.movieName) setMovieName(data.movieName);
@@ -134,10 +149,10 @@ function Chat() {
     
                 const finalData = await finalResponse.json();
 
-                sendOutputValue(finalData.message);
-                return finalData.message;
+                sendOutputValue(finalData.theaterRunningTimes);
+                return finalData.theaterRunningTimes;
             }
-    
+
             sendOutputValue(data.message);
             return data.message;
     
@@ -146,6 +161,7 @@ function Chat() {
             return { error: "Error fetching movie data." };
         }
     };
+    
     
     // ChatInput에서 inputValue를 받고
     // inputValue를 ChatReaction에 전달 & inputValue로 outputValue를 받아와서 ChatReaction에 전달

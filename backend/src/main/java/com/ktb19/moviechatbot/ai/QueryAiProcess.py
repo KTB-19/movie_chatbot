@@ -12,11 +12,9 @@ pip install transformers datasets torch
 pip install jamo
 pip install openai
 pip install kiwi
-pip install kiwipiepy
 pip install torch torchvision torchaudio
 pip install torch
 pip install python-dotenv
-pip install sentencepiece
 
 #%%
 from kobert_tokenizer import KoBERTTokenizer
@@ -37,12 +35,12 @@ import openai
 import os
 from dotenv import load_dotenv
 from kiwipiepy import Kiwi
-# import tensorflow as tf
-# from tensorflow import keras
+import tensorflow as tf
+from tensorflow import keras
 
 #%%
 # OPENAI_API_KEY
-load_dotenv("backend/src/main/java/com/ktb19/moviechatbot/ai/.env")
+load_dotenv()
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 client = openai.OpenAI(
     api_key = OPENAI_API_KEY,
@@ -219,30 +217,51 @@ def process_documents_and_question(documents, question):
 
 
 
+from datetime import datetime
+import re
 
 # 날짜, 시간 형식 변경
 def format_date_time(date, time):
-    formatted_date = date
-    formatted_time = time
-
-    if date:
-        try:
-            date_obj = datetime.strptime(date, '%m/%d')
-            current_year = datetime.now().year
-            formatted_date = date_obj.replace(year=current_year).strftime('%Y-%m-%d')
-        except ValueError:
-            # 날짜 형식이 예상과 다를 경우 원래 값 유지
-            pass
-
-    if time:
-        try:
-            time_obj = datetime.strptime(time, '%H시')
-            formatted_time = time_obj.strftime('%H:%M')
-        except ValueError:
-            # 시간 형식이 예상과 다를 경우 원래 값 유지
-            pass
-
+    formatted_date = format_date(date)
+    formatted_time = format_time(time)
     return formatted_date, formatted_time
+
+def format_date(date):
+    if not date:
+        return date
+    try:
+        # 입력된 date 파싱 + 현재 연도: YYYY-MM-DD 형식으로 변환
+        date_obj = datetime.strptime(date, '%m/%d')
+        return date_obj.replace(year=datetime.now().year).strftime('%Y-%m-%d')
+    except ValueError:
+        return date    # 파싱 실패 시 원래 입력값 리턴
+
+def format_time(time):
+    if not time:
+        return time
+
+    # 다양한 시간 입력 패턴 문자열
+    time_patterns = {
+        r'^\d{1,2}:\d{2}$': lambda t: t,    # HH:MM 형식
+        r'^\d{1,2}시\s?\d{1,2}분$': lambda t: datetime.strptime(t, '%H시 %M분').strftime('%H:%M'),    # HH시 MM분 형식
+        r'^\d{1,2}시$': lambda t: f"{(int(t[:-1]) % 12 + 12):02}:00",    # HH시 (우선 오후로 간주)
+        r'^(오전|오후)\s?\d{1,2}시$': parse_am_pm,    # 오전/오후 HH시
+        r'^(오전|오후|저녁|심야)$': lambda t: {'오전': '07:00', '오후': '12:00', '저녁': '18:00', '심야': '23:00'}[t]
+    }
+
+    for pattern, formatter in time_patterns.items():
+        if re.match(pattern, time):
+            return formatter(time)
+    return time
+    
+# 오전/오후 시간을 HH:MM 형식으로 변환하기
+def parse_am_pm(time):
+    period, hour = re.match(r'^(오전|오후)\s?(\d{1,2})시$', time).groups()
+    hour = int(hour)
+    if period == '오전':
+        return f"{hour:02}:00" if hour < 12 else "00:00"
+    else:
+        return f"{(hour % 12 + 12):02}:00"
 
 
 # 입력한 정보가 정확한지 확인
@@ -256,7 +275,7 @@ def check_entities(entities):
 
     missing_entities = []
     for key, message in entity_info:
-        if not entities.get(key):
+        if key not in entities or not entities[key]:  # None 또는 False인 값을 걸러냄
             missing_entities.append(message)
 
     # 엔티티가 2개 이상 누락된 경우
@@ -269,7 +288,7 @@ def check_entities(entities):
     else:
         # 엔티티가 모두 채워진 경우 확인 문장 출력
         entities['date'], entities['time'] = format_date_time(entities['date'], entities['time'])   # 날짜, 시간 형식 변경 적용
-        user_message = f"{entities['date']} {entities['time']}에 {entities['region']}에서 {entities['movieName']}을(를) 보시고 싶으신 게 맞으신가요?"
+        user_message = f"{entities['date']} {entities['time']}에 {entities['region']}에서 {entities['movieName']}을(를) 보고 싶으신 게 맞으신가요?"
 
     return user_message, entities
 
@@ -293,24 +312,16 @@ def api_call(system_message, user_message):
 # api 시스템 메시지 설정
 def generate_response(entities):
     system_message = (
-        "당신은 사용자에게 영화관을 추천해주는 고객지원 챗봇 '무비빔밥'입니다."
-        "사용자의 입력을 바탕으로 적절한 응답을 생성하세요."
-        "사용자가 필요한 모든 엔티티(영화 이름, 지역, 날짜, 시간)를 제공한 경우 확인 질문을 생성하세요. "
-        "예를 들어, 사용자가 영화 이름, 지역, 날짜, 시간을 제공했다면, 다음과 같이 응답하세요: "
-        "'{date}(에) {time}에 {region}에서 {movieName}을(를) 보시고 싶으신 게 맞으신가요?' "
-        "만약 어떤 엔티티가 누락되었다면, 해당 정보를 요청하는 질문을 생성하세요. "
-        "예를 들어, 지역 정보가 누락된 경우 '어느 지역에서 영화를 보고 싶으신가요?'라고 물어보세요. "
-        "영화 이름이 불명확하거나 불완전한 경우, 이를 확인하는 질문을 생성하세요. "
-        "항상 예매를 완료하기 위해 필요한 모든 정보를 수집하는 것을 목표로 하세요."
-        "단, 사용자에게 영화 예매를 도와주겠다는 응답은 하지 마세요."
+        "당신은 사용자에게 영화 예매 정보를 확인하는 고객지원 챗봇 '무비빔밥'입니다. "
+        "사용자가 입력한 영화 이름, 지역, 날짜, 시간에 대한 정보를 확인하고, 그 정보가 정확한지 물어보세요. "
+        "단, 사용자에게 추가 정보를 제공하거나 다른 주제에 대해 대답하지 마세요. "
     )
 
     user_message, entities = check_entities(entities)
     chatbot_response = api_call(system_message, user_message)
 
-    # 불필요한 origin, similar 엔티티 제거
+    # 불필요한 origin, similar 엔티티 제거 후 response를 엔티티에 추가
     entities = {k: entities[k] for k in ['movieName', 'region', 'date', 'time'] if k in entities}
-    # entities에 response 추가
     entities['response'] = chatbot_response
 
     # json 형태로 변환하여 return

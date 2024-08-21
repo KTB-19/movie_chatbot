@@ -32,7 +32,7 @@ function ChatInput({ inputValues, sendInputValue, getOutputValue, sendOutputValu
                     ref={textareaRef}
                     value={currentInput}
                     onChange={(e) => setCurrentInput(e.target.value)} 
-                    placeholder="메시지를 입력하세요..."
+                    placeholder="메시지를 입력하세요...(한글, 영어, 숫자, 특수문자만 입력 가능)"
                 />
                 <button 
                     type="submit" 

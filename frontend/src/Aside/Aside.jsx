@@ -8,7 +8,7 @@ const Aside = () => {
             <div className="logo-container">
                 <div className="logo">
                     <img className="logo-img" alt="" src="/logo.jpg" />
-                    <h1 style={{color : "white"}}>무비빔밥</h1>
+                    <h1 style={{color : "white", fontFamily: 'BMHANNAPro'}}>무비빔밥</h1>
                 </div>
             </div>
             <RegionSelector></RegionSelector>

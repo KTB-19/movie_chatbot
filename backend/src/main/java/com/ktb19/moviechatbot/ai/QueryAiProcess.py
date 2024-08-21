@@ -12,9 +12,11 @@ pip install transformers datasets torch
 pip install jamo
 pip install openai
 pip install kiwi
+pip install kiwipiepy
 pip install torch torchvision torchaudio
 pip install torch
 pip install python-dotenv
+pip install sentencepiece
 
 #%%
 from kobert_tokenizer import KoBERTTokenizer
@@ -35,12 +37,12 @@ import openai
 import os
 from dotenv import load_dotenv
 from kiwipiepy import Kiwi
-import tensorflow as tf
-from tensorflow import keras
+# import tensorflow as tf
+# from tensorflow import keras
 
 #%%
 # OPENAI_API_KEY
-load_dotenv()
+load_dotenv("backend/src/main/java/com/ktb19/moviechatbot/ai/.env")
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 client = openai.OpenAI(
     api_key = OPENAI_API_KEY,
@@ -217,7 +219,6 @@ def process_documents_and_question(documents, question):
 
 
 
-from datetime import datetime
 
 # 날짜, 시간 형식 변경
 def format_date_time(date, time):

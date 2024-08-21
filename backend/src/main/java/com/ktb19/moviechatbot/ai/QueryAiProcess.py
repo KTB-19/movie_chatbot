@@ -1,20 +1,20 @@
 #%%
 # 필요 의존성 설치
-pip install 'git+https://github.com/SKTBrain/KoBERT.git#egg=kobert_tokenizer&subdirectory=kobert_hf'
-pip install langchain
-pip install transformers
-pip install sentence-transformers
-pip install faiss-cpu
-pip install -q langchain langchain-community
-pip install langchain_openai
-pip install python-Levenshtein
-pip install transformers datasets torch
-pip install jamo
-pip install openai
-pip install kiwi
-pip install torch torchvision torchaudio
-pip install torch
-pip install python-dotenv
+# pip install 'git+https://github.com/SKTBrain/KoBERT.git#egg=kobert_tokenizer&subdirectory=kobert_hf'
+# pip install langchain
+# pip install transformers
+# pip install sentence-transformers
+# pip install faiss-cpu
+# pip install -q langchain langchain-community
+# pip install langchain_openai
+# pip install python-Levenshtein
+# pip install transformers datasets torch
+# pip install jamo
+# pip install openai
+# pip install kiwi
+# pip install torch torchvision torchaudio
+# pip install torch
+# pip install python-dotenv
 
 #%%
 from kobert_tokenizer import KoBERTTokenizer
@@ -35,8 +35,8 @@ import openai
 import os
 from dotenv import load_dotenv
 from kiwipiepy import Kiwi
-import tensorflow as tf
-from tensorflow import keras
+# import tensorflow as tf
+# from tensorflow import keras
 
 #%%
 # OPENAI_API_KEY
@@ -328,7 +328,7 @@ def generate_response(entities):
     return json.dumps(entities, ensure_ascii=False)
 #%%
 
-
+'''
 # 사용 예시
 documents = [
 "데드풀과 울버린",
@@ -374,7 +374,7 @@ entities = json.loads(result)
 json_response = generate_response(entities)
 parsed_response = json.loads(json_response)
 print(parsed_response)
-
+'''
 
 # AI 정확도 평가 및 테스트(주의 토큰 소모가 클수있음.)
 '''

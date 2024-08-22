@@ -8,7 +8,7 @@ from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
 import openai
 
-sys.path.append(os.path.join(os.path.dirname(__file__), 'backend/src/main/java/com/ktb19/moviechatbot/ai'))
+sys.path.append(os.getcwd())
 from vector_store import FAISS_vectorize_documents, jamo_vectorize_documents
 from embeddings import KoBERTEmbeddings, query_embedding, jamodict_search, format_docs
 from datetime_format import kor_today, format_date_time, format_date, format_time, parse_am_pm
@@ -86,31 +86,31 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
         'weekday': weekday
     })
     # 기존에 입력한 영화 이름을 original에, full name을 movieName과 similar에
-    responseDict = json.loads(response1)
-    if responseDict["movieName"] in query_results[1]:
+    response_dict = json.loads(response1)
+    if response_dict["movieName"] in query_results[1]:
         return
-    elif responseDict["similar"] is None and responseDict["movieName"] is not None:
-        movieNameQuery = jamodict_search(responseDict["movieName"],jamodict)
+    elif response_dict["similar"] is None and response_dict["movieName"] is not None:
+        movie_name_query = jamodict_search(response_dict["movieName"],jamodict)
         response2 = chain2.invoke({
-            'context': movieNameQuery,
-            'movie': responseDict["movieName"]
+            'context': movie_name_query,
+            'movie': response_dict["movieName"]
         })
-        responseReDict = json.loads(response2)
-        responseDict["original"] = responseDict["movieName"]
-        responseDict["similar"] = responseReDict["movieName"]
-        responseDict["movieName"] = responseReDict["movieName"]
-    elif responseDict["similar"] and responseDict["movieName"] is None:
+        response_redict = json.loads(response2)
+        response_dict["original"] = response_dict["movieName"]
+        response_dict["similar"] = response_redict["movieName"]
+        response_dict["movieName"] = response_redict["movieName"]
+    elif response_dict["similar"] and response_dict["movieName"] is None:
         jamoQuestion = jamodict_search(question,jamodict)
         response2 = chain2.invoke({
             'context': jamoQuestion,
             'movie': question
         })
-        responseReDict = json.loads(response2)
-        responseDict["original"] = responseDict["movieName"]
-        responseDict["similar"] = responseReDict["movieName"]
-        responseDict["movieName"] = responseReDict["movieName"]
+        response_redict = json.loads(response2)
+        response_dict["original"] = response_dict["movieName"]
+        response_dict["similar"] = response_redict["movieName"]
+        response_dict["movieName"] = response_redict["movieName"]
 
-    return json.dumps(responseDict)
+    return json.dumps(response_dict)
 
 
 

@@ -1,8 +1,5 @@
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), 'backend/src/main/java/com/ktb19/moviechatbot/ai'))
-from vector_store import FAISS_vectorize_documents, jamo_vectorize_documents
-from embeddings import KoBERTEmbeddings, query_embedding, jamodict_search, format_docs
 import pickle
 import json
 from langchain_openai import ChatOpenAI
@@ -10,7 +7,14 @@ from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
 import openai
-from time_format import format_date_time,kor_today
+
+sys.path.append(os.path.join(os.path.dirname(__file__), 'backend/src/main/java/com/ktb19/moviechatbot/ai'))
+from vector_store import FAISS_vectorize_documents, jamo_vectorize_documents
+from embeddings import KoBERTEmbeddings, query_embedding, jamodict_search, format_docs
+from datetime_format import kor_today, format_date_time, format_date, format_time, parse_am_pm
+from check_entities import check_entities
+
+
 # OPENAI_API_KEY
 load_dotenv()
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
@@ -109,34 +113,6 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
     return json.dumps(responseDict)
 
 
-# 입력한 정보가 정확한지 확인
-def check_entities(entities):
-    entity_info = [
-        ("movieName", "영화 제목"),
-        ("region", "지역"),
-        ("date", "날짜"),
-        ("time", "시간")
-    ]
-
-    missing_entities = []
-    for key, message in entity_info:
-        if not entities.get(key):
-            missing_entities.append(message)
-
-    # 엔티티가 2개 이상 누락된 경우
-    if missing_entities:
-        if len(missing_entities) >= 2:
-            missing_str = ' 와 '.join(missing_entities)
-            user_message = f"관람하고 싶은 {missing_str}을 말씀해 주세요."
-        else:
-            user_message = f"관람하고 싶은 {missing_entities[0]}을 말씀해 주세요."
-    else:
-        # 엔티티가 모두 채워진 경우 확인 문장 출력
-        entities['date'], entities['time'] = format_date_time(entities['date'], entities['time'])   # 날짜, 시간 형식 변경 적용
-        user_message = f"{entities['date']} {entities['time']}에 {entities['region']}에서 {entities['movieName']}을(를) 보시고 싶으신 게 맞으신가요?"
-
-    return user_message, entities
-
 
 # api 호출
 def api_call(system_message, user_message):
@@ -153,26 +129,21 @@ def api_call(system_message, user_message):
     except Exception as e:
         return f"오류 발생: {e}"
 
+
 def generate_response(entities):
     system_message = (
-        "당신은 사용자에게 영화관을 추천해주는 고객지원 챗봇 '무비빔밥'입니다."
-        "사용자의 입력을 바탕으로 적절한 응답을 생성하세요."
-        "사용자가 필요한 모든 엔티티(영화 이름, 지역, 날짜, 시간)를 제공한 경우 확인 질문을 생성하세요. "
-        "예를 들어, 사용자가 영화 이름, 지역, 날짜, 시간을 제공했다면, 다음과 같이 응답하세요: "
-        "'{date}(에) {time}에 {region}에서 {movieName}을(를) 보시고 싶으신 게 맞으신가요?' "
-        "만약 어떤 엔티티가 누락되었다면, 해당 정보를 요청하는 질문을 생성하세요. "
-        "예를 들어, 지역 정보가 누락된 경우 '어느 지역에서 영화를 보고 싶으신가요?'라고 물어보세요. "
-        "영화 이름이 불명확하거나 불완전한 경우, 이를 확인하는 질문을 생성하세요. "
-        "항상 예매를 완료하기 위해 필요한 모든 정보를 수집하는 것을 목표로 하세요."
-        "단, 사용자에게 영화 예매를 도와주겠다는 응답은 하지 마세요."
+        "당신은 사용자에게 영화 예매 정보를 확인하는 고객지원 챗봇 '무비빔밥'입니다. "
+        "사용자가 입력한 영화 이름, 지역, 날짜, 시간에 대한 정보를 확인하고, 그 정보가 정확한지 물어보세요. "
+        "단, 사용자에게 추가 정보를 제공하거나 다른 주제에 대해 대답하지 마세요. "
     )
 
+    # 엔티티 정확한지 확인
     user_message, entities = check_entities(entities)
+    # api 호출
     chatbot_response = api_call(system_message, user_message)
 
-    # 불필요한 origin, similar 엔티티 제거
+    # 불필요한 origin, similar 엔티티 제거 후 response를 엔티티에 추가
     entities = {k: entities[k] for k in ['movieName', 'region', 'date', 'time'] if k in entities}
-    # entities에 response 추가
     entities['response'] = chatbot_response
 
     # json 형태로 변환하여 return

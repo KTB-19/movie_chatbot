@@ -148,9 +148,10 @@ function Chat() {
                 });
     
                 const finalData = await finalResponse.json();
+                const output = finalData.message + finalData.theaterRunningTimes;
 
-                sendOutputValue(finalData.theaterRunningTimes);
-                return finalData.theaterRunningTimes;
+                sendOutputValue(output);
+                return output;
             }
 
             sendOutputValue(data.message);

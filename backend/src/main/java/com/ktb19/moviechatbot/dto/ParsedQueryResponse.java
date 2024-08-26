@@ -27,7 +27,7 @@ public class ParsedQueryResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate date;
 
-    @Schema(description = "상영 시간", example = "17:00")
+    @Schema(description = "상영 시간", example = "17:00", type = "string")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
     private LocalTime time;
 

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "AiServer", url = "http://localhost:8000/api/v1")
+@FeignClient(name = "AiServer", url = "${AI_SERVICE_URL}")
 public interface AiServerOpenFeign {
 
     @GetMapping("/infos")

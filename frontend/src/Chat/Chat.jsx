@@ -32,6 +32,27 @@ function Chat() {
         }
     };
 
+    const renderSchedule = (value) => {
+        const theaters = value.theaterRunningTimes;
+        const count = theaters.length;
+        let outputMessage = "";
+
+        if (count > 0) {
+            outputMessage += `${region} 지역 ${date}의 ${movieName} 상영시간표입니다:\n\n`;
+    
+            theaters.forEach(theater => {
+                const times = theater.times.join(", ");
+                outputMessage += `극장: ${theater.theaterName}\n`;
+                outputMessage += `상영 시간: ${times}\n\n`;
+            });
+        } else {
+            outputMessage = "상영 스케줄이 없습니다.";
+        }
+
+        sendOutputValue(outputMessage);
+        return outputMessage;
+    };
+
 
     const sendInputValue = (value) => {
         const newInputValues = [...inputValues, value];
@@ -60,7 +81,7 @@ function Chat() {
     // 1개 혹은 2개 부족하면 2,
     // 네 값이 다 null 혹은 by default 1
     const getOutputValue = async (currentInput) => {
-        // setRegion("Seoul Gangnam-gu");
+        // setRegion("Seoul Gangnam");
         let endpoint;
         let body;
         let initialRequestWas3 = false;
@@ -84,7 +105,7 @@ function Chat() {
                 movieName,
                 region,
                 date: formatDate(date),
-                time
+                time: time || ""
             };
         } else if (movieName || region || date) {
             // 2. /movie/query/additional (POST)
@@ -93,7 +114,7 @@ function Chat() {
                 movieName,
                 region,
                 date: formatDate(date),
-                time,
+                time: time || "",
                 message: currentInput 
             };
         } else {
@@ -101,7 +122,8 @@ function Chat() {
             endpoint = `/api/v1/movie/query?message=${encodeURIComponent(currentInput)}`;
             body = null; 
         }
-        console.log(endpoint);
+        console.log(movieName, region, date, time);
+        console.log(endpoint, body);
     
         try {
             const response = await fetch(endpoint, {
@@ -115,8 +137,8 @@ function Chat() {
             const data = await response.json();
 
             if (initialRequestWas3) {
-                sendOutputValue(data.theaterRunningTimes);
-                return data.theaterRunningTimes;
+                // sendOutputValue(data.theaterRunningTimes);
+                return renderSchedule(data);
             }
     
             // 응답으로 받은 데이터로 상태를 업데이트
@@ -135,7 +157,7 @@ function Chat() {
                     movieName: movieName,
                     region: region,
                     date: formatDate(date),
-                    time: time
+                    time: time || ""
                 };
                 console.log('Re-fetching with all entities:', endpoint);
     
@@ -148,10 +170,10 @@ function Chat() {
                 });
     
                 const finalData = await finalResponse.json();
-                const output = finalData.message + finalData.theaterRunningTimes;
 
-                sendOutputValue(output);
-                return output;
+                return renderSchedule(finalData);
+                // sendOutputValue(finalData.theaterRunningTimes);
+                // return finalData.theaterRunningTimes;
             }
 
             sendOutputValue(data.message);

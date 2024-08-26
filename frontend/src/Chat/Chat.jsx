@@ -137,7 +137,6 @@ function Chat() {
             const data = await response.json();
 
             if (initialRequestWas3) {
-                // sendOutputValue(data.theaterRunningTimes);
                 return renderSchedule(data);
             }
     
@@ -172,8 +171,6 @@ function Chat() {
                 const finalData = await finalResponse.json();
 
                 return renderSchedule(finalData);
-                // sendOutputValue(finalData.theaterRunningTimes);
-                // return finalData.theaterRunningTimes;
             }
 
             sendOutputValue(data.message);

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "info")
@@ -28,10 +29,10 @@ public class MovieInfo {
     private Theater theater;
 
     private LocalDate date;
-    private Time time;
+    private LocalTime time;
 
     @Builder
-    public MovieInfo(Integer id, Movie movie, Theater theater, LocalDate date, Time time) {
+    public MovieInfo(Integer id, Movie movie, Theater theater, LocalDate date, LocalTime time) {
         this.id = id;
         this.movie = movie;
         this.theater = theater;

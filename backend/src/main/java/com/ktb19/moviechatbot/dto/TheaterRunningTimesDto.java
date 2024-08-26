@@ -1,10 +1,12 @@
 package com.ktb19.moviechatbot.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 
 @Getter
@@ -14,6 +16,8 @@ public class TheaterRunningTimesDto {
 
     private String theaterName;
     private int count;
-    private List<Time> times;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
+    private List<LocalTime> times;
 
 }

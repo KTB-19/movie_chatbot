@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+python-dotenv
+pydantic
+pydantic-settings
+
+sentencepiece
+sqlalchemy
+aiomysql
+greenlet
+cryptography

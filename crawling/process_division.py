@@ -33,7 +33,7 @@ def process_division(i, initial):
             l = [i for i in range(1, len(basarea_elements) + 1)]
 
             # 최대 가용한 cpu 수 설정
-            my_cpu_count = 9
+            my_cpu_count = 10 # 크롤링 서버 환경 - Bryan
             chunk_size = max((len(basarea_elements) // my_cpu_count) + (1 if len(basarea_elements) % my_cpu_count != 0 else 0), 1)
             sub_divisions = [l[i:i + chunk_size] for i in range(0, len(l), chunk_size)]
             args_list = [(initial, i, widearea_name, len(basarea_elements), div) for div in sub_divisions]

@@ -30,6 +30,8 @@ def query_embedding(query, k, embeddings_model, vector_store):
 def format_docs(docs):
     return '\n'.join([f'"{d.page_content}"' for d in docs])
 
+def format_dict(d):
+    return '\n\n'.join([f"{key}: {', '.join(value) if isinstance(value, list) else value}" for key, value in d.items()])
 #%%
 # 한글을 자모로 변환하는 함수
 def hangul_to_jamo(text):
@@ -66,5 +68,3 @@ def jamodict_search(query, jamodict):
     sorted_distance_list = sorted(distance_list, key=lambda x: min(x[2]))
     return sorted_distance_list
 
-def format_docs(docs):
-    return '\n'.join([f'"{d.page_content}"' for d in docs])

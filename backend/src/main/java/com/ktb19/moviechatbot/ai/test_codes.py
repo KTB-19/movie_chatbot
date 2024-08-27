@@ -6,7 +6,7 @@ import json
 os.chdir('backend/src/main/java/com/ktb19/moviechatbot/ai')
 sys.path.append(os.getcwd())
 #%%
-from main import vectorize_documents, process_documents_and_question, generate_response
+from main import vectorize_documents, process_documents_and_question, generate_response,query_reprocess
 from embeddings import KoBERTEmbeddings
 #%%
 # 사용 예시
@@ -53,7 +53,19 @@ question = "데드풀 토요일 5시에 보고 싶어"
 #%%
 ## 함수 실행 예시
 result = process_documents_and_question(question,'KoBERT_vector_store','jamodict')
+print('result', result)
 entities = json.loads(result)
+print('entities', entities)
 json_response = generate_response(entities)
+parsed_response = json.loads(json_response)
+print(parsed_response)
+#%%
+re_question = "강남에서 보고싶어"
+#%%
+re_result = query_reprocess(re_question,'KoBERT_vector_store','jamodict',entities)
+print('result', entities)
+re_entities = json.loads(re_result)
+print('re_result', re_entities)
+json_response = generate_response(re_entities)
 parsed_response = json.loads(json_response)
 print(parsed_response)

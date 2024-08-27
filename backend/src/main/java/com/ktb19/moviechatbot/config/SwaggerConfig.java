@@ -92,7 +92,7 @@ public class SwaggerConfig {
         Content content = new Content();
         MediaType mediaType = new MediaType();
         Schema schema = new Schema<>();
-        schema.$ref("#/components/schemas/ErrorResponse");
+//        schema.$ref("#/exception/common/ErrorResponse");
         mediaType.schema(schema).example(new ErrorResponse(status, message));
         content.addMediaType("application/json", mediaType);
         apiResponse.setContent(content);

@@ -1,0 +1,32 @@
+- name: Deploy and run docker-compose on different hosts
+  hosts: backend, crawling
+  become: yes
+
+  tasks:
+    - name: Ensure destination is not a directory
+      file:
+        path: /home/ec2-user/config.my-cnf
+        state: absent
+      when: "'backend' in group_names"
+      
+    - name: Copy files to backend servers
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest}}"
+      with_items:
+        - { src: 'backend-docker-compose.yml', dest: '/home/ec2-user/docker-compose.yml'}
+        - { src: 'config.my-cnf', dest: '/home/ec2-user/config.my-cnf'}
+      when: "'backend' in group_names"
+
+    - name: Copy docker-compose.yml and .env to crawling servers
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      with_items:
+        - { src: 'crawling-docker-compose.yml', dest: '/home/ec2-user/docker-compose.yml' }
+        - { src: '.env', dest: '/home/ec2-user/.env' }
+      when: "'crawling' in group_names"
+
+    - name: Run docker-compose 
+      shell: docker-compose up -d
+

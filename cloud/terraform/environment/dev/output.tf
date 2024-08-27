@@ -1,5 +1,5 @@
-output "front_ip" {
-  value = module.front.instance_public_ip
+output "crawling_ip" {
+  value = module.crawling.instance_public_ip
 }
 
 output "backend_ip" {

@@ -22,6 +22,7 @@ services:
       - monitoring
     volumes:
       - prometheus-data:/prometheus
+      - ~/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
 
 networks:
   monitoring:

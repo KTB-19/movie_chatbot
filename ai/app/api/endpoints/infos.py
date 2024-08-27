@@ -1,9 +1,13 @@
+import json
+
 from fastapi import APIRouter
 from sqlalchemy import text
 
 from app.api.dto.additional_infos_request import AdditionalInfosRequest
 from app.db.database import engine
 from app.models.info import Info
+from app.services.embeddings import KoBERTEmbeddings
+from app.services.query_ai_process import vectorize_documents, process_documents_and_question, generate_response
 from app.services.test1 import get_response
 from app.services.test2 import get_response_additional
 import logging
@@ -19,7 +23,16 @@ async def get_infos(message: str = "") -> Info:
     movies = await read_movies()
     logger.info(f"sql result movies : {movies}")
 
-    response: Info = Info(**get_response(movies, message))
+    # embeddings_model = KoBERTEmbeddings()
+    # vectorize_documents(movies, embeddings_model, "faiss_vector", "jamo_vector")
+
+    entities = json.loads(process_documents_and_question(message, "faiss_vector", "jamo_vector"))
+    logger.info(f"entities : {entities}")
+
+    result = json.loads(generate_response(entities))
+    logger.info(f"result : {result}")
+
+    response: Info = Info(**result)
     logger.info(f"response : {response}")
 
     return response

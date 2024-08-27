@@ -10,8 +10,8 @@ import openai
 
 sys.path.append(os.getcwd())
 from vector_store import FAISS_vectorize_documents, jamo_vectorize_documents
-from embeddings import KoBERTEmbeddings, query_embedding, jamodict_search, format_docs
-from datetime_format import kor_today
+from embeddings import KoBERTEmbeddings, query_embedding, jamodict_search, format_docs,format_dict
+from datetime_format import kor_today, format_date_time, format_date, format_time, parse_am_pm
 from check_entities import check_entities
 
 
@@ -32,7 +32,7 @@ def vectorize_documents(documents, Embedding_model, FAISS_name, jamo_name):
 
 def process_documents_and_question(question,FAISS_name,jamo_name):
     # 한국 시간대 설정
-    today,weekday = kor_today()
+    today, weekday = kor_today()
 
     # LLM 초기화
     llm = ChatOpenAI(model='gpt-3.5-turbo-0125', temperature=0.3, max_tokens=200)
@@ -89,11 +89,12 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
         'today': today,
         'weekday': weekday
     })
-    print(query_results)
-    print(query_results[1])
+    #print(format_docs(query_results[1]))
+    #print(response1)
     # 기존에 입력한 영화 이름을 original에, full name을 movieName과 similar에
     response_dict = json.loads(response1)
     if response_dict["movieName"] in query_results[1]:
+        #print('1st')
         return
     elif response_dict["similar"] is None and response_dict["movieName"] is not None:
         movie_name_query = jamodict_search(response_dict["movieName"], jamodict)
@@ -103,6 +104,8 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
         })
         response_redict = json.loads(response2)
         response_dict = rename_dict(response_dict, response_redict)
+        print(movie_name_query)
+        #print('2nd')
     elif response_dict["similar"] and response_dict["movieName"] is None:
         jamoQuestion = jamodict_search(question,jamodict)
         response2 = chain2.invoke({
@@ -111,6 +114,7 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
         })
         response_redict = json.loads(response2)
         response_dict = rename_dict(response_dict, response_redict)
+        #print('3th')
 
     return json.dumps(response_dict)
 
@@ -122,7 +126,7 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response_dict):
     llm = ChatOpenAI(model='gpt-3.5-turbo-0125', temperature=0.3, max_tokens=200)
 
     re_ner_tpl = '''질문에서 너는 영화 이름, 날짜, 시간, 장소를 구분하는 역할을 수행해.
-    이전 대답에서 부족한 부분을 채워넣는다. 이전의 대답을 우선으로 하되 명확한 내용이 들어있으면 수정한다.
+    이전의 대답을 우선으로 참고하고 명확한 내용이 들어있으면 수정한다.
     context는 상영중인 영화 리스트이다.
     response_dict는 이전의 대답이다.
     context:{context}
@@ -171,8 +175,8 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response_dict):
         query_for_vector = pre_response_dict["movieName"]
     query_results = query_embedding(query_for_vector, k=5, embeddings_model=embeddings_model, vector_store=vector_store)
     response1 = chain1.invoke({
-        'context': format_docs(query_results),
-        'pre_response_dict': format_docs(pre_response_dict),
+        'context': format_docs(query_results[1]),
+        'pre_response_dict': format_dict(pre_response_dict),
         'question': query,
         'today': today,
         'weekday': weekday

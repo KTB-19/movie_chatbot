@@ -21,7 +21,7 @@ def job():
 
     print("final: ", len(data_list))
     database.insert_db.insert_data(data_list)
-    print("inserted into database(for 7 days)")
+    print("inserted into database", flush=True)
 
 
 def job_for7days():
@@ -35,11 +35,10 @@ def job_for7days():
 
     print("final: ", len(data_list))
     database.insert_db.insert_data(data_list)
-    print("inserted into database")
+    print("inserted into database(for 7 days)", flush=True)
 
 
 if __name__ == '__main__':
-
     # 최초 1회 실행
     job_for7days()
 

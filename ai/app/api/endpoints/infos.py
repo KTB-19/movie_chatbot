@@ -6,10 +6,7 @@ from sqlalchemy import text
 from app.api.dto.additional_infos_request import AdditionalInfosRequest
 from app.db.database import engine
 from app.models.info import Info
-from app.services.embeddings import KoBERTEmbeddings
 from app.services.query_ai_process import vectorize_documents, process_documents_and_question, generate_response
-from app.services.test1 import get_response
-from app.services.test2 import get_response_additional
 import logging
 
 router = APIRouter()

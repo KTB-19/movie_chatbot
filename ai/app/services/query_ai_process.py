@@ -8,7 +8,7 @@ from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
 import openai
 
-from app.services.embeddings import KoBERTEmbeddings, query_embedding, format_docs, jamodict_search
+from app.services.embeddings import KoBERTEmbeddings, query_embedding, format_docs, jamodict_search, format_dict, rename_dict
 from app.services.datetime_format import kor_today
 from app.services.check_entities import check_entities
 from app.services.vector_store import FAISS_vectorize_documents, jamo_vectorize_documents
@@ -20,11 +20,6 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 client = openai.OpenAI(
     api_key = OPENAI_API_KEY,
 )
-def rename_dict(dict, redict):
-    dict["original"] = dict["movieName"]
-    dict["similar"] = redict["movieName"]
-    dict["movieName"] = redict["movieName"]
-    return dict
 
 def vectorize_documents(documents, Embedding_model, FAISS_name, jamo_name):
     FAISS_vectorize_documents(documents, Embedding_model, FAISS_name)

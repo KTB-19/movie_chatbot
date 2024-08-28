@@ -78,6 +78,7 @@ jobs:
             docker run -d --name crawling -p 5001:5001 ${{ env.DOCKER_HUB_USERNAME }}/crawling:latest
           '
           rm /tmp/ec2_key
+          
 
       - name: Cleanup
         if: always()

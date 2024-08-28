@@ -50,7 +50,7 @@ jobs:
       - name: Deploy Backend services
         run: |
           aws ssm send-command \
-            --instance-ids ${{ secrets.BACKEND_EC2_INSTANCE_ID }} \
+            --instance-ids ${{ secrets.BACKEND_EC2_HOST }} \
             --document-name "AWS-RunShellScript" \
             --parameters '{
               "commands": [

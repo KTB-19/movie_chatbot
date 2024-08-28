@@ -15,11 +15,6 @@ import logging
 router = APIRouter()
 logger = logging.getLogger("uvicorn")
 
-# 스케쥴링 하기 - 매일 db 업데이트 된 이후 1번 실행 & 초기 시작시 파일 없으면 1번 실행
-# movies = await read_movies()
-# logger.info(f"sql result movies : {movies}")
-# embeddings_model = KoBERTEmbeddings()
-# vectorize_documents(movies, embeddings_model, "faiss_vector", "jamo_vector")
 
 @router.get("/infos")
 async def get_infos(message: str = "") -> Info:

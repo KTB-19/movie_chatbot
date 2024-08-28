@@ -20,7 +20,11 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 client = openai.OpenAI(
     api_key = OPENAI_API_KEY,
 )
-
+def rename_dict(dict, redict):
+    dict["original"] = dict["movieName"]
+    dict["similar"] = redict["movieName"]
+    dict["movieName"] = redict["movieName"]
+    return dict
 
 def vectorize_documents(documents, Embedding_model, FAISS_name, jamo_name):
     FAISS_vectorize_documents(documents, Embedding_model, FAISS_name)
@@ -88,16 +92,16 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
     response_dict = json.loads(response1)
     if response_dict["movieName"] in query_results[1]:
         return
+
     elif response_dict["similar"] is None and response_dict["movieName"] is not None:
-        movie_name_query = jamodict_search(response_dict["movieName"],jamodict)
+        movie_name_query = jamodict_search(response_dict["movieName"], jamodict)
         response2 = chain2.invoke({
             'context': movie_name_query,
             'movie': response_dict["movieName"]
         })
         response_redict = json.loads(response2)
-        response_dict["original"] = response_dict["movieName"]
-        response_dict["similar"] = response_redict["movieName"]
-        response_dict["movieName"] = response_redict["movieName"]
+        response_dict = rename_dict(response_dict, response_redict)
+
     elif response_dict["similar"] and response_dict["movieName"] is None:
         jamoQuestion = jamodict_search(question,jamodict)
         response2 = chain2.invoke({
@@ -105,13 +109,94 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
             'movie': question
         })
         response_redict = json.loads(response2)
-        response_dict["original"] = response_dict["movieName"]
-        response_dict["similar"] = response_redict["movieName"]
-        response_dict["movieName"] = response_redict["movieName"]
+        response_dict = rename_dict(response_dict, response_redict)
 
     return json.dumps(response_dict)
 
+def query_reprocess(query,FAISS_name,jamo_name,pre_response_dict):
+    # 한국 시간대 설정
+    today,weekday = kor_today()
 
+    # LLM 초기화
+    llm = ChatOpenAI(model='gpt-3.5-turbo-0125', temperature=0.3, max_tokens=200)
+
+    re_ner_tpl = '''pre_response_dict에서 null을 채우기 위해 질문에서 너는 영화 이름, 날짜, 시간, 장소를 구분하는 역할을 수행해한다.
+    pre_response_dict를 그대로 가져온다.만약 영화 이름, 날짜, 시간, 장소를 변경을 요청하는 명확한 내용이 들어있으면 수정한다.
+    context는 상영중인 영화 리스트이다.
+    response_dict는 이전의 대답이다.
+    response_dict:{pre_response_dict}
+    영화 이름 null일 경우에만 {question}에서 현재 상영중인 영화 리스트에서 구분한다.
+    동일한 이름이 없다면, 유사한 이름의 영화가 상영중인 영화 리스트에 있다면 영화이름을 리스트에 있는 이름으로 대체한다.
+    similar에는 상영중인 영화 리스트에서 이름 넣는다.
+    만약 없다면 null로 넣는다.
+    오늘 날짜는 {today}이고 요일은 {weekday}다.
+    만약 요일만 있다면 이번주로 계산한다.
+
+    Question: pre_response_dict에서 그대로 가져오고, null인 것은 {question}문장 안에 영화 이름, 장소, 날짜, 시간이 포함되어 있는지 확인해 줘.
+    영화는 movie : , 장소는 region: , 날짜는 date: , 시간은 time: , 문장에서 찾은 영화 이름은 Original:에 대입해줘, context와  유사한 이름 상영중인 영화이름은 Similar: 이라고 알려줘.
+     빈 항목은 null를 채워서 마지막 줄에있는 출력형식으로만 대답한다.
+
+    {{"movieName" : null, "region": null, "date": null, "time": null, "original": null, "similar": null}}
+    '''
+
+    ner_tpl_secondary = '''
+    "context 는 현재 상영중인 영화 리스트 : {context}"
+    "대답은 무조건 context 리스트 안에서 대답한다."
+
+    "context에 있는{movie}와 비슷한 이름을 movieName에 지정한다."
+    "{movie}은 original로 지정한다."
+    Question: {movie} 는 영화 이름의 일부분이다. {movie} 를 포함거나 유사한 영화 이름이 context에 포함되어 있는지 확인하여 채운다,
+    없는 경우는 빈 항목으로 null를 채워서 마지막 줄에있는 출력형식으로만 대답해줘"
+
+     {{"movieName" : null, "original": null}}
+
+    '''
+    prompt1 = ChatPromptTemplate.from_template(re_ner_tpl)
+    prompt2 = ChatPromptTemplate.from_template(ner_tpl_secondary)
+
+
+    chain1 = prompt1 | llm | StrOutputParser()
+    chain2 = prompt2 | llm | StrOutputParser()
+
+    # 임베딩 모델 초기화 및 벡터화
+    embeddings_model = KoBERTEmbeddings()
+    with open(f'{FAISS_name}.pkl', 'rb') as f:
+        vector_store = pickle.load(f)
+    with open(f'{jamo_name}.pkl', 'rb') as f:
+        jamodict = pickle.load(f)
+    # 쿼리 임베딩 및 첫 번째 LLM 호출
+    if pre_response_dict["movieName"] is not None:
+        query_for_vector = pre_response_dict["movieName"]
+    query_results = query_embedding(query_for_vector, k=5, embeddings_model=embeddings_model, vector_store=vector_store)
+    response1 = chain1.invoke({
+        'context': format_docs(query_results[1]),
+        'pre_response_dict': format_dict(pre_response_dict),
+        'question': query,
+        'today': today,
+        'weekday': weekday
+    })
+    #기존에 입력한 영화 이름을 original에, full name을 movieName과 similar에
+    response_dict = json.loads(response1)
+    if response_dict["movieName"] in query_results[1]:
+        return
+    elif response_dict["similar"] is None and response_dict["movieName"] is not None:
+        movie_name_query = jamodict_search(response_dict["movieName"], jamodict)
+        response2 = chain2.invoke({
+            'context': movie_name_query,
+            'movie': response_dict["movieName"]
+        })
+        response_redict = json.loads(response2)
+        response_dict = rename_dict(response_dict, response_redict)
+    elif response_dict["similar"] and response_dict["movieName"] is None:
+        jamoQuestion = jamodict_search(query,jamodict)
+        response2 = chain2.invoke({
+            'context': jamoQuestion,
+            'movie': query
+        })
+        response_redict = json.loads(response2)
+        response_dict = rename_dict(response_dict, response_redict)
+
+    return json.dumps(response_dict)
 
 # api 호출
 def api_call(system_message, user_message):

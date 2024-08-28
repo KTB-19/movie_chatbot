@@ -6,7 +6,7 @@ import json
 os.chdir('backend/src/main/java/com/ktb19/moviechatbot/ai')
 sys.path.append(os.getcwd())
 #%%
-from main import vectorize_documents, process_documents_and_question, generate_response
+from query_ai_process import vectorize_documents, process_documents_and_question, generate_response
 from embeddings import KoBERTEmbeddings
 #%%
 # 사용 예시

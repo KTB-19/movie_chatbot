@@ -58,8 +58,8 @@ jobs:
                 "sudo docker pull ${{ env.DOCKER_HUB_USERNAME }}/ai:latest",
                 "sudo docker stop backend ai || true",
                 "sudo docker rm backend ai || true",
-                "sudo docker run -d --name ai --network export_network -p 8000:8000 -e PROJECT_NAME=ParseAI -e DATABASE_URL=mysql+aiomysql://root:qlalfqjsgh486@db:3306/moviedatabase ${{ env.DOCKER_HUB_USERNAME }}/ai:latest",
-                "sudo docker run -d --name backend --network export_network -p 8080:8080 -e SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/moviedatabase?serverTimezone=Asia/Seoul -e SPRING_DATASOURCE_USERNAME=root -e SPRING_DATASOURCE_PASSWORD=qlalfqjsgh486 -e AI_SERVICE_URL=http://localhost:8000/api/v1 ${{ env.DOCKER_HUB_USERNAME }}/backend:latest"
+                "sudo docker run -d --name ai --network ec2-user_export_network -p 8000:8000 -e PROJECT_NAME=ParseAI -e DATABASE_URL=mysql+aiomysql://root:qlalfqjsgh486@db:3306/moviedatabase ${{ env.DOCKER_HUB_USERNAME }}/ai:latest",
+                "sudo docker run -d --name backend --network ec2-user_export_network -p 8080:8080 -e SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/moviedatabase?serverTimezone=Asia/Seoul -e SPRING_DATASOURCE_USERNAME=root -e SPRING_DATASOURCE_PASSWORD=qlalfqjsgh486 -e AI_SERVICE_URL=http://localhost:8000/api/v1 ${{ env.DOCKER_HUB_USERNAME }}/backend:latest"
               ]
             }'
 

@@ -35,7 +35,9 @@ function App() {
             <div className="ratioContainer">
                 <ManualChat />
                 <button className="toggle-button" onClick={toggleSidebar}>
-                    <PiSidebarSimple />
+                    <div className='sidebar-button'>
+                        < PiSidebarSimple />
+                    </div>
                 </button>
                 {isSidebarVisible && <div className="sidebar"><Aside /></div>}
                 <Chat />

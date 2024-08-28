@@ -1,9 +1,7 @@
 import pickle
 from langchain_community.vectorstores import FAISS
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), 'backend/src/main/java/com/ktb19/moviechatbot/ai'))
-from embeddings import documents_to_jamodict
+from app.services.embeddings import documents_to_jamodict
+
 def FAISS_vectorize_documents(documents, embedding_model, name):
     try:
         vector_store = FAISS.from_texts(documents, embedding=embedding_model)

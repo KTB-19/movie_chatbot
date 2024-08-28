@@ -1,4 +1,7 @@
 # 입력한 정보가 정확한지 확인
+from app.services.datetime_format import format_date_time
+
+
 def check_entities(entities):
     entity_info = [
         ("movieName", "영화 제목"),

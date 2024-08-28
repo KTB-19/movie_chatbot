@@ -42,3 +42,14 @@
         src: /usr/local/bin/docker-compose
         dest: /usr/bin/docker-compose
         state: link
+
+    - name: Set timezone to Asia/Seoul
+      ansible.builtin.command: timedatectl set-timezone Asia/Seoul
+
+    - name: Ensure the correct timezone is set
+      ansible.builtin.command: timedatectl
+      register: timedatectl_output
+
+    - name: Print the current timezone
+      ansible.builtin.debug:
+        var: timedatectl_output.stdout

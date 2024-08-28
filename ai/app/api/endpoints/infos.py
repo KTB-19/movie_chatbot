@@ -15,24 +15,21 @@ import logging
 router = APIRouter()
 logger = logging.getLogger("uvicorn")
 
+# 스케쥴링 하기 - 매일 db 업데이트 된 이후 1번 실행 & 초기 시작시 파일 없으면 1번 실행
+# movies = await read_movies()
+# logger.info(f"sql result movies : {movies}")
+# embeddings_model = KoBERTEmbeddings()
+# vectorize_documents(movies, embeddings_model, "faiss_vector", "jamo_vector")
+
 @router.get("/infos")
 async def get_infos(message: str = "") -> Info:
     logger.info("get_infos start")
     logger.info(f"message : {message}")
 
-    movies = await read_movies()
-    logger.info(f"sql result movies : {movies}")
-
-    # embeddings_model = KoBERTEmbeddings()
-    # vectorize_documents(movies, embeddings_model, "faiss_vector", "jamo_vector")
-
     entities = json.loads(process_documents_and_question(message, "faiss_vector", "jamo_vector"))
     logger.info(f"entities : {entities}")
 
-    result = json.loads(generate_response(entities))
-    logger.info(f"result : {result}")
-
-    response: Info = Info(**result)
+    response: Info = Info(**json.loads(generate_response(entities)))
     logger.info(f"response : {response}")
 
     return response
@@ -44,13 +41,31 @@ async def get_infos_additional(request: AdditionalInfosRequest) -> Info:
     logger.info(f"parsedQuery : {request.parsedQuery}")
     logger.info(f"message : {request.message}")
 
-    movies = await read_movies()
-    logger.info(f"sql result movies : {movies}")
+    entities = json.loads(process_documents_and_question(request.message, "faiss_vector", "jamo_vector"))
+    logger.info(f"entities : {entities}")
 
-    response: Info = Info(**get_response_additional(movies, request.parsedQuery, request.message))
+    union_entities = union(request.parsedQuery, entities)
+    logger.info(f"union_entities : {union_entities}")
+
+    response: Info = Info(**json.loads(generate_response(union_entities)))
     logger.info(f"response : {response}")
 
     return response
+
+
+def union(parsedQuery, entities):
+    entity_info = [
+        ("movieName", "영화 제목"),
+        ("region", "지역"),
+        ("date", "날짜"),
+        ("time", "시간")
+    ]
+
+    for key, message in entity_info:
+        if getattr(parsedQuery, key):
+            entities[key] = getattr(parsedQuery, key)
+
+    return entities
 
 
 async def read_movies():

@@ -37,14 +37,14 @@ jobs:
       #     aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
 
       # Backend, AI, Crawling 이미지 빌드 및 푸시
-      - name: Build and push Docker images
-        run: |
-          docker build -t $DOCKER_HUB_USERNAME/backend:latest ./backend
-          docker build -t $DOCKER_HUB_USERNAME/ai:latest ./ai
-          docker build -t $DOCKER_HUB_USERNAME/crawling:latest ./crawling
-          docker push $DOCKER_HUB_USERNAME/backend:latest
-          docker push $DOCKER_HUB_USERNAME/ai:latest
-          docker push $DOCKER_HUB_USERNAME/crawling:latest
+      # - name: Build and push Docker images
+      #   run: |
+      #     docker build -t $DOCKER_HUB_USERNAME/backend:latest ./backend
+      #     docker build -t $DOCKER_HUB_USERNAME/ai:latest ./ai
+      #     docker build -t $DOCKER_HUB_USERNAME/crawling:latest ./crawling
+      #     docker push $DOCKER_HUB_USERNAME/backend:latest
+      #     docker push $DOCKER_HUB_USERNAME/ai:latest
+      #     docker push $DOCKER_HUB_USERNAME/crawling:latest
 
       # Backend 서비스 배포 (AWS Systems Manager 사용)
       - name: Deploy Backend services

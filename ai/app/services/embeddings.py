@@ -33,6 +33,12 @@ def format_docs(docs):
 def format_dict(dict):
     return '\n\n'.join([f"{key}: {', '.join(value) if isinstance(value, list) else value}" for key, value in dict.items()])
 
+def rename_dict(dict, redict):
+    dict["original"] = dict["movieName"]
+    dict["similar"] = redict["movieName"]
+    dict["movieName"] = redict["movieName"]
+    return dict
+
 #%%
 # 한글을 자모로 변환하는 함수
 def hangul_to_jamo(text):

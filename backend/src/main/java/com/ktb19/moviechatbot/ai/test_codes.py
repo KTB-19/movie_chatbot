@@ -109,3 +109,7 @@ question, requestion = question_and_answer[0], question_and_answer[2]
 chat_test_answers = chat_test(question,re_question)
 answer, final_answer = chat_test_answers[0], chat_test_answers[1]
 print(question, requestion, chat_test_answers, final_answer)
+print(question)
+print(answer)
+print(requestion)
+print(final_answer)

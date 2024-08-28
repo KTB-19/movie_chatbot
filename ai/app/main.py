@@ -1,8 +1,10 @@
 from fastapi import FastAPI
+
 from app.api.endpoints import infos
 from app.core.config import settings
+from app.services.scheduler import lifespan
 
-app = FastAPI(title=settings.PROJECT_NAME)
+app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
 
 app.include_router(infos.router, prefix="/api/v1")
 

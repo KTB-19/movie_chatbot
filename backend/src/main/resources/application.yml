@@ -16,3 +16,10 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
     database: mysql
 AI_SERVICE_URL: http://localhost:8000/api/v1
+
+springdoc:
+  default-produces-media-type: application/json;charset=UTF-8
+  default-consumes-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    tags-sorter: alpha # 태그를 알파벳 순으로 정렬
+    operations-sorter: alpha  # delete - get - patch - post - put 순으로 정렬, alpha를 사용하면 알파벳 순으로 정렬 가능

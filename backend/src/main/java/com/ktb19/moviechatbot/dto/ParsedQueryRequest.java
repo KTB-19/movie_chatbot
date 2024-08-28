@@ -1,6 +1,7 @@
 package com.ktb19.moviechatbot.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -19,17 +20,21 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class ParsedQueryRequest {
 
-    @Pattern(regexp = "^[가-힣a-zA-Z0-9 !#$%&'*+/=?`{|}~^.-:]*$", message = "한글, 영어, 숫자, 특수문자만 입력할 수 있습니다.")
+    @Schema(description = "영화 이름", example = "에이리언 : 로물루스")
+    @Pattern(regexp = "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 !#$%&'*+/=?`{|}~^.-:]*$", message = "한글, 영어, 숫자, 특수문자만 입력할 수 있습니다.")
     @Size(max = 100)
     private String movieName;
 
+    @Schema(description = "지역", example = "null")
     @Pattern(regexp = "^[가-힣 ]*$", message = "한글, 띄어쓰기만 입력할 수 있습니다.")
     @Size(max = 30)
     private String region;
 
+    @Schema(description = "상영 날짜", example = "2024-08-14")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate date;
 
+    @Schema(description = "상영 시간", example = "17:00", type = "string")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
     private LocalTime time;
 

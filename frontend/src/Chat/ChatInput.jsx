@@ -11,7 +11,7 @@ function ChatInput({ inputValues, sendInputValue, getOutputValue, sendOutputValu
         e.preventDefault();
         if (currentInput !== "") {
             const outputValue = await getOutputValue(currentInput);
-            sendOutputValue(outputValue);
+            // sendOutputValue(outputValue);
             sendInputValue(currentInput);
             setCurrentInput(''); 
         }

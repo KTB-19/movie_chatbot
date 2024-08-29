@@ -9,6 +9,8 @@ function Chat() {
     // questions(output) & answers(input)
     const [inputValues, setInputValues] = useState([]);
     const [outputValues, setOutputValues] = useState([]);
+    const [yesNoValue, setYesNoValue] = useState('');
+    const [recommendMessage, setRecommendMessage] = useState(''); // recommendMessage 상태 추가
 
     const scrollRef = useRef();
     const { movieName, region, date, time, setMovieName, setRegion, setDate, setTime, manualMessage, setManual } = useContext(AppContext);
@@ -32,27 +34,100 @@ function Chat() {
         }
     };
 
-    const renderSchedule = (value) => {
-        const theaters = value.theaterRunningTimes || [];
-        const count = theaters.length;
-        let outputMessage = "";
-    
-        if (count > 0) {
-            outputMessage += `${region} 지역 ${date}의 ${movieName} 상영시간표입니다:\n\n`;
-        
-            theaters.forEach(theater => {
-                const times = theater.times.join(", ");
-                outputMessage += `극장: ${theater.theaterName}\n`;
-                outputMessage += `상영 시간: ${times}\n\n`;
-            });
-        } else {
-            outputMessage = "상영 스케줄이 없습니다.";
+    function YesNoButtons({ onYes, onNo }) {
+        return (
+            <div>
+                <button onClick={onYes}>Yes</button>
+                <button onClick={onNo}>No</button>
+            </div>
+        );
+    }
+
+    useEffect(() => {
+        if (yesNoValue === 'Yes') {
+            // yes면 checker에서 value.recommendMessage를 outputMessage로 두고 sendOutputValue(recommendMessage), return recommendMessage
+            console.log('Yes 선택함');
+            sendOutputValue(recommendMessage); // 추천 메시지 전송
+        } else if (yesNoValue === 'No') {
+            // no면 체크박스 세개 만들어서(날짜 바꾸기, 지역 바꾸기, 영화 바꾸기) 중복선택가능하게. 
+            const handleOptionChange = (option) => {
+                switch (option) {
+                    case 'date':
+                        setDate('');
+                        break;
+                    case 'region':
+                        setRegion('');
+                        break;
+                    case 'movieName':
+                        setMovieName('');
+                        break;
+                    default:
+                        break;
+                }
+            };
+
+            const options = (
+                <div>
+                    <label>
+                        <input type="checkbox" onChange={() => handleOptionChange('date')} />
+                        날짜 바꾸기
+                    </label>
+                    <label>
+                        <input type="checkbox" onChange={() => handleOptionChange('region')} />
+                        지역 바꾸기
+                    </label>
+                    <label>
+                        <input type="checkbox" onChange={() => handleOptionChange('movieName')} />
+                        영화 바꾸기
+                    </label>
+                </div>
+            );
+
+            sendOutputValue(options);
+
+            //no인 경우 getoutputvalue의 additional query 실행.
+            getOutputValue("");
         }
-    
-        sendOutputValue(outputMessage);
-        return outputMessage;
+    }, [yesNoValue, recommendMessage]);
+
+    const handleYesNoResponse = (response) => {
+        setYesNoValue(response);
     };
 
+    const checker = (value) => {
+        // let outputMessage = "";
+        // const theaters = value.theaterRunningTimes || [];
+        // const count = theaters.length;
+    
+        // if (count > 0) {
+        //     outputMessage += `${region} 지역 ${date}의 ${movieName} 상영시간표입니다:\n\n`;
+        
+        //     theaters.forEach(theater => {
+        //         const times = theater.times.join(", ");
+        //         outputMessage += `극장: ${theater.theaterName}\n`;
+        //         outputMessage += `상영 시간: ${times}\n\n`;
+        //     });
+        // } else {
+        //     outputMessage = "상영 스케줄이 없습니다.";
+        // }
+
+        // const checkMessage = value.checkMessage;
+        const checkMessage = "checkMessage입니다.";
+
+        const messageWithButtons = (
+            <div>
+                <p>{checkMessage}</p>
+                <YesNoButtons
+                    onYes={() => handleYesNoResponse('Yes')}
+                    onNo={() => handleYesNoResponse('No')}
+                />
+            </div>
+        );
+
+        sendOutputValue(messageWithButtons);
+        setRecommendMessage(value.recommendMessage);
+        return messageWithButtons;
+    };
 
     const sendInputValue = (value) => {
         const newInputValues = [...inputValues, value];
@@ -66,7 +141,6 @@ function Chat() {
         sessionStorage.setItem("outputValues", JSON.stringify(newOutputValues));
     };
 
-
     // 매뉴얼 메시지 보내기
     useEffect(() => {
         if (manualMessage) {
@@ -76,10 +150,6 @@ function Chat() {
         }
     }, [manualMessage, outputValues, setManual]);
 
-    // 요청 경우 나누기
-    // app context의 세 값 확인 후 세 값이 다 null 이 아니면 3,
-    // 1개 혹은 2개 부족하면 2,
-    // 네 값이 다 null 혹은 by default 1
     const getOutputValue = async (currentInput) => {
         let endpoint;
         let body;
@@ -151,7 +221,7 @@ function Chat() {
             const data = await response.json();
     
             if (initialRequestWas3) {
-                return renderSchedule(data);
+                return checker(data);
             }
     
             if (data.movieName) setMovieName(data.movieName);
@@ -180,7 +250,7 @@ function Chat() {
                 });
     
                 const finalData = await finalResponse.json();
-                return renderSchedule(finalData);
+                return checker(finalData);
             }
     
             sendOutputValue(data.message);
@@ -192,10 +262,6 @@ function Chat() {
         }
     };
     
-    
-    
-    // ChatInput에서 inputValue를 받고
-    // inputValue를 ChatReaction에 전달 & inputValue로 outputValue를 받아와서 ChatReaction에 전달
     return (
         <div className="chat-container">
             <div className="chat-header"><ChatHeader /></div>
@@ -207,7 +273,7 @@ function Chat() {
                     inputValues={inputValues} 
                     sendInputValue={sendInputValue} 
                     getOutputValue={getOutputValue} 
-                    sendOutputValue={sendOutputValue} 
+                    // sendOutputValue={sendOutputValue} 
                 />
             </div>
         </div>

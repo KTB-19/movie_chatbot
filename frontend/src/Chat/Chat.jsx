@@ -11,6 +11,7 @@ function Chat() {
     const [outputValues, setOutputValues] = useState([]);
     const [yesNoValue, setYesNoValue] = useState('');
     const [recommendMessage, setRecommendMessage] = useState(''); // recommendMessage 상태 추가
+    const [isInputDisabled, setIsInputDisabled] = useState(false); // 사용자가 버튼 입력할 때(yesno, checkbox) input 비활성화 상태 추가
 
     const scrollRef = useRef();
     const { movieName, region, date, time, setMovieName, setRegion, setDate, setTime, manualMessage, setManual } = useContext(AppContext);
@@ -48,6 +49,7 @@ function Chat() {
             // yes면 checker에서 value.recommendMessage를 outputMessage로 두고 sendOutputValue(recommendMessage), return recommendMessage
             console.log('Yes 선택함');
             sendOutputValue(recommendMessage); // 추천 메시지 전송
+            setIsInputDisabled(false); // 입력을 다시 활성화
         } else if (yesNoValue === 'No') {
             // no면 체크박스 세개 만들어서(날짜 바꾸기, 지역 바꾸기, 영화 바꾸기) 중복선택가능하게. 
             const handleOptionChange = (option) => {
@@ -87,11 +89,13 @@ function Chat() {
 
             //no인 경우 getoutputvalue의 additional query 실행.
             getOutputValue("");
+            setIsInputDisabled(false); // 입력을 다시 활성화
         }
     }, [yesNoValue, recommendMessage]);
 
     const handleYesNoResponse = (response) => {
         setYesNoValue(response);
+        setIsInputDisabled(true); // YesNoButtons이 활성화되면 입력 비활성화
     };
 
     const checker = (value) => {
@@ -274,6 +278,7 @@ function Chat() {
                     sendInputValue={sendInputValue} 
                     getOutputValue={getOutputValue} 
                     // sendOutputValue={sendOutputValue} 
+                    disabled={isInputDisabled} // 입력 비활성화 속성 추가
                 />
             </div>
         </div>

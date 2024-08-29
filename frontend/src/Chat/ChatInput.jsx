@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { FaArrowUp } from "react-icons/fa6";
 import './ChatInput.css';
 
-function ChatInput({ inputValues, sendInputValue, getOutputValue, sendOutputValue }) {
+function ChatInput({ inputValues, sendInputValue, getOutputValue, sendOutputValue, disabled }) {
     const [currentInput, setCurrentInput] = useState(''); 
     const textareaRef = useRef();
 
@@ -33,10 +33,12 @@ function ChatInput({ inputValues, sendInputValue, getOutputValue, sendOutputValu
                     value={currentInput}
                     onChange={(e) => setCurrentInput(e.target.value)} 
                     placeholder="메시지를 입력하세요...(한글, 영어, 숫자, 특수문자만 입력 가능)"
+                    disabled={disabled} // disabled 속성 추가
                 />
                 <button 
                     type="submit" 
-                    className={currentInput === '' ? 'disabled' : 'enabled'}
+                    className={currentInput === '' || disabled ? 'disabled' : 'enabled'} 
+                    disabled={disabled} // 버튼도 disabled
                 >
                     <FaArrowUp />
                 </button>

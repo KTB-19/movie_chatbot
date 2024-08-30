@@ -39,7 +39,7 @@ async def get_infos_additional(request: AdditionalInfosRequest) -> Info:
     entities = json.loads(query_reprocess(request.message, "faiss_vector", "jamo_vector", request.parsedQuery))
     logger.info(f"entities : {entities}")
 
-    if entities["region"] is not None:
+    if entities["region"] is not None and not isinstance(entities["region"], list):
         entities = location_type(entities)
 
     response: Info = Info(**json.loads(generate_response(entities)))

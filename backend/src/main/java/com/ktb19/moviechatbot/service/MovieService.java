@@ -40,7 +40,7 @@ public class MovieService {
         List<MovieInfoDetailsQueryDto> dto = getMovieInfoDetails(query, areas);
 
         if (dto.isEmpty()) {
-            return new MovieRunningTimesDto(0, new ArrayList<>());
+            return new MovieRunningTimesDto("입력하신 정보에 대한 상영정보가 존재하지 않습니다.");
         }
 
         Map<String, List<LocalTime>> timesPerTheaterNameMap = groupByTheater(dto);
@@ -55,10 +55,7 @@ public class MovieService {
                 ));
         log.info("recommend : " + recommend.getMessage());
 
-        List<TheaterRunningTimesDto> theaterRunningTimesDtos = mappingToDto(timesPerTheaterNameMap);
-        log.info("theaterRunningTimesDtos : " + theaterRunningTimesDtos);
-
-        return new MovieRunningTimesDto(theaterRunningTimesDtos.size(), theaterRunningTimesDtos);
+        return new MovieRunningTimesDto(recommend.getMessage());
     }
 
     /**

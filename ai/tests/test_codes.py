@@ -2,12 +2,14 @@ import sys
 import os
 import json
 
+
 # #%%
 # os.chdir('backend/src/main/java/com/ktb19/moviechatbot/ai')
 # sys.path.append(os.getcwd())
 #%%
 from app.services.query_ai_process import vectorize_documents, process_documents_and_question, generate_response,query_reprocess, location_type
 from app.services.embeddings import KoBERTEmbeddings
+
 #%%
 # 사용 예시
 documents = [
@@ -46,6 +48,7 @@ documents = [
 "다큐 황은정 : 스마트폰이 뭐길래"
 ]
 #%%
+
 areas = [
     {
         "wideArea": "서울시",
@@ -374,6 +377,7 @@ areas = [
 
 
 #%%
+
 embeddings_model = KoBERTEmbeddings()
 vectorize_documents(documents,embeddings_model,'KoBERT_vector_store','jamodict')
 #%%
@@ -385,7 +389,6 @@ entities = json.loads(result)
 json_response = generate_response(entities)
 parsed_response = json.loads(json_response)
 print(parsed_response)
-
 
 #%%
 def chat_test(question,re_question):
@@ -452,3 +455,4 @@ print(answer)
 print(re_question)
 print(pre_final_answer)
 print(final_answer)
+

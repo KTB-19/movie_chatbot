@@ -111,8 +111,9 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
 
     return json.dumps(response_dict)
 
-def query_reprocess(query,FAISS_name,jamo_name,pre_response_dict):
+def query_reprocess(query,FAISS_name,jamo_name,pre_response):
     # 한국 시간대 설정
+    pre_response_dict = pre_response.dict()
     today,weekday = kor_today()
 
     # LLM 초기화
@@ -236,7 +237,7 @@ def generate_response(entities):
 def location_type(response_dict):
     # response_dict = json.loads(response)
     region_value = response_dict["region"]
-    with open("region_text.txt", "r", encoding="utf-8") as file:
+    with open(".\\services\\region_text.txt", "r", encoding="utf-8") as file:
         region_text = file.read()
     temperature = 0.3
     #print('temperature', temperature)

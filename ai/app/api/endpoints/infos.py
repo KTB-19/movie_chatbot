@@ -21,7 +21,7 @@ async def get_infos(message: str = "") -> Info:
     entities = json.loads(process_documents_and_question(message, "faiss_vector", "jamo_vector"))
     logger.info(f"entities : {entities}")
 
-    if entities[region] is not None:
+    if entities["region"] is not None:
         entities = location_type(entities)
 
     response: Info = Info(**json.loads(generate_response(entities)))

@@ -11,6 +11,9 @@ import openai
 from app.services.embeddings import KoBERTEmbeddings, query_embedding, format_docs, jamodict_search, format_dict, rename_dict, parse_output_string
 from app.services.datetime_format import kor_today
 from app.services.check_entities import check_entities, check_json_entities
+from app.services.embeddings import KoBERTEmbeddings, query_embedding, format_docs, jamodict_search, format_dict, rename_dict
+from app.services.datetime_format import kor_today, format_date_time, format_date, format_time, parse_am_pm
+from app.services.check_entities import check_entities
 from app.services.vector_store import FAISS_vectorize_documents, jamo_vectorize_documents
 
 
@@ -41,7 +44,6 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
     만약 없다면 null로 넣는다.
     오늘 날짜는 {today}이고 요일은 {weekday}다.
     만약 요일만 있다면 이번주로 계산한다.
-    
 
     Question: {question}문장 안에 영화 이름, 장소, 날짜, 시간이 포함되어 있는지 확인해 줘.
     영화는 movie : , 장소는 region: , 날짜는 date: , 시간은 time: , 문장에서 찾은 영화 이름은 Original:에 대입해줘, context와  유사한 이름 상영중인 영화이름은 Similar: 이라고 알려줘.

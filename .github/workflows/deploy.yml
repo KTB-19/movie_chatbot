@@ -50,7 +50,7 @@ jobs:
       - name: Deploy Backend services
         run: |
           aws ssm send-command \
-            --instance-ids ${{ secrets.BACKEND_EC2_HOST }} \
+            --instance-ids i-011b123c83aff0b9d \
             --document-name "AWS-RunShellScript" \
             --parameters '{
               "commands": [
@@ -62,8 +62,7 @@ jobs:
                 "sudo docker run -d --name backend --network ec2-user_export_network -p 8080:8080 -e SPRING_DATASOURCE_URL=jdbc:mysql://172.21.0.3:3306/moviedatabase?serverTimezone=Asia/Seoul -e SPRING_DATASOURCE_USERNAME=root -e SPRING_DATASOURCE_PASSWORD=qlalfqjsgh486 -e AI_SERVICE_URL=http://172.21.0.4:8000/api/v1 ${{ env.DOCKER_HUB_USERNAME }}/backend:latest"
               ]
             }'
-            
-            
+
       # # Crawling 서비스 배포 (SSH를 통한 직접 배포)
       # - name: Deploy Crawling service
       #   env:

@@ -441,7 +441,7 @@ for question_and_answer in answer_key:
     chat_test_answers = chat_test(question,re_question)
     answer, final_answer = chat_test_answers[0], chat_test_answers[1]
 #%%
-question_and_answer = ["울버린 논현에서 5시에 보고 싶어", "장소 누락, {영화 : 포함, 장소: 없음, 시간 포함, 날짜 포함}", "강남에서 보고 싶어.", "데드풀과 울버린"]
+question_and_answer = ["울버린 이번주 토요일 5시에 보고 싶어", "장소 누락, {영화 : 포함, 장소: 없음, 시간 포함, 날짜 포함}", "논현에서 보고 싶어.", "데드풀과 울버린"]
 question, re_question = question_and_answer[0], question_and_answer[2]
 chat_test_answers = chat_test(question, re_question)
 answer, pre_final_answer = chat_test_answers[0], chat_test_answers[1]

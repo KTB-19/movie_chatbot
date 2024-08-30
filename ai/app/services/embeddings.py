@@ -75,3 +75,8 @@ def jamodict_search(query, jamodict):
     sorted_distance_list = sorted(distance_list, key=lambda x: min(x[2]))
     return sorted_distance_list
 
+def parse_output_string(response):
+    # "output: " 부분을 제거하고, 대괄호와 따옴표를 제거한 후 공백을 기준으로 나누어 리스트로 변환
+    cleaned_string = response.replace('output: ', '').strip().strip('[]').replace('"', '')
+    result = cleaned_string.split(", ")
+    return result

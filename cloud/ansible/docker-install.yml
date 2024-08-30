@@ -30,7 +30,6 @@
     - name: Install docker-compose
       shell:
         cmd: curl -L "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-        warn: false
 
     - name: Chmod docker-compose 
       file:
@@ -42,7 +41,7 @@
         src: /usr/local/bin/docker-compose
         dest: /usr/bin/docker-compose
         state: link
-
+    # 시간 바꾸기
     - name: Set timezone to Asia/Seoul
       ansible.builtin.command: timedatectl set-timezone Asia/Seoul
 

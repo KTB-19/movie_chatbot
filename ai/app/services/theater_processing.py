@@ -1,5 +1,4 @@
 import pandas as pd
-from config import XLSX_FILE_PATH
 
 # 영화관 주소 데이터 로드
 def load_theater_data(xlsx_file_path):
@@ -13,7 +12,7 @@ def create_recommendation_message(entities, db, theater_df):
     date = entities['date']
     
     # 백엔드- 영화스케줄 DB 연결
-    matched_theaters = db["timesPerTheaterNameMap"]
+    matched_theaters = db.timesPerTheaterNameMap
 
     # 상영 횟수로 정렬하기
     sorted_theaters = sorted(matched_theaters.items(), key=lambda x: len(x[1]), reverse=True)
@@ -39,6 +38,6 @@ def create_recommendation_message(entities, db, theater_df):
     # 추천 영화관 정보를 텍스트로 변환
     context = ""
     for rec in recommendations:
-        context += f"{rec['name']}에서 '{rec['movieName']}'이 {', '.join(rec['showtimes'])}에 상영됩니다. 주소: {rec['address']}, {rec['transport_info']} "
+        context += f"{rec['name']}에서 '{rec['movieName']}'이 {', '.join(rec['showtimes'])}에 상영됩니다. 주소: {rec['address']}"
 
     return context

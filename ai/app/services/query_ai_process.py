@@ -237,7 +237,7 @@ def generate_response(entities):
 def location_type(response_dict):
     # response_dict = json.loads(response)
     region_value = response_dict["region"]
-    with open(".\\services\\region_text.txt", "r", encoding="utf-8") as file:
+    with open("./services/region_text.txt", "r", encoding="utf-8") as file:
         region_text = file.read()
     temperature = 0.3
     #print('temperature', temperature)

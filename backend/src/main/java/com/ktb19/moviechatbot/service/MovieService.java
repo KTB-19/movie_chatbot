@@ -1,6 +1,7 @@
 package com.ktb19.moviechatbot.service;
 
 import com.ktb19.moviechatbot.dto.*;
+import com.ktb19.moviechatbot.feign.AiServerOpenFeign;
 import com.ktb19.moviechatbot.repository.MovieInfoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Time;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,7 @@ import static java.util.stream.Collectors.*;
 public class MovieService {
 
     private final MovieInfoRepository movieInfoRepository;
+    private final AiServerOpenFeign aiServerOpenFeign;
 
     /**
      * 영화 이름, 지역, 날짜, 시간을 통해 상영 시간을 조회하고, 극장별로 그룹화하여 반환합니다.
@@ -36,13 +39,23 @@ public class MovieService {
 
         List<MovieInfoDetailsQueryDto> dto = getMovieInfoDetails(query, areas);
 
+        if (dto.isEmpty()) {
+            return new MovieRunningTimesDto("입력하신 정보에 대한 상영정보가 존재하지 않습니다.");
+        }
+
         Map<String, List<LocalTime>> timesPerTheaterNameMap = groupByTheater(dto);
         log.info("timesPerTheaterNameMap : " + timesPerTheaterNameMap);
 
-        List<TheaterRunningTimesDto> theaterRunningTimesDtos = mappingToDto(timesPerTheaterNameMap);
-        log.info("theaterRunningTimesDtos : " + theaterRunningTimesDtos);
+        MovieInfoDetailsQueryDto detail = dto.get(0);
+        AiRecommendResponse recommend = aiServerOpenFeign.getRecommend(
+                new AiRecommendRequest(
+                        detail.getMovie().getTitle(),
+                        detail.getMovieInfo().getDate(),
+                        timesPerTheaterNameMap
+                ));
+        log.info("recommend : " + recommend.getMessage());
 
-        return new MovieRunningTimesDto(theaterRunningTimesDtos.size(), theaterRunningTimesDtos);
+        return new MovieRunningTimesDto(recommend.getMessage());
     }
 
     /**

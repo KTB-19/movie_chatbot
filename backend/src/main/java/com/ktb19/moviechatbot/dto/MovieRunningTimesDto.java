@@ -15,12 +15,29 @@ import java.util.List;
 @AllArgsConstructor
 public class MovieRunningTimesDto {
 
-    @Schema(description = "영화관 개수", example = "2")
-    private int count;
+    @Schema(description = "상영 정보 메세지",
+            example = """
+                    현재 위치에서 가장 가까운 영화관들 중에서 추천드릴 수 있는 영화관은 다음과 같습니다:
+                    1. CGV 성남모란
+                       - 영화: 에이리언: 로물루스
+                       - 상영 시간: 12:45, 17:15, 19:30
+                       - 총 3회 상영
+                       - 위치: 모란역 1번 출구에서 도보로 3분 거리
 
-    @Schema(description = "영화관", type = "array",
-            example = "[{ \"theaterName\": \"CGV 동성로\", \"count\": 3, \"times\": [\"17:00\", \"18:30\", \"19:00\"]}," +
-                    "{ \"theaterName\": \"롯데시네마 대구\", \"count\": 2, \"times\": [\"18:00\", \"20:00\"] }]")
-    private List<TheaterRunningTimesDto> theaterRunningTimes;
+                    2. CGV 서현
+                       - 영화: 에이리언: 로물루스
+                       - 상영 시간: 17:00, 20:00
+                       - 총 2회 상영
+                       - 위치: 서현역 2번 출구에서 도보로 5분 거리
+
+                    3. CGV 야탑
+                       - 영화: 에이리언: 로물루스
+                       - 상영 시간: 17:00
+                       - 총 1회 상영
+                       - 위치: 야탑역 3번 출구에서 도보로 2분 거리
+
+                    각 영화관 위치에 대한 설명과 대중교통을 이용한 접근법을 참고해주세요. 좋은 영화 감상하시길 바랍니다!
+            """)
+    private String message;
 
 }

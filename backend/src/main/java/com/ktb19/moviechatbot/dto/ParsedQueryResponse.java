@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Schema(description = "메시지 파싱 응답")
 @Getter
@@ -21,7 +22,7 @@ public class ParsedQueryResponse {
     private String movieName;
 
     @Schema(description = "지역", example = "null")
-    private String region;
+    private List<String> region;
 
     @Schema(description = "상영 날짜", example = "2024-08-14")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")

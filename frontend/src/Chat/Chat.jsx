@@ -73,6 +73,9 @@ function Chat() {
         setYesNoValue(response);
         setIsInputDisabled(true); // Yes/No 응답을 기다리는 동안 입력을 비활성화
 
+        // Yes/No 값을 사용자 입력으로 취급하여 저장
+        sendInputValue(response);
+
         if (response === 'Yes') {
             console.log('Yes selected');
             getOutputValue('Yes').then(() => {
@@ -97,16 +100,24 @@ function Chat() {
     const handleChangeOrNot = async (shouldChange) => {
         setIsInputDisabled(true); // 변경 처리 중 입력 비활성화
 
+        let changedValues = ''
+
         if (shouldChange) {
             if (selectedOptions.includes('date')) {
                 await setDate(prevDate => ''); // 날짜 시간 변경
+                changedValues += 'date '
             }
             if (selectedOptions.includes('region')) {
                 await setRegion(prevRegion => ''); // 지역 변경
+                changedValues += 'region '
             }
             if (selectedOptions.includes('movieName')) {
                 await setMovieName(prevMovieName => ''); // 영화명 변경
+                changedValues += 'moviename '
             }
+
+            let inputText = shouldChange ? changedValues + "정보를 변경했습니다." : "변경하지 않았습니다.";
+            sendInputValue(inputText);
 
             console.log("Context values changed:", {
                 movieName: movieNameRef.current,
@@ -118,6 +129,8 @@ function Chat() {
             setSelectedOptions([]);
             await getOutputValue("info changed");  // 상태 변경 후 새 요청
         } else {
+            let inputText = "변경하지 않았습니다.";
+            sendInputValue(inputText);
             await getOutputValue('Yes');
         }
 

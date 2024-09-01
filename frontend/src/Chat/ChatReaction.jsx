@@ -1,8 +1,8 @@
 import React from "react";
-import './ChatReaction.css';
+import './ChatReaction.css';  // 스타일이 정의된 파일을 가져옵니다.
 import { LiaRobotSolid } from "react-icons/lia";
 import { LuUser } from "react-icons/lu";
-import YesNoButtons from "./YesNoButtons";
+import YesNoButtons from "./YesNoButtons";  // Yes/No 버튼 컴포넌트를 가져옵니다.
 
 function ChatReaction({ inputValues, outputValues, onYes, onNo, renderCheckBoxes, handleCheckBoxChange, handleChangeOrNot }) {
     return (
@@ -33,7 +33,7 @@ function ChatReaction({ inputValues, outputValues, onYes, onNo, renderCheckBoxes
                             )}
                             {/* 체크박스 출력 및 바꾸기/안바꾸기 버튼 */}
                             {renderCheckBoxes && output[2] && (
-                                <div>
+                                <div className="checkbox-container">
                                     <label>
                                         <input type="checkbox" onChange={() => handleCheckBoxChange('date')} />
                                         날짜 바꾸기
@@ -46,9 +46,9 @@ function ChatReaction({ inputValues, outputValues, onYes, onNo, renderCheckBoxes
                                         <input type="checkbox" onChange={() => handleCheckBoxChange('movieName')} />
                                         영화 바꾸기
                                     </label>
-                                    <div>
-                                        <button onClick={() => handleChangeOrNot(true)}>바꾸기</button>
-                                        <button onClick={() => handleChangeOrNot(false)}>안바꾸기</button>
+                                    <div className="checkbox-buttons">
+                                        <button onClick={() => handleChangeOrNot(true)}>변경하기</button>
+                                        <button className="cancel-button" onClick={() => handleChangeOrNot(false)}>유지하기</button>
                                     </div>
                                 </div>
                             )}

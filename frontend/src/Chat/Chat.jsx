@@ -14,6 +14,7 @@ function Chat() {
     const [renderCheckBoxes, setRenderCheckBoxes] = useState(false);
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [responseMessage, setResponseMessage] = useState('');  // 응답 메시지 상태
+    const [runningTimesQueryExecuted, setRunningTimesQueryExecuted] = useState(false); // 3번 쿼리 실행 여부
 
     const scrollRef = useRef();
     const { movieName, region, date, time, setTime, setMovieName, setRegion, setDate, manualMessage, setManual } = useContext(AppContext);
@@ -99,32 +100,34 @@ function Chat() {
 
     const handleChangeOrNot = async (shouldChange) => {
         setIsInputDisabled(true); // 변경 처리 중 입력 비활성화
-
-        let changedValues = ''
-
+    
+        let changedValues = '';
+    
         if (shouldChange) {
-            if (selectedOptions.includes('date')) {
-                await setDate(prevDate => ''); // 날짜 시간 변경
-                changedValues += 'date '
+            if (selectedOptions.length === 0) {
+                // 아무것도 선택하지 않은 경우
+                sendInputValue('변경하지 않았습니다.');
+            } else {
+                if (selectedOptions.includes('date')) {
+                    await setDate(prevDate => ''); // 날짜 시간 변경
+                    dateRef.current = '';
+                    changedValues += 'date ';
+                }
+                if (selectedOptions.includes('region')) {
+                    await setRegion(prevRegion => ''); // 지역 변경
+                    regionRef.current = '';
+                    changedValues += 'region ';
+                }
+                if (selectedOptions.includes('movieName')) {
+                    await setMovieName(prevMovieName => ''); // 영화명 변경
+                    movieNameRef.current = '';
+                    changedValues += 'moviename ';
+                }
+    
+                let inputText = changedValues + "정보를 변경했습니다.";
+                sendInputValue(inputText);
             }
-            if (selectedOptions.includes('region')) {
-                await setRegion(prevRegion => ''); // 지역 변경
-                changedValues += 'region '
-            }
-            if (selectedOptions.includes('movieName')) {
-                await setMovieName(prevMovieName => ''); // 영화명 변경
-                changedValues += 'moviename '
-            }
-
-            let inputText = shouldChange ? changedValues + "정보를 변경했습니다." : "변경하지 않았습니다.";
-            sendInputValue(inputText);
-
-            console.log("Context values changed:", {
-                movieName: movieNameRef.current,
-                region: regionRef.current,
-                date: dateRef.current,
-            });
-
+    
             setRenderCheckBoxes(false);
             setSelectedOptions([]);
             await getOutputValue("info changed");  // 상태 변경 후 새 요청
@@ -133,7 +136,7 @@ function Chat() {
             sendInputValue(inputText);
             await getOutputValue('Yes');
         }
-
+    
         setIsInputDisabled(false); // 체크박스 동작 후 입력 활성화
     };
 
@@ -154,7 +157,7 @@ function Chat() {
         const shouldShowYesNoButtons = (movieNameRef.current && regionRef.current && dateRef.current) ? true : false;
 
         console.log("in checker", shouldShowYesNoButtons, movieNameRef.current, regionRef.current, dateRef.current);
-        renderOutput(message, shouldShowYesNoButtons, false);
+        renderOutput(message, shouldShowYesNoButtons && !runningTimesQueryExecuted, false); // runningTimesQueryExecuted 상태 추가
         if (shouldShowYesNoButtons) {
             setIsInputDisabled(true); // Yes/No 버튼이 표시되면 입력을 비활성화
         }
@@ -167,7 +170,7 @@ function Chat() {
     };
 
     const sendOutputValue = (message, withYesNoButtons = false, withCheckBoxes = false) => {
-        renderOutput(message, withYesNoButtons, withCheckBoxes);
+        renderOutput(message, withYesNoButtons && !runningTimesQueryExecuted, withCheckBoxes); // runningTimesQueryExecuted 상태 추가
     };
 
     // 매뉴얼 메시지 보내기
@@ -206,8 +209,11 @@ function Chat() {
         };
 
         try {
+            let isRunningTimesQuery = false;
+
             if (movieNameRef.current && regionRef.current && dateRef.current) {
                 endpoint = `/api/v1/movie/running-times`;
+                isRunningTimesQuery = true; // 3번 쿼리 상태 설정
                 body = {
                     movieName: movieNameRef.current || "",
                     region: regionRef.current || "",
@@ -242,6 +248,10 @@ function Chat() {
             });
 
             const data = await response.json();
+
+            if (isRunningTimesQuery) {
+                setRunningTimesQueryExecuted(true); // 3번 쿼리 실행 후 상태 설정
+            }
 
             if (data.movieName) setMovieName(() => data.movieName);
             if (data.region) setRegion(() => data.region);

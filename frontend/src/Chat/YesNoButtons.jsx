@@ -1,10 +1,11 @@
 import React from 'react';
+import "./YesNoButtons.css";
 
 function YesNoButtons({ onYes, onNo }) {
     return (
-        <div>
-            <button onClick={onYes}>Yes</button>
-            <button onClick={onNo}>No</button>
+        <div className="yesno-buttons">
+            <button className="yes-button" onClick={onYes}>Yes</button>
+            <button className="no-button" onClick={onNo}>No</button>
         </div>
     );
 }

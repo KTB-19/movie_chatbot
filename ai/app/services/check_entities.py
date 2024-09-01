@@ -22,8 +22,8 @@ def check_json_entities(response):
 def check_entities(entities):
 
     # 날짜, 시간 형식 변경 적용
-    if entities['date']:
-        entities['date'] = format_date(entities['date'])
+    # if entities['date']:
+    #     entities['date'] = format_date(entities['date'])
 
     if entities['time']:
         entities['time'] = format_time(entities['time'])

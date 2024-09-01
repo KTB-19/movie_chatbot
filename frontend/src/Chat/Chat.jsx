@@ -253,10 +253,22 @@ function Chat() {
                 setRunningTimesQueryExecuted(true); // 3번 쿼리 실행 후 상태 설정
             }
 
-            if (data.movieName) setMovieName(() => data.movieName);
-            if (data.region) setRegion(() => data.region);
-            if (data.date) setDate(() => data.date);
-            if (data.time) setTime(() => data.time);
+            // ref 값도 업데이트
+            if (data.movieName) {
+                setMovieName(data.movieName);
+                movieNameRef.current = data.movieName;  
+            }
+            if (data.region) {
+                setRegion(data.region);
+                regionRef.current = data.region; 
+            }
+            if (data.date) {
+                setDate(data.date);
+                dateRef.current = data.date;
+            }
+            if (data.time) {
+                setTime(data.time);
+            }
 
             console.log("응답값: ", data);
 

@@ -96,7 +96,6 @@
     color: #89a2e1;
 }
 
-/* 체크박스 및 바꾸기/안바꾸기 버튼 스타일 */
 .checkbox-container {
     display: flex;
     flex-direction: column;

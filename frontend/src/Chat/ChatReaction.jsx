@@ -31,7 +31,7 @@ function ChatReaction({ inputValues, outputValues, onYes, onNo, renderCheckBoxes
                                     onNo={onNo}
                                 />
                             )}
-                            {/* 체크박스 출력 및 바꾸기/안바꾸기 버튼 */}
+                            {/* 체크박스 출력 및 변경/유지 버튼 */}
                             {renderCheckBoxes && output[2] && (
                                 <div className="checkbox-container">
                                     <label>

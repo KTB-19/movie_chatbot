@@ -10,7 +10,7 @@ function ChatInput({ inputValues, sendInputValue, getOutputValue, sendOutputValu
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (currentInput !== "") {
-            const outputValue = await getOutputValue(currentInput);
+            await getOutputValue(currentInput);
             sendInputValue(currentInput);
             setCurrentInput(''); 
         }
@@ -24,6 +24,14 @@ function ChatInput({ inputValues, sendInputValue, getOutputValue, sendOutputValu
         }
     }, [currentInput]);
 
+    // 엔터 키를 누르면 제출
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();  // 줄바꿈 방지
+            handleSubmit(e);  // 폼 제출
+        }
+    };
+
     return (
         <div className="chat-input-container">
             <form onSubmit={handleSubmit}>
@@ -31,6 +39,7 @@ function ChatInput({ inputValues, sendInputValue, getOutputValue, sendOutputValu
                     ref={textareaRef}
                     value={currentInput}
                     onChange={(e) => setCurrentInput(e.target.value)} 
+                    onKeyDown={handleKeyDown}  // 엔터 키 이벤트 처리
                     placeholder="메시지를 입력하세요...(한글, 영어, 숫자, 특수문자만 입력 가능)"
                     disabled={disabled} // disabled 속성 추가
                 />

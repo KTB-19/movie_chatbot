@@ -1,12 +1,10 @@
 package com.ktb19.moviechatbot.service;
 
-import com.ktb19.moviechatbot.dto.MovieInfoDetailsQueryDto;
-import com.ktb19.moviechatbot.dto.MovieRunningTimesDto;
-import com.ktb19.moviechatbot.dto.MovieRunningTimesRequest;
-import com.ktb19.moviechatbot.dto.QueryDto;
+import com.ktb19.moviechatbot.dto.*;
 import com.ktb19.moviechatbot.entity.MovieInfo;
 import com.ktb19.moviechatbot.entity.Movie;
 import com.ktb19.moviechatbot.entity.Theater;
+import com.ktb19.moviechatbot.feign.AiServerOpenFeign;
 import com.ktb19.moviechatbot.repository.MovieInfoRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,10 +17,11 @@ import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,6 +31,8 @@ class MovieServiceTest {
     MovieService movieService;
     @Mock
     MovieInfoRepository movieInfoRepository;
+    @Mock
+    AiServerOpenFeign aiServerOpenFeign;
 
     @Test
     @DisplayName("time이 null이면, QueryDto의 movieName, region, date에 해당하는 times를 db에서 조회하여 반환한다")
@@ -56,16 +57,26 @@ class MovieServiceTest {
         MovieInfo movieInfo1 = new MovieInfo(1, movie, theater, date, time1);
         MovieInfo movieInfo2 = new MovieInfo(2, movie, theater, date, time2);
 
+        Map<String, List<LocalTime>> timesPerTheaterNameMap = Map.of(
+                theater.getName(), List.of(time1, time2)
+        );
+
+        String responseMessage = "message";
+
         given(movieInfoRepository.findAllByQuery(eq(movieName), eq(wideArea), eq(basicArea), eq(date)))
                 .willReturn(List.of(new MovieInfoDetailsQueryDto(movieInfo1, movie, theater), new MovieInfoDetailsQueryDto(movieInfo2, movie, theater)));
+
+        given(aiServerOpenFeign.getRecommend(argThat(request ->
+                request.getMovieName().equals(movieName) &&
+                request.getDate().equals(date) &&
+                request.getTimesPerTheaterNameMap().equals(timesPerTheaterNameMap)
+        ))).willReturn(new AiRecommendResponse(responseMessage));
 
         //When
         MovieRunningTimesDto result = movieService.getRunningTimes(query);
 
         //Then
-        assertThat(result.getCount()).isEqualTo(1);
-        assertThat(result.getTheaterRunningTimes().getFirst().getCount()).isEqualTo(2);
-        assertThat(result.getTheaterRunningTimes().getFirst().getTimes()).contains(time1, time2);
+        assertThat(result.getMessage()).isEqualTo(responseMessage);
     }
 
     @Test
@@ -91,16 +102,26 @@ class MovieServiceTest {
         MovieInfo movieInfo1 = new MovieInfo(1, movie, theater, date, time1);
         MovieInfo movieInfo2 = new MovieInfo(2, movie, theater, date, time2);
 
+        Map<String, List<LocalTime>> timesPerTheaterNameMap = Map.of(
+                theater.getName(), List.of(time2)
+        );
+
+        String responseMessage = "message";
+
         given(movieInfoRepository.findAllByQueryAfterTime(eq(movieName), eq(wideArea), eq(basicArea), eq(date), eq(LocalTime.of(19, 0))))
                 .willReturn(List.of(new MovieInfoDetailsQueryDto(movieInfo2, movie, theater)));
+
+        given(aiServerOpenFeign.getRecommend(argThat(request ->
+                request.getMovieName().equals(movieName) &&
+                        request.getDate().equals(date) &&
+                        request.getTimesPerTheaterNameMap().equals(timesPerTheaterNameMap)
+        ))).willReturn(new AiRecommendResponse(responseMessage));
 
         //When
         MovieRunningTimesDto result = movieService.getRunningTimes(query);
 
         //Then
-        assertThat(result.getCount()).isEqualTo(1);
-        assertThat(result.getTheaterRunningTimes().getFirst().getCount()).isEqualTo(1);
-        assertThat(result.getTheaterRunningTimes().getFirst().getTimes()).contains(time2);
+        assertThat(result.getMessage()).isEqualTo(responseMessage);
     }
 
     @Test
@@ -135,6 +156,12 @@ class MovieServiceTest {
         MovieInfo movieInfo1 = new MovieInfo(1, movie, theater, query.getDate(), time1);
         MovieInfo movieInfo2 = new MovieInfo(1, movie, theater, query.getDate(), time2);
 
+        Map<String, List<LocalTime>> timesPerTheaterNameMap = Map.of(
+                theater.getName(), List.of(time1, time2)
+        );
+
+        String responseMessage = "message";
+
         given(movieInfoRepository.findAllByQuery(
                 eq(query.getMovieName()),
                 eq("경상남도"),
@@ -145,13 +172,17 @@ class MovieServiceTest {
                 new MovieInfoDetailsQueryDto(movieInfo2, movie, theater)
         ));
 
+        given(aiServerOpenFeign.getRecommend(argThat(request ->
+                request.getMovieName().equals(query.getMovieName()) &&
+                        request.getDate().equals(query.getDate()) &&
+                        request.getTimesPerTheaterNameMap().equals(timesPerTheaterNameMap)
+        ))).willReturn(new AiRecommendResponse(responseMessage));
+
         //When
         MovieRunningTimesDto result = movieService.getRunningTimes(query);
 
         //Then
-        assertThat(result.getCount()).isEqualTo(1);
-        assertThat(result.getTheaterRunningTimes().getFirst().getCount()).isEqualTo(2);
-        assertThat(result.getTheaterRunningTimes().getFirst().getTimes()).contains(time1, time2);
+        assertThat(result.getMessage()).isEqualTo(responseMessage);
 
     }
 
@@ -172,6 +203,12 @@ class MovieServiceTest {
         MovieInfo movieInfo1 = new MovieInfo(1, movie, theater, query.getDate(), time1);
         MovieInfo movieInfo2 = new MovieInfo(1, movie, theater, query.getDate(), time2);
 
+        Map<String, List<LocalTime>> timesPerTheaterNameMap = Map.of(
+                theater.getName(), List.of(time1, time2)
+        );
+
+        String responseMessage = "message";
+
         given(movieInfoRepository.findAllByQuery(
                 eq(query.getMovieName()),
                 eq("경상남도"),
@@ -182,13 +219,16 @@ class MovieServiceTest {
                 new MovieInfoDetailsQueryDto(movieInfo2, movie, theater)
         ));
 
+        given(aiServerOpenFeign.getRecommend(argThat(request ->
+                request.getMovieName().equals(query.getMovieName()) &&
+                        request.getDate().equals(query.getDate()) &&
+                        request.getTimesPerTheaterNameMap().equals(timesPerTheaterNameMap)
+        ))).willReturn(new AiRecommendResponse(responseMessage));
+
         //When
         MovieRunningTimesDto result = movieService.getRunningTimes(query);
 
         //Then
-        assertThat(result.getCount()).isEqualTo(1);
-        assertThat(result.getTheaterRunningTimes().getFirst().getCount()).isEqualTo(2);
-        assertThat(result.getTheaterRunningTimes().getFirst().getTimes()).contains(time1, time2);
-
+        assertThat(result.getMessage()).isEqualTo(responseMessage);
     }
 }

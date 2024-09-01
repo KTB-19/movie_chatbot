@@ -1,10 +1,11 @@
-from query_ai_process import api_call
-from theater_processing import load_theater_data, create_recommendation_message
+from app.services.config import XLSX_FILE_PATH
+from app.services.query_ai_process import api_call
+from app.services.theater_processing import load_theater_data, create_recommendation_message
 
 # 영화관 추천 함수 호출
 def recommend_theaters(entities, db):
     # 영화관 주소 데이터 로드
-    theater_df = load_theater_data()
+    theater_df = load_theater_data(XLSX_FILE_PATH)
 
     system_message = """
     당신은 영화관 추천을 도와주는 고객지원 챗봇 '무비빔밥'입니다.

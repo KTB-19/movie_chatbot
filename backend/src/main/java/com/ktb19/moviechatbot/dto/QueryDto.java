@@ -27,11 +27,18 @@ public class QueryDto {
     private String message;
 
     public static QueryDto of(AiInfosResponse aiInfosResponse) {
+
+        String dateString = aiInfosResponse.getDate();
+        LocalDate date = dateString == null ? null : LocalDate.parse(dateString);
+
+        String timeString = aiInfosResponse.getTime();
+        LocalTime time = timeString == null ? null : LocalTime.parse(timeString);
+
         return new QueryDto(
                 aiInfosResponse.getMovieName(),
                 aiInfosResponse.getRegion(),
-                LocalDate.parse(aiInfosResponse.getDate()),
-                LocalTime.parse(aiInfosResponse.getTime()),
+                date,
+                time,
                 aiInfosResponse.getResponse()
         );
     }

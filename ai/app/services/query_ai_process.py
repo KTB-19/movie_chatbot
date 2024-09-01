@@ -44,6 +44,7 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
     만약 없다면 null로 넣는다.
     오늘 날짜는 {today}이고 요일은 {weekday}다.
     만약 요일만 있다면 이번주로 계산한다.
+    날짜의 포멧은 MM-DD으로 반환한다.
 
     Question: {question}문장 안에 영화 이름, 장소, 날짜, 시간이 포함되어 있는지 확인해 줘.
     영화는 movie : , 장소는 region: , 날짜는 date: , 시간은 time: , 문장에서 찾은 영화 이름은 Original:에 대입해줘, context와  유사한 이름 상영중인 영화이름은 Similar: 이라고 알려줘.
@@ -130,6 +131,7 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
     만약 없다면 null로 넣는다.
     오늘 날짜는 {today}이고 요일은 {weekday}다.
     만약 요일만 있다면 이번주로 계산한다.
+    날짜의 포멧은 MM-DD으로 반환한다.
 
     Question: pre_response_dict에서 그대로 가져오고, null인 것은 {question}문장 안에 영화 이름, 장소, 날짜, 시간이 포함되어 있는지 확인해 줘.
     영화는 movie : , 장소는 region: , 날짜는 date: , 시간은 time: , 문장에서 찾은 영화 이름은 Original:에 대입해줘, context와  유사한 이름 상영중인 영화이름은 Similar: 이라고 알려줘.

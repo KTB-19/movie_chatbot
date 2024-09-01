@@ -17,6 +17,6 @@ public class AdditionalQueryRequest {
 
     @Schema(description = "추가 질문", example = "대구 동성로에서 보려고")
     @Size(min = 1, max = 200)
-    @Pattern(regexp = "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 !#$%&'*+/=?`{|}~^.-]*$", message = "한글, 영어, 숫자, 특수문자만 입력할 수 있습니다.")
+    @Pattern(regexp = "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 !#$%&'*+/=?`{(|)}~^.-]*$", message = "한글, 영어, 숫자, 특수문자만 입력할 수 있습니다.")
     private String message;
 }

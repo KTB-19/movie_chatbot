@@ -1,16 +1,13 @@
 package com.ktb19.moviechatbot.controller;
 
 import com.ktb19.moviechatbot.dto.*;
-import com.ktb19.moviechatbot.entity.Movie;
 import com.ktb19.moviechatbot.service.MovieService;
 import com.ktb19.moviechatbot.service.ParseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
@@ -52,7 +49,7 @@ public class MovieController {
             @RequestParam
             @Size(min = 1, max = 200)
             @Pattern(
-                    regexp = "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 !#$%&'*+/=?`{|}~^.-:]*$",
+                    regexp = "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 !#$%&'*+/=?`{(|)}~^.-:]*$",
                     message = "한글, 영어, 숫자, 특수문자만 입력할 수 있습니다."
             )
             String message) {

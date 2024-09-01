@@ -23,7 +23,7 @@ public class MovieRunningTimesRequest {
 
     @Schema(description = "영화 이름", example = "에이리언 : 로물루스")
     @NotBlank
-    @Pattern(regexp = "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 !#$%&'*+/=?`{|}~^.-:]*$", message = "한글, 영어, 숫자, 특수문자만 입력할 수 있습니다.")
+    @Pattern(regexp = "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 !#$%&'*+/=?`{(|)}~^.-:]*$", message = "한글, 영어, 숫자, 특수문자만 입력할 수 있습니다.")
     @Size(min = 1, max = 100)
     private String movieName;
 

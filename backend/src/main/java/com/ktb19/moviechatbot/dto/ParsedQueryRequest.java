@@ -2,8 +2,6 @@ package com.ktb19.moviechatbot.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -21,7 +19,7 @@ import java.time.LocalTime;
 public class ParsedQueryRequest {
 
     @Schema(description = "영화 이름", example = "에이리언 : 로물루스")
-    @Pattern(regexp = "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 !#$%&'*+/=?`{|}~^.-:]*$", message = "한글, 영어, 숫자, 특수문자만 입력할 수 있습니다.")
+    @Pattern(regexp = "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 !#$%&'*+/=?`{(|)}~^.-:]*$", message = "한글, 영어, 숫자, 특수문자만 입력할 수 있습니다.")
     @Size(max = 100)
     private String movieName;
 

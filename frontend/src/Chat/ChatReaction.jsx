@@ -2,25 +2,56 @@ import React from "react";
 import './ChatReaction.css';
 import { LiaRobotSolid } from "react-icons/lia";
 import { LuUser } from "react-icons/lu";
+import YesNoButtons from "./YesNoButtons";
 
-function ChatReaction({ inputValues, outputValues }) {
+function ChatReaction({ inputValues, outputValues, onYes, onNo, renderCheckBoxes, handleCheckBoxChange, handleChangeOrNot }) {
     return (
         <div className="chat-reaction-container">
             {outputValues.map((output, index) => (
                 <div key={index} className="chat-message-pair">
-                    {/* inputValues와 outputValues의 인덱스가 맞지 않는 경우 처리 */}
+                    {/* input 출력 */}
                     {index > 0 && inputValues[index - 1] && (
                         <div className="chat-question">
                             <div className="chat-question-box">{inputValues[index - 1]}</div>
                             <LuUser className="chat-icon-q" />
                         </div>
                     )}
+                    {/* output 출력 */}
                     <div className="chat-answer">
                         <LiaRobotSolid className="chat-icon-a" />
                         <div className="chat-answer-box">
-                            {typeof output === 'object' && output !== null
-                                ? <pre>{JSON.stringify(output, null, 2)}</pre>
-                                : output || ''}
+                            {/* 메시지 출력 */}
+                            {output[0] && (
+                                <div>{output[0]}</div>
+                            )}
+                            {/* Yes/No 버튼 출력 */}
+                            {output[1] && !renderCheckBoxes && (
+                                <YesNoButtons
+                                    onYes={onYes}
+                                    onNo={onNo}
+                                />
+                            )}
+                            {/* 체크박스 출력 및 바꾸기/안바꾸기 버튼 */}
+                            {renderCheckBoxes && output[2] && (
+                                <div>
+                                    <label>
+                                        <input type="checkbox" onChange={() => handleCheckBoxChange('date')} />
+                                        날짜 바꾸기
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" onChange={() => handleCheckBoxChange('region')} />
+                                        지역 바꾸기
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" onChange={() => handleCheckBoxChange('movieName')} />
+                                        영화 바꾸기
+                                    </label>
+                                    <div>
+                                        <button onClick={() => handleChangeOrNot(true)}>바꾸기</button>
+                                        <button onClick={() => handleChangeOrNot(false)}>안바꾸기</button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

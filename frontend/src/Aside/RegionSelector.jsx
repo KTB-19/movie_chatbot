@@ -334,6 +334,23 @@ const RegionSelector = () => {
     const [basicArea, setBasicArea] = useState("");
     const [basicAreas, setBasicAreas] = useState([]);
 
+    // region 값이 변경될 때 wideArea와 basicArea 값을 설정
+    useEffect(() => {
+        if (region && region.trim()) {
+            const [newWideArea, newBasicArea] = region.split(" ");
+            setWideArea(newWideArea || "");
+            setBasicArea(newBasicArea || "");
+
+            const area = areas.find(area => area.wideArea === newWideArea);
+            setBasicAreas(area ? area.basicArea : []);
+        } else {
+            // region이 공백이거나 null인 경우 기본값으로 설정
+            setWideArea("");
+            setBasicArea("");
+            setBasicAreas([]);
+        }
+    }, [region]);
+
     // wideArea 변경 시 해당하는 basicArea 목록 업데이트
     const handleWideAreaChange = (e) => {
         const selectedWideArea = e.target.value;

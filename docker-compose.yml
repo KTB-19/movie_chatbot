@@ -1,64 +1,60 @@
+version: '3.8'
 services:
-  db:
-    image: prunsoli/ktb-19-db:1.2
-    container_name: movie-db-test
-    restart: always
-    ports:
-      - "3306:3306"
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-    environment:
-      - LC_ALL=C.UTF-8  # LC_ALL 환경 변수 추가
-    networks:
-      - app-network
-
-  web:
-    image: eddykim3396/ai:latest
-    container_name: ktb-19-ai
-    restart: always
-    ports:
-      - "8000:8000"
-    environment:
-      - PROJECT_NAME=ParseAI
-      - DATABASE_URL=mysql+aiomysql://root:qlalfqjsgh486@db:3306/moviedatabase
-    depends_on:
-      - db
-    networks:
-      - app-network
-    working_dir: /app
-
-  # frontend:
-  #   image: ktb19_frontend:latest
-  #   container_name: ktb19-frontend
-  #   restart: always
-  #   ports:
-  #     - "3000:3000"
-  #   networks:
-  #     - app-network
-
-  # crawling:
-  #   image: ktb19-crawling:latest
-  #   container_name: ktb19-crawling
-  #   restart: always
-  #   networks:
-  #     - app-network
-
-  backend:
-    image: yohanii/ktb_backend:latest
-    container_name: ktb19-backend
-    depends_on:
-      - db
-    ports:
-      - '8080:8080'
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/moviedatabase?serverTimezone=Asia/Seoul
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=qlalfqjsgh486
-      - AI_SERVICE_URL=http://ktb-19-ai:8000/api/v1
-    networks:
-      - app-network
-
+ db:
+  image: prunsoli/ktb-19-db:1.2
+  container_name: movie-db-test
+  restart: always
+  ports:
+   - "3306:3306"
+  command:
+   - --character-set-server=utf8mb4
+   - --collation-server=utf8mb4_unicode_ci
+  environment:
+   - LC_ALL=C.UTF-8 # LC_ALL 환경 변수 추가
+  networks:
+   - app-network
+ web:
+  image: eddykim3396/ai:arm64
+  container_name: ktb-19-ai
+  restart: always
+  ports:
+   - "8000:8000"
+  environment:
+   - PROJECT_NAME=ParseAI
+   - DATABASE_URL=mysql+aiomysql://root:qlalfqjsgh486@db:3306/moviedatabase
+  depends_on:
+   - db
+  networks:
+   - app-network
+  working_dir: /app
+ # frontend:
+ #  image: ktb19_frontend:latest
+ #  container_name: ktb19-frontend
+ #  restart: always
+ #  ports:
+ #   - "3000:3000"
+ #  networks:
+ #   - app-network
+ # crawling:
+ #  image: ktb19-crawling:latest
+ #  container_name: ktb19-crawling
+ #  restart: always
+ #  networks:
+ #   - app-network
+ backend:
+  image: yohanii/ktb_backend:latest
+  container_name: ktb19-backend
+  depends_on:
+   - db
+  ports:
+   - '8080:8080'
+  environment:
+   - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/moviedatabase?serverTimezone=Asia/Seoul
+   - SPRING_DATASOURCE_USERNAME=root
+   - SPRING_DATASOURCE_PASSWORD=qlalfqjsgh486
+   - AI_SERVICE_URL=http://ktb-19-ai:8000/api/v1
+  networks:
+   - app-network
 networks:
-  app-network:
-    driver: bridge
+ app-network:
+  driver: bridge

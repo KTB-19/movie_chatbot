@@ -38,7 +38,7 @@ function ChatInput({ inputValues, sendInputValue, getOutputValue, sendOutputValu
                 <button 
                     type="submit" 
                     className={currentInput === '' || disabled ? 'disabled' : 'enabled'} 
-                    disabled={disabled} // 버튼도 disabled
+                    disabled={currentInput === '' || disabled} // 버튼도 disabled
                 >
                     <FaArrowUp />
                 </button>

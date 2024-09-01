@@ -22,8 +22,10 @@ const CustomDatePicker = () => {
     useEffect(() => {
         if (date) {
             setSelectedDate(moment(date, "YYYY-MM-DD").toDate());
+            sessionStorage.setItem("date", date); // 세션 스토리지에 저장
         } else {
             setSelectedDate(null);
+            sessionStorage.removeItem("date"); // 값이 없을 때는 세션 스토리지에서 제거
         }
     }, [date]);
 

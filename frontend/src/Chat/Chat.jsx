@@ -10,6 +10,7 @@ function Chat() {
     const [outputValues, setOutputValues] = useState([]);
     const [yesNoValue, setYesNoValue] = useState('');
     const [isInputDisabled, setIsInputDisabled] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false); // 요청 중인지 상태
     const [renderCheckBoxes, setRenderCheckBoxes] = useState(false);
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [responseMessage, setResponseMessage] = useState('');  // 응답 메시지 상태
@@ -36,7 +37,7 @@ function Chat() {
         setOutputValues(savedOutputValues);
     }, []);
 
-    // 상태가 업데이트된 후 checker 실행
+    // 상태가 업데이트된 후 checker 실행 및 입력 활성화
     useEffect(() => {
         if (responseMessage) {
             console.log("Running checker with the response message...");
@@ -47,8 +48,14 @@ function Chat() {
                 date: dateRef.current,
             });
             setResponseMessage('');  // 메시지 초기화
+            setIsSubmitting(false);  // 요청이 끝나면 버튼을 다시 활성화
+
+            // 응답 처리 후 입력을 활성화하도록 로직 추가
+            if (!renderCheckBoxes) {
+                setIsInputDisabled(false);
+            }
         }
-    }, [responseMessage]);
+    }, [responseMessage, renderCheckBoxes]);
 
     // 새로운 input or output 추가되면 scroll to bottom
     useEffect(() => {
@@ -64,17 +71,18 @@ function Chat() {
     const handleYesNoResponse = (response) => {
         console.log('YesNo button clicked:', response);
         setYesNoValue(response);
-        setIsInputDisabled(true);
+        setIsInputDisabled(true); // Yes/No 응답을 기다리는 동안 입력을 비활성화
 
         if (response === 'Yes') {
             console.log('Yes selected');
-            getOutputValue('Yes');
-            setIsInputDisabled(false);
+            getOutputValue('Yes').then(() => {
+                setIsInputDisabled(false); // 응답 후 입력 활성화
+            });
         } else if (response === 'No') {
             console.log('No selected');
             setRenderCheckBoxes(true);
-            setIsInputDisabled(false);
             renderOutput('무엇을 변경하시겠습니까?', false, true);
+            setIsInputDisabled(false); // 응답 후 입력 활성화
         }
     };
     
@@ -87,6 +95,8 @@ function Chat() {
     };
 
     const handleChangeOrNot = async (shouldChange) => {
+        setIsInputDisabled(true); // 변경 처리 중 입력 비활성화
+
         if (shouldChange) {
             if (selectedOptions.includes('date')) {
                 await setDate(prevDate => ''); // 날짜 시간 변경
@@ -106,11 +116,12 @@ function Chat() {
 
             setRenderCheckBoxes(false);
             setSelectedOptions([]);
-            getOutputValue("info changed");  // 상태 변경 후 새 요청
-
+            await getOutputValue("info changed");  // 상태 변경 후 새 요청
         } else {
-            getOutputValue('Yes');
+            await getOutputValue('Yes');
         }
+
+        setIsInputDisabled(false); // 체크박스 동작 후 입력 활성화
     };
 
     const renderOutput = (message, withYesNoButtons, withCheckBoxes) => {
@@ -131,6 +142,9 @@ function Chat() {
 
         console.log("in checker", shouldShowYesNoButtons, movieNameRef.current, regionRef.current, dateRef.current);
         renderOutput(message, shouldShowYesNoButtons, false);
+        if (shouldShowYesNoButtons) {
+            setIsInputDisabled(true); // Yes/No 버튼이 표시되면 입력을 비활성화
+        }
     };
 
     const sendInputValue = (value) => {
@@ -152,6 +166,9 @@ function Chat() {
     }, [manualMessage]);
 
     const getOutputValue = async (currentInput) => {
+        setIsSubmitting(true);  // 요청 시작 시 버튼 비활성화
+        setIsInputDisabled(true);  // 요청 시작 시 입력 비활성화
+
         let endpoint;
         let body;
 
@@ -221,9 +238,12 @@ function Chat() {
             console.log("응답값: ", data);
 
             setResponseMessage(data.message);  // 응답 메시지를 상태에 저장
+            setIsInputDisabled(false);  // 요청이 성공적으로 완료되면 입력을 활성화
 
         } catch (error) {
             console.error("Error fetching movie data:", error);
+            setIsSubmitting(false);  // 오류 발생 시 버튼을 다시 활성화
+            setIsInputDisabled(false);  // 오류 발생 시 입력을 다시 활성화
             return { error: "Error fetching movie data." };
         }
     };
@@ -247,7 +267,7 @@ function Chat() {
                     inputValues={inputValues}
                     sendInputValue={sendInputValue}
                     getOutputValue={getOutputValue}
-                    disabled={isInputDisabled} // 입력 필드 비활성화 설정
+                    disabled={isInputDisabled || isSubmitting} // 입력 필드와 버튼 비활성화 설정
                 />
             </div>
         </div>

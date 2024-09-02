@@ -15,6 +15,8 @@ function Chat() {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [responseMessage, setResponseMessage] = useState('');  // 응답 메시지 상태
     const [runningTimesQueryExecuted, setRunningTimesQueryExecuted] = useState(false); // 3번 쿼리 실행 여부
+    const [regionOptions, setRegionOptions] = useState([]); // 지역 선택 옵션
+    const [showRestartButton, setShowRestartButton] = useState(false); // 재시작 버튼 표시 여부
 
     const scrollRef = useRef();
     const { movieName, region, date, time, setTime, setMovieName, setRegion, setDate, manualMessage, setManual } = useContext(AppContext);
@@ -23,43 +25,43 @@ function Chat() {
     const regionRef = useRef(region);
     const dateRef = useRef(date);
 
-    // 상태가 변경될 때마다 ref에 최신 상태를 저장
     useEffect(() => {
+        // 상태가 변경될 때마다 ref에 최신 상태를 저장
         movieNameRef.current = movieName;
         regionRef.current = region;
         dateRef.current = date;
     }, [movieName, region, date]);
 
-    // input과 output 세션 스토리지에서 불러오기
     useEffect(() => {
+        // input과 output 세션 스토리지에서 불러오기
         const savedInputValues = JSON.parse(sessionStorage.getItem("inputValues") || "[]");
         const savedOutputValues = JSON.parse(sessionStorage.getItem("outputValues") || "[]");
         setInputValues(savedInputValues);
         setOutputValues(savedOutputValues);
     }, []);
 
-    // 상태가 업데이트된 후 checker 실행 및 입력 활성화
     useEffect(() => {
+        // 상태가 업데이트된 후 checker 실행 및 입력 활성화
         if (responseMessage) {
-            console.log("Running checker with the response message...");
+            console.log("Running checker...");
             checker({
-                message: responseMessage,  // 응답 메시지 사용
+                message: responseMessage,
                 movieName: movieNameRef.current,
                 region: regionRef.current,
                 date: dateRef.current,
             });
             setResponseMessage('');  // 메시지 초기화
-            setIsSubmitting(false);  // 요청이 끝나면 버튼을 다시 활성화
+            setIsSubmitting(false);  // 요청이 끝나면 입력 다시 활성화
 
-            // 응답 처리 후 입력을 활성화하도록 로직 추가
+            // 응답 처리 후 입력을 활성화
             if (!renderCheckBoxes) {
                 setIsInputDisabled(false);
             }
         }
     }, [responseMessage, renderCheckBoxes]);
 
-    // 새로운 input or output 추가되면 scroll to bottom
     useEffect(() => {
+        // 새로운 input or output 추가되면 scroll to bottom
         scrollToBottom();
     }, [inputValues, outputValues]);
 
@@ -85,11 +87,12 @@ function Chat() {
         } else if (response === 'No') {
             console.log('No selected');
             setRenderCheckBoxes(true);
-            renderOutput('무엇을 변경하시겠습니까?', false, true);
+            sendOutputValue('무엇을 변경하시겠습니까?', false, true);
             setIsInputDisabled(false); // 응답 후 입력 활성화
         }
     };
     
+    // 확인필요
     const handleCheckBoxChange = (option) => {
         setSelectedOptions(prevState =>
             prevState.includes(option)
@@ -109,17 +112,17 @@ function Chat() {
                 sendInputValue('변경하지 않았습니다.');
             } else {
                 if (selectedOptions.includes('date')) {
-                    await setDate(prevDate => ''); // 날짜 시간 변경
+                    await setDate('');
                     dateRef.current = '';
                     changedValues += 'date ';
                 }
                 if (selectedOptions.includes('region')) {
-                    await setRegion(prevRegion => ''); // 지역 변경
+                    await setRegion('');
                     regionRef.current = '';
                     changedValues += 'region ';
                 }
                 if (selectedOptions.includes('movieName')) {
-                    await setMovieName(prevMovieName => ''); // 영화명 변경
+                    await setMovieName('');
                     movieNameRef.current = '';
                     changedValues += 'moviename ';
                 }
@@ -130,7 +133,7 @@ function Chat() {
     
             setRenderCheckBoxes(false);
             setSelectedOptions([]);
-            await getOutputValue("info changed");  // 상태 변경 후 새 요청
+            await getOutputValue(changedValues+" 정보들을 변경할래");  // 상태 변경 후 새 3 요청
         } else {
             let inputText = "변경하지 않았습니다.";
             sendInputValue(inputText);
@@ -140,8 +143,22 @@ function Chat() {
         setIsInputDisabled(false); // 체크박스 동작 후 입력 활성화
     };
 
-    const renderOutput = (message, withYesNoButtons, withCheckBoxes) => {
-        const outputEntry = [message, withYesNoButtons, withCheckBoxes];
+    const handleRegionSelection = (selectedRegion) => {
+        setRegion(selectedRegion);
+        regionRef.current = selectedRegion; 
+        setRegionOptions([]); // 선택이 완료되면 옵션을 초기화
+    };
+
+    // 확인필요
+    const renderRegionSelectionButtons = (regions) => {
+        sendOutputValue("지역을 선택하세요:", false, false);
+        regions.forEach((region) => {
+            sendOutputValue(region, false, false, () => handleRegionSelection(region));
+        });
+    };
+
+    const sendOutputValue = (message, withYesNoButtons, withCheckBoxes, onClickHandler = null) => {
+        const outputEntry = [message, withYesNoButtons, withCheckBoxes, onClickHandler];
         const newOutputValues = [...outputValues, outputEntry];
         setOutputValues(newOutputValues);
     
@@ -154,10 +171,11 @@ function Chat() {
         const { message } = value;
         console.log("in checker", message);
     
+        // 세 값이 모두 null이 아니면 yesno button 띄우기 (& 3번 요청이 아니었음)
         const shouldShowYesNoButtons = (movieNameRef.current && regionRef.current && dateRef.current) ? true : false;
 
         console.log("in checker", shouldShowYesNoButtons, movieNameRef.current, regionRef.current, dateRef.current);
-        renderOutput(message, shouldShowYesNoButtons && !runningTimesQueryExecuted, false); // runningTimesQueryExecuted 상태 추가
+        sendOutputValue(message, shouldShowYesNoButtons && !runningTimesQueryExecuted, false); // runningTimesQueryExecuted 상태 추가
         if (shouldShowYesNoButtons) {
             setIsInputDisabled(true); // Yes/No 버튼이 표시되면 입력을 비활성화
         }
@@ -167,10 +185,6 @@ function Chat() {
         const newInputValues = [...inputValues, value];
         setInputValues(newInputValues);
         sessionStorage.setItem("inputValues", JSON.stringify(newInputValues));
-    };
-
-    const sendOutputValue = (message, withYesNoButtons = false, withCheckBoxes = false) => {
-        renderOutput(message, withYesNoButtons && !runningTimesQueryExecuted, withCheckBoxes); // runningTimesQueryExecuted 상태 추가
     };
 
     // 매뉴얼 메시지 보내기
@@ -236,7 +250,7 @@ function Chat() {
                 body = null;
             }
 
-            console.log("보낸값 혹은 설정값", movieNameRef.current, regionRef.current, dateRef.current, time);
+            console.log("보낸값", movieNameRef.current, regionRef.current, dateRef.current, time);
             console.log("endpoint", endpoint, body);
 
             const response = await fetch(endpoint, {
@@ -251,29 +265,42 @@ function Chat() {
 
             if (isRunningTimesQuery) {
                 setRunningTimesQueryExecuted(true); // 3번 쿼리 실행 후 상태 설정
+                setShowRestartButton(true); // 3번 쿼리 실행 후 재시작 버튼 표시
             }
 
-            // ref 값도 업데이트
             if (data.movieName) {
                 setMovieName(data.movieName);
-                movieNameRef.current = data.movieName;  
+                movieNameRef.current = data.movieName;
             }
             if (data.region) {
-                setRegion(data.region);
-                regionRef.current = data.region; 
+                if (Array.isArray(data.region)) {
+                    if (data.region.length === 1) {
+                        setRegion(data.region[0]);
+                        regionRef.current = data.region[0];
+                    } else if (data.region.length > 1) {
+                        setRegionOptions(data.region);
+                        renderRegionSelectionButtons(data.region);
+                    }
+                } else {
+                    setRegion(data.region);
+                    regionRef.current = data.region;
+                }
             }
+
             if (data.date) {
                 setDate(data.date);
                 dateRef.current = data.date;
             }
+
             if (data.time) {
                 setTime(data.time);
             }
 
             console.log("응답값: ", data);
+            // console.log("설정값: ", movieNameRef, dateRef, regionRef);
 
             setResponseMessage(data.message);  // 응답 메시지를 상태에 저장
-            setIsInputDisabled(false);  // 요청이 성공적으로 완료되면 입력을 활성화
+            setIsInputDisabled(false);
 
         } catch (error) {
             console.error("Error fetching movie data:", error);
@@ -281,6 +308,38 @@ function Chat() {
             setIsInputDisabled(false);  // 오류 발생 시 입력을 다시 활성화
             return { error: "Error fetching movie data." };
         }
+    };
+
+    const handleRestartChat = () => {
+        // 채팅 상태 및 세션 스토리지 초기화
+        setInputValues([]);
+        setOutputValues([]);
+        sessionStorage.clear();
+        setManual(
+            `안녕하세요! 저는 여러 영화관의 정보를 통합하여 제공하는 지능형 고객 지원 챗봇입니다.\n` +
+            `원하는 날짜, 시간, 지역에 따른 맞춤형 영화 상영 스케줄 정보를 제공합니다.\n` +
+            `왼쪽 사이드바에서 날짜, 지역을 선택하고 보고싶은 영화 제목을 입력해주세요!`
+        );
+
+        setMovieName('');
+        setRegion('');
+        setDate('');
+        setTime('');
+        movieNameRef.current = '';
+        regionRef.current = '';
+        dateRef.current = '';
+        setShowRestartButton(false);
+        setRunningTimesQueryExecuted(false); // 리셋 후 3번 쿼리 상태 초기화
+
+        // 매뉴얼 메시지 다시 출력, output 배열의 첫 번째 항목으로 추가
+        if (manualMessage) {
+            setOutputValues([manualMessage]);
+            sessionStorage.setItem("outputValues", JSON.stringify([manualMessage]));
+            sendOutputValue(manualMessage);  // 매뉴얼 메시지를 출력하도록 getOutputValue 호출
+            setManual('');
+        }
+
+        console.log("restart", outputValues);
     };
 
     return (
@@ -296,6 +355,11 @@ function Chat() {
                     handleCheckBoxChange={handleCheckBoxChange}
                     handleChangeOrNot={handleChangeOrNot}
                 />
+                {showRestartButton && (
+                <div className="chat-restart">
+                    <button onClick={handleRestartChat}>채팅 재시작</button>
+                </div>
+            )}
             </div>
             <div className="chat-input">
                 <ChatInput

@@ -1,8 +1,8 @@
 import React from "react";
-import './ChatReaction.css';  // 스타일이 정의된 파일을 가져옵니다.
+import './ChatReaction.css';
 import { LiaRobotSolid } from "react-icons/lia";
 import { LuUser } from "react-icons/lu";
-import YesNoButtons from "./YesNoButtons";  // Yes/No 버튼 컴포넌트를 가져옵니다.
+import YesNoButtons from "./YesNoButtons";
 
 function ChatReaction({ inputValues, outputValues, onYes, onNo, renderCheckBoxes, handleCheckBoxChange, handleChangeOrNot }) {
     return (

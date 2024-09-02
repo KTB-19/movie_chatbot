@@ -29,8 +29,14 @@ def check_entities(entities):
 
     missing_entities = []
     for key, message in entity_info:
-        if key not in entities or not entities[key]:  # None 또는 False인 값을 걸러냄
+        value = entities.get(key)
+
+        # missing_entities: value가 None / 빈 문자열 / 빈 문자열만 포함된 리스트인 경우 
+        if not value or (isinstance(value, list) and all(not v.strip() for v in value)):
             missing_entities.append(message)
+        elif isinstance(value, list):
+            # 리스트가 전달된 경우, 리스트의 모든 유효한 값을 쉼표로 구분하여 연결
+            entities[key] = ', '.join([v.strip() for v in value if v.strip()])
 
     
     if missing_entities:
@@ -44,9 +50,9 @@ def check_entities(entities):
         # 엔티티가 모두 채워진 경우 확인 문장 출력
         if "time" in entities and entities["time"]:
             entities['date'], entities['time'] = format_date_time(entities['date'], entities['time'])   # 날짜, 시간 형식 변경 적용
-            user_message = f"{entities['date']} {entities['time']}에 {entities['region']}에서 {entities['movieName']}을(를) 보고 싶으신 게 맞으신가요?"
+            user_message = f"{entities['date']} {entities['time']}에 {entities['region']}에서 {entities['movieName']}을(를) 보고 싶은 게 맞으신가요?"
         else:
             entities['date'], _ = format_date_time(entities['date'], None)   # 사용자가 시간은 입력하지 않은 경우
-            user_message = f"{entities['date']}에 {entities['region']}에서 {entities['movieName']}을(를) 보고 싶으신 게 맞으신가요?"
+            user_message = f"{entities['date']}에 {entities['region']}에서 {entities['movieName']}을(를) 보고 싶은 게 맞으신가요?"
     
     return user_message, entities

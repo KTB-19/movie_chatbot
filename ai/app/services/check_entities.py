@@ -1,6 +1,7 @@
-# 입력한 정보가 정확한지 확인
-from app.services.datetime_format import format_date_time
+from app.services.datetime_format import format_date_time, format_date, format_time
 import json
+
+
 def check_json_entities(response):
     try:
         # JSON 형식의 응답을 딕셔너리로 변환합니다.
@@ -19,40 +20,35 @@ def check_json_entities(response):
     return response_dict
 
 
+# 입력한 정보가 정확한지 확인
 def check_entities(entities):
-    # 필수 엔티티 정보
-    entity_info = [
-        ("movieName", "영화 제목"),
-        ("region", "지역"),
-        ("date", "날짜")
+    # 필수 엔티티
+    entity_info = [("movieName", "영화 제목"), ("region", "지역"), ("date", "날짜")]
+    
+    # 누락된 필수 엔티티 확인
+    missing_entities = [
+        message for key, message in entity_info 
+        if not entities.get(key) or entities[key] == '' or entities[key] == ['']
     ]
 
-    missing_entities = []
-    for key, message in entity_info:
-        value = entities.get(key)
+    # None, 빈 문자열, 빈 리스트 처리
+    for key in entities:
+        if isinstance(entities[key], list):
+            entities[key] = ', '.join(filter(str.strip, entities[key]))
+        if not entities[key] or entities[key] == '':
+            entities[key] = None
 
-        # missing_entities: value가 None / 빈 문자열 / 빈 문자열만 포함된 리스트인 경우 
-        if not value or (isinstance(value, list) and all(not v.strip() for v in value)):
-            missing_entities.append(message)
-        elif isinstance(value, list):
-            # 리스트가 전달된 경우, 리스트의 모든 유효한 값을 쉼표로 구분하여 연결
-            entities[key] = ', '.join([v.strip() for v in value if v.strip()])
+    # 시간 형식 변환
+    if entities.get("time"):
+        entities['time'] = format_time(entities['time'])
 
-    
-    if missing_entities:
-        # 엔티티가 하나 이상 채워지지 않은 경우 다시 질문하기
-        if len(missing_entities) > 1:
-            missing_str = ' 와 '.join(missing_entities)
-            user_message = f"관람하고 싶은 {missing_str}을 말씀해 주세요."
-        else:
-            user_message = f"관람하고 싶은 {missing_entities[0]}을 말씀해 주세요."
+    # 엔티티가 하나라도 누락된 경우
+    if missing_entities: 
+        missing_str = ', '.join(missing_entities)       # 엔티티 연결은 모두 ','로
+        user_message = f"관람하고 싶은 {missing_str}을(를) 말씀해 주세요."
+    # 엔티티가 모두 채워진 경우
     else:
-        # 엔티티가 모두 채워진 경우 확인 문장 출력
-        if "time" in entities and entities["time"]:
-            entities['date'], entities['time'] = format_date_time(entities['date'], entities['time'])   # 날짜, 시간 형식 변경 적용
-            user_message = f"{entities['date']} {entities['time']}에 {entities['region']}에서 {entities['movieName']}을(를) 보고 싶은 게 맞으신가요?"
-        else:
-            entities['date'], _ = format_date_time(entities['date'], None)   # 사용자가 시간은 입력하지 않은 경우
-            user_message = f"{entities['date']}에 {entities['region']}에서 {entities['movieName']}을(를) 보고 싶은 게 맞으신가요?"
-    
+        time_str = f" {entities['time']}에" if entities.get("time") else ""
+        user_message = f"{entities['date']}{time_str} {entities['region']}에서 {entities['movieName']}을(를) 관람하고 싶은 게 맞으신가요?"
+
     return user_message, entities

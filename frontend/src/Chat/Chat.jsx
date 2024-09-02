@@ -147,34 +147,36 @@ function Chat() {
     };
 
     const handleRegionSelection = (selectedRegion) => {
-        console.log("in regionselector",selectedRegion);
+        console.log("in regionselector", selectedRegion);
         setRegion(selectedRegion);
         regionRef.current = selectedRegion; 
-        setRegionOptions([]); // 선택이 완료되면 옵션을 초기화
+
+        // 지역이 선택되면 지역 선택 옵션을 초기화하고, getOutputValue를 호출하여 다음 단계로 진행
+        setRegionOptions([]);
+        setIsInputDisabled(false);
+        getOutputValue(selectedRegion);
     };
 
     // 확인필요
     const renderRegionSelectionButtons = (regions) => {
-        sendOutputValue("지역을 선택하세요:", false, false);
-
-        
-        // handleRegionSelection(region);
-
+        if (regions.length === 2) {
+            sendOutputValue("지역을 선택하세요", false, false, true);
+            setIsInputDisabled(true);
+        }
     };
 
-    const sendOutputValue = (message, withYesNoButtons, withCheckBoxes, onClickHandler = null) => {
-        const outputEntry = [message, withYesNoButtons, withCheckBoxes, onClickHandler];
+    const sendOutputValue = (message, withYesNoButtons, withCheckBoxes, withRegionButtons = false, onClickHandler = null) => {
+        const outputEntry = [message, withYesNoButtons, withCheckBoxes, withRegionButtons, onClickHandler];
         if (outputValues.length > 0 && outputValues[outputValues.length - 1][0] === "응답 대기 중...(새로고침하지 마세요)") {
             outputValues[outputValues.length - 1] = outputEntry;
             setOutputValues(outputValues);
             console.log("outputValues:", outputValues);
-            if (message!=="응답 대기 중...(새로고침하지 마세요)") sessionStorage.setItem("outputValues", JSON.stringify(outputValues));
-        }
-        else {
+            if (message !== "응답 대기 중...(새로고침하지 마세요)") sessionStorage.setItem("outputValues", JSON.stringify(outputValues));
+        } else {
             const newOutputValues = [...outputValues, outputEntry];
             setOutputValues(newOutputValues);
             console.log("outputValues:", newOutputValues);
-            if (message!=="응답 대기 중...(새로고침하지 마세요)") sessionStorage.setItem("outputValues", JSON.stringify(newOutputValues));
+            if (message !== "응답 대기 중...(새로고침하지 마세요)") sessionStorage.setItem("outputValues", JSON.stringify(newOutputValues));
         }
     };
 
@@ -224,7 +226,7 @@ function Chat() {
 
         const formatTime = (time) => {
             if (!time) return null;
-        
+
             const t = new Date(time);
             if (isNaN(t.getTime())) {
                 console.error("Invalid time value:", time);
@@ -239,7 +241,7 @@ function Chat() {
 
             if (movieNameRef.current && regionRef.current && dateRef.current) {
                 endpoint = `/api/v1/movie/running-times`;
-                isRunningTimesQuery = true; // 3번 쿼리 상태 설정
+                isRunningTimesQuery = true;
                 body = {
                     movieName: movieNameRef.current || "",
                     region: regionRef.current || "",
@@ -280,26 +282,25 @@ function Chat() {
                 setShowRestartButton(true); // 3번 쿼리 실행 후 재시작 버튼 표시
             }
 
+            let isTwoRegion = false;
+
             if (data.movieName) {
                 setMovieName(data.movieName);
                 movieNameRef.current = data.movieName;
             }
+
             if (data.region) {
-                if (Array.isArray(data.region)) {
-                    if (data.region.length === 1) {
-                        setRegion(data.region[0]);
-                        console.log("here", data.region, region);
-                        regionRef.current = data.region[0];
-                    } else if (data.region.length > 1) {
-                        setRegionOptions(data.region);
-                        renderRegionSelectionButtons(data.region);
-                    }
-                } 
-                else {
-                    setRegion(data.region);
-                    console.log("here", data.region, region);
-                    regionRef.current = data.region;
+                if (Array.isArray(data.region) && data.region.length === 2) {
+                    setRegionOptions(data.region);
+                    renderRegionSelectionButtons(data.region);
+                    isTwoRegion = true;
+                } else {
+                    setRegion(data.region[0]);
+                    regionRef.current = data.region[0];
+                    setRegionOptions([]); // 초기화
                 }
+            } else {
+                setRegionOptions([]); // 초기화
             }
 
             if (data.date) {
@@ -312,16 +313,16 @@ function Chat() {
             }
 
             console.log("응답값: ", data);
-            // console.log("설정값: ", movieNameRef, dateRef, regionRef);
 
-            setResponseMessage(data.message);  // 응답 메시지를 상태에 저장
-            setIsInputDisabled(false);
+            if (!isTwoRegion) {
+                setResponseMessage(data.message);
+                setIsInputDisabled(false);
+            }
 
         } catch (error) {
             console.error("Error fetching movie data:", error);
-            setIsSubmitting(false);  // 오류 발생 시 버튼을 다시 활성화
-            setIsInputDisabled(false);  // 오류 발생 시 입력을 다시 활성화
-            return { error: "Error fetching movie data." };
+            setIsSubmitting(false);
+            setIsInputDisabled(false);
         }
     };
 

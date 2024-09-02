@@ -3,6 +3,7 @@ import './ChatReaction.css';
 import { LiaRobotSolid } from "react-icons/lia";
 import { LuUser } from "react-icons/lu";
 import YesNoButtons from "./YesNoButtons";
+import RegionButtons from "./RegionButtons"; // 새로 만든 컴포넌트 임포트
 
 function ChatReaction({ 
     inputValues, 
@@ -13,7 +14,7 @@ function ChatReaction({
     handleCheckBoxChange, 
     handleChangeOrNot, 
     regionOptions, 
-    handleRegionSelection // 추가된 부분
+    handleRegionSelection 
 }) {
     return (
         <div className="chat-reaction-container">
@@ -57,17 +58,11 @@ function ChatReaction({
                                     </div>
                                 </div>
                             )}
-                            {regionOptions.length > 0 && (
-                                <div className="region-selection-buttons">
-                                    {regionOptions.map((region, idx) => (
-                                        <button 
-                                            key={idx} 
-                                            onClick={() => handleRegionSelection(region)}
-                                        >
-                                            {region}
-                                        </button>
-                                    ))}
-                                </div>
+                            {output[3] && regionOptions.length > 0 && (
+                                <RegionButtons 
+                                    regions={regionOptions} 
+                                    onRegionSelect={handleRegionSelection}
+                                />
                             )}
                         </div>
                     </div>

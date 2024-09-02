@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -12,7 +14,7 @@ import lombok.Setter;
 public class AiInfosResponse {
 
     private String movieName;
-    private String region;
+    private List<String> region;
     private String date;
     private String time;
     private String response;

@@ -367,6 +367,7 @@ const RegionSelector = () => {
 
     // region 값이 변경될 때 wideArea와 basicArea를 설정하고, 세션 스토리지 값을 업데이트
     useEffect(() => {
+        console.log("region changed");
         if (region && region.trim()) {
             const [newWideArea, newBasicArea] = region.split(" ");
             if (newWideArea !== wideArea || newBasicArea !== basicArea) {

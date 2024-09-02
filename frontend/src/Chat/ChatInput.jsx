@@ -10,9 +10,9 @@ function ChatInput({ inputValues, sendInputValue, getOutputValue, sendOutputValu
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (currentInput !== "") {
-            await getOutputValue(currentInput);
             sendInputValue(currentInput);
             setCurrentInput(''); 
+            await getOutputValue(currentInput);
         }
     };
 

@@ -2,7 +2,7 @@ import React from "react";
 import './ChatReaction.css';
 import { LiaRobotSolid } from "react-icons/lia";
 import { LuUser } from "react-icons/lu";
-import YesNoButtons from "./YesNoButtons";
+import YesNoButtons from "./YesNoButtons"; 
 
 function ChatReaction({ inputValues, outputValues, onYes, onNo, renderCheckBoxes, handleCheckBoxChange, handleChangeOrNot }) {
     return (

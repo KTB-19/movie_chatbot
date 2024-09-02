@@ -37,21 +37,19 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
 
     # LLMChain 설정
     ner_tpl = '''1. 너는 영화 예매를 도와주는 챗봇이다. 영화 이름, 날짜, 시간, 장소를 구분하는 역할을 수행한다.
-    2. context는 상영중인 영화 리스트이다.
-    context:{context}
-    3. 영화 이름은 현재 상영중인 영화 리스트에서 구분한다.
-    또는 question에 유사한 이름의 영화가 상영중인 영화 리스트에 있다면 영화이름을 리스트에 있는 이름으로 대체하고 similar에는 상영중인 영화 리스트에서 이름 넣는다.
-    만약 없다면 null로 넣는다.
-    4. 오늘 날짜는 {today}이고 요일은 {weekday}다.
+    
+    2. 오늘 날짜는 {today}이고 요일은 {weekday}다.
     만약 요일만 있다면 이번주로 계산한다.
     날짜의 포멧은 YYYY-MM-DD으로 반환한다.
     
-    6. 안녕과 같은 인사 내용은 생략한다.
+    3. 안녕과 같은 인사 내용은 생략한다.
     
-    7. null은 ""나 ''를 쓰지 않는다.
+    4. 없거나 빈 항목은 null를 채워서 아래에 있는 출력 형식으로만 대답한다.
+    
+    5. null은 ""나 ''를 쓰지 않는다.
 
     Question: question:"{question}"문장 안에 영화 이름, 장소, 날짜, 시간이 포함되어 있는지 확인해 줘.
-    영화는 movie : , 장소는 region: , 날짜는 date: , 시간은 time: , question에서 찾은 영화 이름은 Original:에 대입해줘, context에서 question 유사한 이름 상영중인 영화이름은 Similar: 이라고 대답한다.
+    영화는 movie : , 장소는 region: , 날짜는 date: , 시간은 time: , question에서 찾은 영화 이름은 Original:에 대입한다.
     없거나 빈 항목은 null를 채워서 아래에 있는 출력 형식으로만 대답한다.
 
     {{"movieName" : null, "region": null, "date": null, "time": null, "original": null, "similar": null}}

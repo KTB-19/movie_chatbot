@@ -334,62 +334,73 @@ const RegionSelector = () => {
     const [basicArea, setBasicArea] = useState("");
     const [basicAreas, setBasicAreas] = useState([]);
 
-    // region 값이 변경될 때 wideArea와 basicArea 값을 설정
-    useEffect(() => {
-        if (region && region.trim()) {
-            const [newWideArea, newBasicArea] = region.split(" ");
-            setWideArea(newWideArea || "");
-            setBasicArea(newBasicArea || "");
-
-            const area = areas.find(area => area.wideArea === newWideArea);
-            setBasicAreas(area ? area.basicArea : []);
-        } else {
-            // region이 공백이거나 null인 경우 기본값으로 설정
-            setWideArea("");
-            setBasicArea("");
-            setBasicAreas([]);
-        }
-    }, [region]);
-
-    // wideArea 변경 시 해당하는 basicArea 목록 업데이트
-    const handleWideAreaChange = (e) => {
-        const selectedWideArea = e.target.value;
-        setWideArea(selectedWideArea);
-        setBasicArea("");
-
-        // 선택된 wideArea에 맞는 basicAreas 설정
-        const area = areas.find(area => area.wideArea === selectedWideArea);
-        setBasicAreas(area ? area.basicArea : []);
-    };
-
-    const handleBasicAreaChange = (e) => {
-        const selectedBasicArea = e.target.value;
-        setBasicArea(selectedBasicArea);
-    };
-
-    // 세션 스토리지에서 wideArea와 basicArea 불러오기
+    // 초기 로딩 또는 새로고침 시 세션 스토리지에서 region 정보를 가져와서 wideArea와 basicArea를 설정
     useEffect(() => {
         const savedWideArea = sessionStorage.getItem("wideArea");
         const savedBasicArea = sessionStorage.getItem("basicArea");
-        
+
         if (savedWideArea) {
             setWideArea(savedWideArea);
-            const area = areas.find((area) => area.wideArea === savedWideArea);
+            const area = areas.find(area => area.wideArea === savedWideArea);
             setBasicAreas(area ? area.basicArea : []);
         }
         if (savedBasicArea) {
             setBasicArea(savedBasicArea);
         }
+        
+        // region이 아직 설정되지 않았을 경우에만 설정
+        if (!region && savedWideArea && savedBasicArea) {
+            setRegion(`${savedWideArea} ${savedBasicArea}`);
+        }
     }, []);
 
-    // wideArea 또는 basicArea 변경 시 region 업데이트 및 세션 스토리지에 저장
+    // wideArea 또는 basicArea 변경 시 region과 세션 스토리지 값을 업데이트
     useEffect(() => {
         const fullRegion = (wideArea + " " + basicArea).trim();
-        setRegion(fullRegion);
-        sessionStorage.setItem("region", fullRegion);
-        sessionStorage.setItem("wideArea", wideArea);
-        sessionStorage.setItem("basicArea", basicArea);
-    }, [wideArea, basicArea, setRegion]);
+        if (region !== fullRegion) {
+            setRegion(fullRegion);
+            sessionStorage.setItem("region", fullRegion);
+            sessionStorage.setItem("wideArea", wideArea);
+            sessionStorage.setItem("basicArea", basicArea);
+        }
+    }, [wideArea, basicArea]);
+
+    // region 값이 변경될 때 wideArea와 basicArea를 설정하고, 세션 스토리지 값을 업데이트
+    useEffect(() => {
+        if (region && region.trim()) {
+            const [newWideArea, newBasicArea] = region.split(" ");
+            if (newWideArea !== wideArea || newBasicArea !== basicArea) {
+                setWideArea(newWideArea || "");
+                setBasicArea(newBasicArea || "");
+
+                const area = areas.find(area => area.wideArea === newWideArea);
+                setBasicAreas(area ? area.basicArea : []);
+            }
+        } else {
+            setWideArea("");
+            setBasicArea("");
+            setBasicAreas([]);
+            sessionStorage.removeItem("region");
+            sessionStorage.removeItem("wideArea");
+            sessionStorage.removeItem("basicArea");
+        }
+    }, [region]); // region만 의존성으로 두고 wideArea와 basicArea는 업데이트
+
+    // wideArea 변경 시 해당하는 basicArea 목록 업데이트
+    const handleWideAreaChange = (e) => {
+        const selectedWideArea = e.target.value;
+        setWideArea(selectedWideArea);
+        setBasicArea(""); // wideArea 변경 시 basicArea 초기화
+
+        const area = areas.find(area => area.wideArea === selectedWideArea);
+        setBasicAreas(area ? area.basicArea : []);
+    };
+
+    // basicArea 변경 핸들러
+    const handleBasicAreaChange = (e) => {
+        const selectedBasicArea = e.target.value;
+        setBasicArea(selectedBasicArea);
+    };
 
     return (
         <div id="region-selector">

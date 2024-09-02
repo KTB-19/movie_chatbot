@@ -119,6 +119,8 @@ function Chat() {
                 if (selectedOptions.includes('region')) {
                     await setRegion('');
                     regionRef.current = '';
+                    sessionStorage.setItem("wideArea", '');
+                    sessionStorage.setItem("basicArea", '');
                     changedValues += 'region ';
                 }
                 if (selectedOptions.includes('movieName')) {
@@ -127,13 +129,14 @@ function Chat() {
                     changedValues += 'moviename ';
                 }
     
-                let inputText = changedValues + "정보를 변경했습니다.";
+                let inputText = changedValues + "정보를 변경할래.";
                 sendInputValue(inputText);
+                sendOutputValue("변경할 "+ changedValues + "정보를 입력하세요");
             }
     
             setRenderCheckBoxes(false);
             setSelectedOptions([]);
-            await getOutputValue(changedValues+" 정보들을 변경할래");  // 상태 변경 후 새 3 요청
+            // await getOutputValue(changedValues+" 정보들을 변경할래");  // 상태 변경 후 새 3 요청
         } else {
             let inputText = "변경하지 않았습니다.";
             sendInputValue(inputText);
@@ -144,6 +147,7 @@ function Chat() {
     };
 
     const handleRegionSelection = (selectedRegion) => {
+        console.log("in regionselector",selectedRegion);
         setRegion(selectedRegion);
         regionRef.current = selectedRegion; 
         setRegionOptions([]); // 선택이 완료되면 옵션을 초기화
@@ -288,10 +292,11 @@ function Chat() {
                         setRegionOptions(data.region);
                         renderRegionSelectionButtons(data.region);
                     }
-                } else {
-                    setRegion(data.region);
-                    regionRef.current = data.region;
-                }
+                } 
+                // else {
+                //     setRegion(data.region);
+                //     regionRef.current = data.region;
+                // }
             }
 
             if (data.date) {

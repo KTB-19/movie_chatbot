@@ -112,6 +112,8 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
 
     return json.dumps(response_dict)
 
+
+
 def query_reprocess(query,FAISS_name,jamo_name,pre_response):
     # 한국 시간대 설정
     pre_response_dict = pre_response.dict()
@@ -202,6 +204,8 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
 
     return json.dumps(response_dict)
 
+
+
 # api 호출
 def api_call(system_message, user_message):
     try:
@@ -236,6 +240,9 @@ def generate_response(entities):
 
     # json 형태로 변환하여 return
     return json.dumps(entities, ensure_ascii=False)
+
+
+
 def location_type(response_dict):
     # response_dict = json.loads(response)
     region_value = response_dict["region"]

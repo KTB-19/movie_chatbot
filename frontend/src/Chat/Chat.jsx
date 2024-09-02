@@ -163,13 +163,13 @@ function Chat() {
             outputValues[outputValues.length - 1] = outputEntry;
             setOutputValues(outputValues);
             console.log("outputValues:", outputValues);
-            if (message!="대기중") sessionStorage.setItem("outputValues", JSON.stringify(outputValues));
+            if (message!="응답 대기 중...(새로고침하지 마세요)") sessionStorage.setItem("outputValues", JSON.stringify(outputValues));
         }
         else {
             const newOutputValues = [...outputValues, outputEntry];
             setOutputValues(newOutputValues);
             console.log("outputValues:", newOutputValues);
-            if (message!="대기중") sessionStorage.setItem("outputValues", JSON.stringify(newOutputValues));
+            if (message!="응답 대기 중...(새로고침하지 마세요)") sessionStorage.setItem("outputValues", JSON.stringify(newOutputValues));
         }
     };
 
@@ -204,7 +204,7 @@ function Chat() {
     const getOutputValue = async (currentInput) => {
         setIsSubmitting(true);  // 요청 시작 시 버튼 비활성화
         setIsInputDisabled(true);  // 요청 시작 시 입력 비활성화
-        sendOutputValue("대기중", false, false, null);
+        sendOutputValue("응답 대기 중...(새로고침하지 마세요)", false, false, null);
 
         let endpoint;
         let body;

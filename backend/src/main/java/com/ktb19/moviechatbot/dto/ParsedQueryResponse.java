@@ -11,6 +11,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import static com.ktb19.moviechatbot.constant.Constants.PATTERN_JSONFORMAT_DATE;
+import static com.ktb19.moviechatbot.constant.Constants.PATTERN_JSONFORMAT_TIME;
+
 @Schema(description = "메시지 파싱 응답")
 @Getter
 @Setter
@@ -25,11 +28,11 @@ public class ParsedQueryResponse {
     private List<String> region;
 
     @Schema(description = "상영 날짜", example = "2024-08-14")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PATTERN_JSONFORMAT_DATE, timezone = "Asia/Seoul")
     private LocalDate date;
 
     @Schema(description = "상영 시간", example = "17:00", type = "string")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PATTERN_JSONFORMAT_TIME, timezone = "Asia/Seoul")
     private LocalTime time;
 
     @Schema(description = "서비스 답변", example = "어느 지역에서 영화를 보고 싶으신가요?")

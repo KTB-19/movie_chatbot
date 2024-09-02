@@ -11,6 +11,9 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
+import static com.ktb19.moviechatbot.constant.Constants.PATTERN_JSONFORMAT_DATE;
+import static com.ktb19.moviechatbot.constant.Constants.PATTERN_JSONFORMAT_TIME;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,12 +24,12 @@ public class AiRecommendRequest {
 
     private String region;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PATTERN_JSONFORMAT_DATE, timezone = "Asia/Seoul")
     private LocalDate date;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PATTERN_JSONFORMAT_TIME, timezone = "Asia/Seoul")
     private LocalTime time;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PATTERN_JSONFORMAT_TIME, timezone = "Asia/Seoul")
     private Map<String, List<LocalTime>> timesPerTheaterNameMap;
 }

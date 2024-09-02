@@ -1,5 +1,6 @@
 package com.ktb19.moviechatbot.controller;
 
+import com.ktb19.moviechatbot.constant.Constants;
 import com.ktb19.moviechatbot.dto.*;
 import com.ktb19.moviechatbot.service.MovieService;
 import com.ktb19.moviechatbot.service.ParseService;
@@ -16,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static com.ktb19.moviechatbot.constant.Constants.*;
 
 /**
  * 영화 관련 쿼리와 상영 시간 정보를 처리하는 API를 제공합니다.
@@ -49,8 +52,8 @@ public class MovieController {
             @RequestParam
             @Size(min = 1, max = 200)
             @Pattern(
-                    regexp = "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9 !#$%&'*+/=?`{(|)}~^.-:]*$",
-                    message = "한글, 영어, 숫자, 특수문자만 입력할 수 있습니다."
+                    regexp = PATTERN_REGEXP_ALL,
+                    message = PATTERN_REGEXP_ALL_MESSAGE
             )
             String message) {
 

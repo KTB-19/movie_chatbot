@@ -4,6 +4,8 @@ services:
   movie-crawling:
     image: prunsoli/movie-crawling:2.1.1
     container_name: movie-crawling
+    env_file:
+      - .env
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.49.1

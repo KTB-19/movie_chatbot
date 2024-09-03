@@ -244,7 +244,7 @@ function Chat() {
                 isRunningTimesQuery = true;
                 body = {
                     movieName: movieNameRef.current || "",
-                    region: regionRef.current || "",
+                    region: regionRef.current || [""],
                     date: dateRef.current ? formatDate(dateRef.current) : null,
                     time: time ? formatTime(time) : null
                 };
@@ -299,9 +299,10 @@ function Chat() {
                     regionRef.current = data.region[0];
                     setRegionOptions([]); // 초기화
                 }
-            } else {
-                setRegionOptions([]); // 초기화
-            }
+            } 
+            // else {
+            //     setRegionOptions([]); // 초기화
+            // }
 
             if (data.date) {
                 setDate(data.date);

@@ -7,7 +7,7 @@ def kor_today():
     kst = pytz.timezone('Asia/Seoul')
     utc_now = datetime.now(pytz.utc)
     kst_now = utc_now.astimezone(kst)
-    today = kst_now.strftime('%m/%d')
+    today = kst_now.strftime('%Y-%m-%d')
     weekday = kst_now.strftime('%A')
 
     return today, weekday

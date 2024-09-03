@@ -2,6 +2,7 @@ import sys
 import os
 import pickle
 import json
+import ast
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -129,29 +130,31 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
     pre_response_dict = pre_response.dict()
     # pre_response_dict = pre_response
     today,weekday = kor_today()
-
+    # print(today,weekday)
     # LLM 초기화
     llm = ChatOpenAI(model='gpt-3.5-turbo-0125', temperature=0.3, max_tokens=200)
 
-    re_ner_tpl = '''pre_response_dict에서 null을 채우기 위해 질문에서 너는 영화 이름, 날짜, 시간, 장소를 구분하는 역할을 수행한다.
-    pre_response_dict의 영화, 지역, 시간을 가져온다. 만약 영화 이름, 날짜, 시간, 지역 변경을 요청하는 명확한 내용이 있으면 변경 내용만 수정한다.
-    구체적인 question은 기존 내용에 추가한다.
-    pre_response_dict는 이전의 대답이다.
+    re_ner_tpl = '''
+    1. pre_response_dict에서 업데이트 하기 위해 질문에서 너는 영화 이름, 날짜, 시간, 장소를 구분하는 역할을 수행한다.
+    2. pre_response_dict의 영화, 날짜, 지역, 시간을 가져온다. 
+    3. pre_response_dict의 None인 값은 question에서 영화 이름, 날짜, 시간, 지역의 값을 확인한다.  
+    4. 영화 이름, 날짜, 시간, 지역중 변경을 요청하는 명확한 내용이 question에 있으면 pre_response_dict에 변경 내용을 업데이트한다.
+    3. 구체적인 question은 기존 내용에 추가한다.
+    4. pre_response_dict는 이전의 결과이다.
     pre_response_dict:"{pre_response_dict}"
-    영화 이름 null일 경우에만 question에 영화 이름이 있는지 확인한다.
-    만약 유사한 이름 또는 내용이 없다면 null로 넣는다.
-    오늘 날짜는 {today}이고 요일은 {weekday}다.
-    만약 요일만 있다면 이번주로 계산한다.
-    날짜의 포멧은 YYYY-MM-DD으로 반환한다.
-    안녕과 같은 인사 내용은 생략한다.
-    영화 이름이 없다면 null을 넣는다.
-    null은 ""나 ''를 쓰지 않는다.
+    5. 영화 이름 None일 경우에만 question에 영화 이름이 있는지 확인한다.
+    6. 만약 유사한 이름 또는 내용이 없다면 None로 넣는다.
+    7. 오늘 날짜는 {today}이고 요일은 {weekday}다.
+    8. 만약 요일만 있다면 이번주로 계산한다.
+    9. 날짜의 포멧은 YYYY-MM-DD으로 반환한다.
+    10. 안녕과 같은 인사 내용은 생략한다.
+    11. 영화 이름이 없다면 None을 넣는다.
+    12. None은 ""나 ''를 쓰지 않는다.
     
-    Question: pre_response_dict를 사용하고, null인 것은 question:"{question}"문장 안에 영화 이름, 장소, 날짜, 시간이 포함되어 있는지 확인해 줘.
-    영화는 movie : , 장소는 region: , 날짜는 date: , 시간은 time: , 문장에서 찾은 영화 이름은 Original:에 대입해줘.
-    없거나 빈 항목은 null를 채워서 아래에 있는 출력 형식으로만 대답한다.2
+    Question: pre_response_dict:"{pre_response_dict}"의 내용을 사용하고, None인 것은 question:"{question}"문장 안에 영화 이름, 장소, 날짜, 시간이 포함되어 있는지 확인해 줘.
+    영화는 movie : , 장소는 region: , 날짜는 date: , 시간은 time: , 문장에서 찾은 영화 이름은 Original:에 대입한다.
 
-    {{"movieName" : null, "region": null, "date": null, "time": null, "original": null, "similar": null}}
+    {{"movieName" : None, "region": None, "date": None, "time": None, "original": None, "similar": None}}
     '''
 
     ner_tpl_secondary = '''
@@ -196,8 +199,8 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
         'today': today,
         'weekday': weekday
     })
-
-    response_dict = check_json_entities(response1)
+    response_dict = ast.literal_eval(response1)
+    # response_dict = check_json_entities(response1)
     # print("r1",response_dict)
     if response_dict["movieName"] in query_results[1]:
         return

@@ -261,9 +261,12 @@ def generate_response(entities):
 
 
 def location_type(response_dict):
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    # region_text.txt의 절대 경로를 생성
+    file_path = os.path.join(base_dir, "region_text.txt")
     # response_dict = json.loads(response)
     region_value = response_dict["region"]
-    with open("./services/region_text.txt", "r", encoding="utf-8") as file:
+    with open(file_path, "r", encoding="utf-8") as file:
         region_text = file.read()
     temperature = 0.3
     #print('temperature', temperature)

@@ -134,7 +134,7 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
     llm = ChatOpenAI(model='gpt-3.5-turbo-0125', temperature=0.3, max_tokens=200)
 
     re_ner_tpl = '''pre_response_dict에서 null을 채우기 위해 질문에서 너는 영화 이름, 날짜, 시간, 장소를 구분하는 역할을 수행한다.
-    pre_response_dict의 영화, 지역, 시간을 가져온다. 만약 영화 이름, 날짜, 시간, 지역 변경을 요청하는 명확한 내용이 들어있으면 수정한다.
+    pre_response_dict의 영화, 지역, 시간을 가져온다. 만약 영화 이름, 날짜, 시간, 지역 변경을 요청하는 명확한 내용이 있으면 변경 내용만 수정한다.
     구체적인 question은 기존 내용에 추가한다.
     pre_response_dict는 이전의 대답이다.
     pre_response_dict:"{pre_response_dict}"
@@ -147,9 +147,9 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
     영화 이름이 없다면 null을 넣는다.
     null은 ""나 ''를 쓰지 않는다.
     
-    Question: pre_response_dict에서 그대로 가져오고, null인 것은 question:"{question}"문장 안에 영화 이름, 장소, 날짜, 시간이 포함되어 있는지 확인해 줘.
+    Question: pre_response_dict를 사용하고, null인 것은 question:"{question}"문장 안에 영화 이름, 장소, 날짜, 시간이 포함되어 있는지 확인해 줘.
     영화는 movie : , 장소는 region: , 날짜는 date: , 시간은 time: , 문장에서 찾은 영화 이름은 Original:에 대입해줘.
-     빈 항목은 null를 채워서 마지막 줄에있는 출력형식으로만 대답한다.
+    없거나 빈 항목은 null를 채워서 아래에 있는 출력 형식으로만 대답한다.2
 
     {{"movieName" : null, "region": null, "date": null, "time": null, "original": null, "similar": null}}
     '''

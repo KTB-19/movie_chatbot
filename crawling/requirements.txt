@@ -1,7 +1,0 @@
-selenium
-python-dotenv
-coverage
-pymysql
-schedule
-apscheduler
-cryptography

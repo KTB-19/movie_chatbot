@@ -34,7 +34,7 @@ def check_entities(entities):
     # None, 빈 문자열, 빈 리스트 처리
     for key in entities:
         if isinstance(entities[key], list):
-            entities[key] = ', '.join(filter(str.strip, entities[key]))
+            continue
         if not entities[key] or entities[key] == '':
             entities[key] = None
 

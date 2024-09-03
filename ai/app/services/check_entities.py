@@ -51,4 +51,5 @@ def check_entities(entities):
         time_str = f" {entities['time']}에" if entities.get("time") else ""
         user_message = f"{entities['date']}{time_str} {entities['region']}에서 {entities['movieName']}을(를) 관람하고 싶은 게 맞으신가요?"
 
+
     return user_message, entities

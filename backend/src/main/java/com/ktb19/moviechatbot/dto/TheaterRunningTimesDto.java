@@ -11,6 +11,8 @@ import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
 
+import static com.ktb19.moviechatbot.constant.Constants.PATTERN_JSONFORMAT_TIME;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -20,7 +22,7 @@ public class TheaterRunningTimesDto {
 
     private int count;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PATTERN_JSONFORMAT_TIME, timezone = "Asia/Seoul")
     private List<LocalTime> times;
 
 }

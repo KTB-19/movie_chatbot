@@ -294,7 +294,7 @@ function Chat() {
                     setRegionOptions(data.region);
                     renderRegionSelectionButtons(data.region);
                     isTwoRegion = true;
-                } else {
+                } else if (Array.isArray(data.region)) {
                     setRegion(data.region[0]);
                     regionRef.current = data.region[0];
                     setRegionOptions([]); // 초기화

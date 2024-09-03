@@ -14,7 +14,7 @@ services:
   networks:
    - app-network
  web:
-  image: eddykim3396/ai:arm64
+  image: eddykim3396/ai:latest
   container_name: ktb-19-ai
   restart: always
   ports:

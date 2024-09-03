@@ -1,0 +1,11 @@
+.idea
+.git
+.gitignore
+.dockerignore
+Dockerfile
+*.md
+*.sh
+*.yml
+__pycache__
+.env
+test

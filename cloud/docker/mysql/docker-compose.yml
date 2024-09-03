@@ -1,0 +1,8 @@
+
+services:
+  db:
+    image: prunsoli/ktb-19-db:1.1
+    container_name: movie-db-test
+    restart: always
+    ports:
+      - "3306:3306"

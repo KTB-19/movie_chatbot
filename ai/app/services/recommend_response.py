@@ -1,11 +1,18 @@
+import os
+
 from app.services.config import XLSX_FILE_PATH
 from app.services.query_ai_process import api_call
 from app.services.theater_processing import load_theater_data, create_recommendation_message
 
 # 영화관 추천 함수 호출
 def recommend_theaters(entities, db):
+
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    # KOBIS_영화상영관정보_2024-08-28.xlsx의 절대 경로를 생성
+    file_path = os.path.join(base_dir, "KOBIS_영화상영관정보_2024-08-28.xlsx")
+
     # 영화관 주소 데이터 로드
-    theater_df = load_theater_data(XLSX_FILE_PATH)
+    theater_df = load_theater_data(file_path)
 
     system_message = """
     당신은 영화관 추천을 도와주는 고객지원 챗봇 '무비빔밥'입니다.

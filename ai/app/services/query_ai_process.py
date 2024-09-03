@@ -36,30 +36,36 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
     llm = ChatOpenAI(model='gpt-3.5-turbo-0125', temperature=0.3, max_tokens=200)
 
     # LLMChain 설정
-    ner_tpl = '''너는 영화 예매를 도와주는 챗봇이야. 영화 이름, 날짜, 시간, 장소를 구분하는 역할을 수행해.
-    context는 상영중인 영화 리스트이다.
-    context:{context}
-    영화 이름은 현재 상영중인 영화 리스트에서 구분한다.
-    또는 {question} 와 유사한 이름의 영화가 상영중인 영화 리스트에 있다면 영화이름을 리스트에 있는 이름으로 대체하고 similar에는 상영중인 영화 리스트에서 이름 넣는다.
-    만약 없다면 null로 넣는다.
-    오늘 날짜는 {today}이고 요일은 {weekday}다.
+    ner_tpl = '''1. 너는 영화 예매를 도와주는 챗봇이다. 영화 이름, 날짜, 시간, 장소를 구분하는 역할을 수행한다.
+    
+    2. 오늘 날짜는 {today}이고 요일은 {weekday}다.
     만약 요일만 있다면 이번주로 계산한다.
     날짜의 포멧은 YYYY-MM-DD으로 반환한다.
+    
+    3. 안녕과 같은 인사 내용은 생략한다.
+    
+    4. 없거나 빈 항목은 null를 채워서 아래에 있는 출력 형식으로만 대답한다.
+    
+    5. null은 ""나 ''를 쓰지 않는다.
 
-    Question: {question}문장 안에 영화 이름, 장소, 날짜, 시간이 포함되어 있는지 확인해 줘.
-    영화는 movie : , 장소는 region: , 날짜는 date: , 시간은 time: , 문장에서 찾은 영화 이름은 Original:에 대입해줘, context와  유사한 이름 상영중인 영화이름은 Similar: 이라고 알려줘.
-     빈 항목은 null를 채워서 마지막 줄에있는 출력형식으로만 대답해줘
+    Question: question:"{question}"문장 안에 영화 이름, 장소, 날짜, 시간이 포함되어 있는지 확인해 줘.
+    영화는 movie : , 장소는 region: , 날짜는 date: , 시간은 time: , question에서 찾은 영화 이름은 Original:에 대입한다.
+    없거나 빈 항목은 null를 채워서 아래에 있는 출력 형식으로만 대답한다.
 
     {{"movieName" : null, "region": null, "date": null, "time": null, "original": null, "similar": null}}
     '''
 
     ner_tpl_secondary = '''
-    "context 는 현재 상영중인 영화 리스트 : {context}"
-    "대답은 무조건 context 리스트 안에서 대답한다."
-
-    "context에 있는{movie}와 비슷한 이름을 movieName에 지정한다."
-    "{movie}은 original로 지정한다."
-    Question: {movie} 는 영화 이름의 일부분이다. {movie} 를 포함거나 유사한 영화 이름이 context에 포함되어 있는지 확인하여 채운다,
+    1. "context 는 현재 상영중인 영화 리스트 : {context}"
+    2. "영화 이름이 없다면 null을 넣는다."
+    3. "context 리스트 안에 유사한 내용이 있다면 context내용으로 변경한다. 없다면 null을 넣는다."
+    4. "안녕과 같은 인사 내용은 생략한다."
+    
+    5. "context에 있는{movie}와 비슷한 이름을 movieName에 지정한다."
+    6. "{movie}은 original로 지정한다."
+    7. "null은 ""나 ''를 쓰지 않는다."
+    
+    Question: {movie} 는 영화 이름의 일부분이다. {movie} 를 포함거나 유사한 영화 이름이 context에 포함되어 있는지 확인하여 context의 내용으로 채운다,
     없는 경우는 빈 항목으로 null를 채워서 마지막 줄에있는 출력형식으로만 대답해줘"
 
      {{"movieName" : null, "original": null}}
@@ -88,7 +94,9 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
         'weekday': weekday
     })
     # 기존에 입력한 영화 이름을 original에, full name을 movieName과 similar에
+    # print("f1r1",response1)
     response_dict = json.loads(response1)
+    # print("f1",response_dict)
     if response_dict["movieName"] in query_results[1]:
         return
 
@@ -98,9 +106,10 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
             'context': movie_name_query,
             'movie': response_dict["movieName"]
         })
+        # print("f2a",response2)
         response_redict = json.loads(response2)
         response_dict = rename_dict(response_dict, response_redict)
-
+        # print("f2",response_dict)
     elif response_dict["similar"] and response_dict["movieName"] is None:
         jamoQuestion = jamodict_search(question,jamodict)
         response2 = chain2.invoke({
@@ -109,32 +118,37 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
         })
         response_redict = json.loads(response2)
         response_dict = rename_dict(response_dict, response_redict)
+        # print("f3",response_dict)
 
     return json.dumps(response_dict)
+
+
 
 def query_reprocess(query,FAISS_name,jamo_name,pre_response):
     # 한국 시간대 설정
     pre_response_dict = pre_response.dict()
+    # pre_response_dict = pre_response
     today,weekday = kor_today()
 
     # LLM 초기화
     llm = ChatOpenAI(model='gpt-3.5-turbo-0125', temperature=0.3, max_tokens=200)
 
-    re_ner_tpl = '''pre_response_dict에서 null을 채우기 위해 질문에서 너는 영화 이름, 날짜, 시간, 장소를 구분하는 역할을 수행해한다.
-    pre_response_dict를 그대로 가져온다. 만약 영화 이름, 날짜, 시간, 장소를 변경을 요청하는 명확한 내용이 들어있으면 수정한다.
-    context는 상영중인 영화 리스트이다.
-    response_dict는 이전의 대답이다.
-    response_dict:{pre_response_dict}
-    영화 이름 null일 경우에만 {question}에서 현재 상영중인 영화 리스트에서 구분한다.
-    동일한 이름이 없다면, 유사한 이름의 영화가 상영중인 영화 리스트에 있다면 영화이름을 리스트에 있는 이름으로 대체한다.
-    similar에는 상영중인 영화 리스트에서 이름 넣는다.
-    만약 없다면 null로 넣는다.
+    re_ner_tpl = '''pre_response_dict에서 null을 채우기 위해 질문에서 너는 영화 이름, 날짜, 시간, 장소를 구분하는 역할을 수행한다.
+    pre_response_dict의 영화, 지역, 시간을 가져온다. 만약 영화 이름, 날짜, 시간, 지역 변경을 요청하는 명확한 내용이 들어있으면 수정한다.
+    구체적인 question은 기존 내용에 추가한다.
+    pre_response_dict는 이전의 대답이다.
+    pre_response_dict:"{pre_response_dict}"
+    영화 이름 null일 경우에만 question에 영화 이름이 있는지 확인한다.
+    만약 유사한 이름 또는 내용이 없다면 null로 넣는다.
     오늘 날짜는 {today}이고 요일은 {weekday}다.
     만약 요일만 있다면 이번주로 계산한다.
     날짜의 포멧은 YYYY-MM-DD으로 반환한다.
-
-    Question: pre_response_dict에서 그대로 가져오고, null인 것은 {question}문장 안에 영화 이름, 장소, 날짜, 시간이 포함되어 있는지 확인해 줘.
-    영화는 movie : , 장소는 region: , 날짜는 date: , 시간은 time: , 문장에서 찾은 영화 이름은 Original:에 대입해줘, context와  유사한 이름 상영중인 영화이름은 Similar: 이라고 알려줘.
+    안녕과 같은 인사 내용은 생략한다.
+    영화 이름이 없다면 null을 넣는다.
+    null은 ""나 ''를 쓰지 않는다.
+    
+    Question: pre_response_dict에서 그대로 가져오고, null인 것은 question:"{question}"문장 안에 영화 이름, 장소, 날짜, 시간이 포함되어 있는지 확인해 줘.
+    영화는 movie : , 장소는 region: , 날짜는 date: , 시간은 time: , 문장에서 찾은 영화 이름은 Original:에 대입해줘.
      빈 항목은 null를 채워서 마지막 줄에있는 출력형식으로만 대답한다.
 
     {{"movieName" : null, "region": null, "date": null, "time": null, "original": null, "similar": null}}
@@ -143,11 +157,14 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
     ner_tpl_secondary = '''
     "context 는 현재 상영중인 영화 리스트 : {context}"
     "대답은 무조건 context 리스트 안에서 대답한다."
-
+    "안녕과 같은 인사 내용은 생략한다."
     "context에 있는{movie}와 비슷한 이름을 movieName에 지정한다."
     "{movie}은 original로 지정한다."
-    Question: {movie} 는 영화 이름의 일부분이다. {movie} 를 포함거나 유사한 영화 이름이 context에 포함되어 있는지 확인하여 채운다,
-    없는 경우는 빈 항목으로 null를 채워서 마지막 줄에있는 출력형식으로만 대답해줘"
+    "영화 이름이 없다면 null을 넣는다."
+    "null은 ""나 ''를 쓰지 않는다."
+    
+    Question: {movie} 는 영화 이름의 일부분이다. {movie} 를 포함거나 유사한 영화 이름이 context에 포함되어 있는지 확인하여 context의 내용으로 채운다.
+    없는 경우는 빈 항목으로 null를 채워서 마지막 줄에있는 출력형식으로만 대답한다."
 
      {{"movieName" : null, "original": null}}
 
@@ -167,6 +184,7 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
         jamodict = pickle.load(f)
     # 쿼리 임베딩 및 첫 번째 LLM 호출
     if pre_response_dict["movieName"] is not None:
+        # print(pre_response_dict["movieName"])
         query_for_vector = pre_response_dict["movieName"]
     else:
         query_for_vector = query
@@ -180,7 +198,7 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
     })
 
     response_dict = check_json_entities(response1)
-
+    # print("r1",response_dict)
     if response_dict["movieName"] in query_results[1]:
         return
     elif response_dict["similar"] is None and response_dict["movieName"] is not None:
@@ -191,6 +209,7 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
         })
         response_redict = json.loads(response2)
         response_dict = rename_dict(response_dict, response_redict)
+        # print("r2",response_dict)
     elif response_dict["similar"] and response_dict["movieName"] is None:
         jamoQuestion = jamodict_search(query,jamodict)
         response2 = chain2.invoke({
@@ -199,8 +218,10 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
         })
         response_redict = json.loads(response2)
         response_dict = rename_dict(response_dict, response_redict)
-
+        # print("r3",response_dict)
     return json.dumps(response_dict)
+
+
 
 # api 호출
 def api_call(system_message, user_message):
@@ -236,6 +257,9 @@ def generate_response(entities):
 
     # json 형태로 변환하여 return
     return json.dumps(entities, ensure_ascii=False)
+
+
+
 def location_type(response_dict):
     # response_dict = json.loads(response)
     region_value = response_dict["region"]
@@ -249,7 +273,7 @@ def location_type(response_dict):
 
     # LLMChain 설정
     location_tpl = f'''너는 지리에 정통한 챗봇으로, 입력된 지명이나 주소를 처리하는 일을 담당해. 아래의 가이드라인을 따를 거야:
-    1. 주소를 알수 없는 지명이나, 없는 지명이라면 "null"을 반환해.
+    1. 주소를 알수 없는 지명이나, 없는 지명이라면 null을 반환한다.
     
     2. 주어진 지명에 대해, 동일한 이름을 가진 다른 시군구의 위치를 모두 찾아줘. 
        예를 들어, 만약 여러 도시나 지역에서 같은 이름의 지명이 있다면, 그 모든 위치를 전달해줘.
@@ -275,6 +299,7 @@ def location_type(response_dict):
     4. 참조 지명에서 찾는다. region_text는 참조 지명이다.
     region_text:{region_text}
     
+    5. null은 ""나 ''를 쓰지 않는다.
     
     이제, 내가 찾고자 하는 장소를 알려줄게, 없으면 None을 준다.:
     input: {region_value}

@@ -30,6 +30,15 @@ def query_embedding(query, k, embeddings_model, vector_store):
 def format_docs(docs):
     return '\n'.join([f'"{d.page_content}"' for d in docs])
 
+def format_dict(dict):
+    return '\n\n'.join([f"{key}: {', '.join(value) if isinstance(value, list) else value}" for key, value in dict.items()])
+
+def rename_dict(dict, redict):
+    dict["original"] = dict["movieName"]
+    dict["similar"] = redict["movieName"]
+    dict["movieName"] = redict["movieName"]
+    return dict
+
 #%%
 # 한글을 자모로 변환하는 함수
 def hangul_to_jamo(text):
@@ -66,5 +75,8 @@ def jamodict_search(query, jamodict):
     sorted_distance_list = sorted(distance_list, key=lambda x: min(x[2]))
     return sorted_distance_list
 
-def format_docs(docs):
-    return '\n'.join([f'"{d.page_content}"' for d in docs])
+def parse_output_string(response):
+    # "output: " 부분을 제거하고, 대괄호와 따옴표를 제거한 후 공백을 기준으로 나누어 리스트로 변환
+    cleaned_string = response.replace('output: ', '').strip().strip('[]').replace('"', '')
+    result = cleaned_string.split(", ")
+    return result

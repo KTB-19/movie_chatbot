@@ -46,11 +46,12 @@ public class MovieService {
         Map<String, List<LocalTime>> timesPerTheaterNameMap = groupByTheater(dto);
         log.info("timesPerTheaterNameMap : " + timesPerTheaterNameMap);
 
-        MovieInfoDetailsQueryDto detail = dto.get(0);
         AiRecommendResponse recommend = aiServerOpenFeign.getRecommend(
                 new AiRecommendRequest(
-                        detail.getMovie().getTitle(),
-                        detail.getMovieInfo().getDate(),
+                        query.getMovieName(),
+                        query.getRegion(),
+                        query.getDate(),
+                        query.getTime(),
                         timesPerTheaterNameMap
                 ));
         log.info("recommend : " + recommend.getMessage());

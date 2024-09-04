@@ -9,7 +9,6 @@ import { PiSidebarSimple } from "react-icons/pi";
 function App() {
     // 사이드바 조절
     const [isSidebarVisible, setSidebarVisible] = useState('');
-    const [hideSidebar, setHideSidebar] = useState(true);
 
     useEffect(() => {
         const handleResize = () => {
@@ -26,7 +25,6 @@ function App() {
 
     const toggleSidebar = () => {
         setSidebarVisible(!isSidebarVisible);
-        setHideSidebar(false);
     };
 
 

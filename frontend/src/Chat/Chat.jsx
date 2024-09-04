@@ -248,7 +248,9 @@ function Chat() {
                     date: dateRef.current ? formatDate(dateRef.current) : null,
                     time: time ? formatTime(time) : null
                 };
-            } else if (movieNameRef.current || regionRef.current || dateRef.current) {
+            } 
+            // else (movieNameRef.current || regionRef.current || dateRef.current) {
+            else {
                 endpoint = `/api/v1/movie/query/additional`;
                 body = {
                     parsedQuery: {
@@ -259,10 +261,11 @@ function Chat() {
                     },
                     message: currentInput || ""
                 };
-            } else {
-                endpoint = `/api/v1/movie/query?message=${encodeURIComponent(currentInput)}`;
-                body = null;
-            }
+            } 
+            // else {
+            //     endpoint = `/api/v1/movie/query?message=${encodeURIComponent(currentInput)}`;
+            //     body = null;
+            // }
 
             console.log("보낸값", movieNameRef.current, regionRef.current, dateRef.current, time);
             console.log("endpoint", endpoint, body);

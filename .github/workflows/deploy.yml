@@ -48,7 +48,7 @@ jobs:
           CI=false npm run build
           aws s3 sync build/ s3://${{ secrets.S3_BUCKET }} --delete
           aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
-
+ 
       # Backend, AI 이미지 빌드 및 푸시
       - name: Build and push Docker images
         run: |

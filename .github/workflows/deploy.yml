@@ -51,9 +51,9 @@ jobs:
       - name: Build and push Docker images
         run: |
           docker build -t $DOCKER_HUB_USERNAME/backend:latest ./backend
-        #  docker build -t $DOCKER_HUB_USERNAME/ai:latest ./ai
+        # docker build -t $DOCKER_HUB_USERNAME/ai:latest ./ai
           docker push $DOCKER_HUB_USERNAME/backend:latest
-        #  docker push $DOCKER_HUB_USERNAME/ai:latest
+        # docker push $DOCKER_HUB_USERNAME/ai:latest
 
       # Backend 서비스 배포 (AWS Systems Manager 사용)
       - name: Deploy Backend services

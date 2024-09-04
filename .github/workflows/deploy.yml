@@ -3,13 +3,12 @@ name: Deploy FullStackApp to AWS
 on:
   push:
     branches:
-      - feature/actions-pipeline
+      - refactor/pipeline
 
 env:
   DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
   DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
   AWS_REGION: ap-northeast-2
-
 
 jobs:
   deploy:

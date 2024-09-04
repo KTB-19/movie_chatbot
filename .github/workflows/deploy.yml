@@ -46,15 +46,15 @@ jobs:
       - name: Deploy Backend services
         run: |
           aws ssm send-command \
-            --instance-ids i-011b123c83aff0b9d \
+            --instance-ids i-05f61b1d8708b7fdd \
             --document-name "AWS-RunShellScript" \
             --parameters '{
               "commands": [
                 "sudo docker pull ${{ env.DOCKER_HUB_USERNAME }}/backend:latest",
                 "sudo docker pull ${{ env.DOCKER_HUB_USERNAME }}/ai:latest",
-                "sudo docker stop backend ai || true",
-                "sudo docker rm backend ai || true",
-                "sudo docker run -d --name ai --network ec2-user_export_network -p 8000:8000 -e PROJECT_NAME=ParseAI -e DATABASE_URL=mysql+aiomysql://root:qlalfqjsgh486@172.18.0.3:3306/moviedatabase ${{ env.DOCKER_HUB_USERNAME }}/ai:latest",
+               # "sudo docker stop backend ai || true",
+               # "sudo docker rm backend ai || true",
+               # "sudo docker run -d --name ai --network ec2-user_export_network -p 8000:8000 -e PROJECT_NAME=ParseAI -e DATABASE_URL=mysql+aiomysql://root:qlalfqjsgh486@172.18.0.3:3306/moviedatabase ${{ env.DOCKER_HUB_USERNAME }}/ai:latest",
                 "sudo docker run -d --name backend --network ec2-user_export_network -p 8080:8080 -e SPRING_DATASOURCE_URL=jdbc:mysql://172.18.0.3:3306/moviedatabase?serverTimezone=Asia/Seoul -e SPRING_DATASOURCE_USERNAME=root -e SPRING_DATASOURCE_PASSWORD=qlalfqjsgh486 -e AI_SERVICE_URL=http://172.18.0.5:8000/api/v1 ${{ env.DOCKER_HUB_USERNAME }}/backend:latest"
               ]
             }'

@@ -1,0 +1,56 @@
+@import url("https://statics.goorm.io/fonts/GoormSansCode/v1.0.0/GoormSansCode.min.css");
+
+* {
+  font-family: "Goorm Sans Code", sans-serif;
+}
+
+body, html {
+  height: 100%;
+  margin: 0;
+}
+
+.ratioContainer {
+  display: flex;
+  height: 100vh;
+  background-color: #0F1E46;
+}
+
+.sidebar {
+  flex: 1;
+  background-color: #0F1E46;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  transition: transform 0.3s ease-in-out;
+}
+
+.chat-container {
+  flex: 4;
+  background-color: white;
+  border-radius: 30px;
+  margin: 15px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+/* 창 너비가 화면의 절반 이하일 때 사이드바 숨김 */
+@media screen and (max-width: 50%) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+}
+
+.toggle-button {
+  position: fixed;
+  padding: 10px;
+  background-color: #0F1E46;;
+  font-size: 24px;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}

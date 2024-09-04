@@ -57,6 +57,7 @@ jobs:
           docker push $DOCKER_HUB_USERNAME/backend:latest
 
           cd ../ai
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env.production
           docker build -t $DOCKER_HUB_USERNAME/ai:latest .
           docker push $DOCKER_HUB_USERNAME/ai:latest
 

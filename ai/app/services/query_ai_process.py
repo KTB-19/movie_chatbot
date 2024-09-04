@@ -32,7 +32,14 @@ def vectorize_documents(documents, Embedding_model, FAISS_name, jamo_name):
 def process_documents_and_question(question,FAISS_name,jamo_name):
     # 한국 시간대 설정
     today,weekday = kor_today()
-
+    base_entities = {
+        "movieName": None,
+        "region": None,
+        "date": None,
+        "time": None,
+        "original": None,
+        "similar": None
+    }
     # LLM 초기화
     llm = ChatOpenAI(model='gpt-3.5-turbo-0125', temperature=0.3, max_tokens=200)
 
@@ -50,7 +57,7 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
     5. null은 ""나 ''를 쓰지 않는다.
 
     Question: question:"{question}"문장 안에 영화 이름, 장소, 날짜, 시간이 포함되어 있는지 확인해 줘.
-    영화는 movie : , 장소는 region: , 날짜는 date: , 시간은 time: , question에서 찾은 영화 이름은 Original:에 대입한다.
+    영화는 movieName : , 장소는 region: , 날짜는 date: , 시간은 time: , question에서 찾은 영화 이름은 original:에 대입한다.
     없거나 빈 항목은 null를 채워서 아래에 있는 출력 형식으로만 대답한다.
 
     {{"movieName" : null, "region": null, "date": null, "time": null, "original": null, "similar": null}}
@@ -95,9 +102,14 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
         'weekday': weekday
     })
     # 기존에 입력한 영화 이름을 original에, full name을 movieName과 similar에
-    # print("f1r1",response1)
-    response_dict = json.loads(response1)
-    # print("f1",response_dict)
+    try:
+        response_dict = json.loads(response1)
+        for key in base_entities:
+            if key not in response_dict:
+                response_dict[key] = response_dict[key]
+    except Exception as e:
+        response_dict = {"movieName": None, "region": None, "date": None, "time": None, "original": None, "similar": None}
+        return f"오류 발생: {e}"
     if response_dict["movieName"] in query_results[1]:
         return
 
@@ -120,7 +132,6 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
         response_redict = json.loads(response2)
         response_dict = rename_dict(response_dict, response_redict)
         # print("f3",response_dict)
-
     return json.dumps(response_dict)
 
 
@@ -131,30 +142,48 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
     # pre_response_dict = pre_response
     today,weekday = kor_today()
     # print(today,weekday)
+
+    base_entities = {
+        "movieName": None,
+        "region": None,
+        "date": None,
+        "time": None,
+        "original": None,
+        "similar": None
+    }
     # LLM 초기화
+
     llm = ChatOpenAI(model='gpt-3.5-turbo-0125', temperature=0.3, max_tokens=200)
 
     re_ner_tpl = '''
-    1. pre_response_dict에서 업데이트 하기 위해 질문에서 너는 영화 이름, 날짜, 시간, 장소를 구분하는 역할을 수행한다.
-    2. pre_response_dict의 영화, 날짜, 지역, 시간을 가져온다. 
-    3. pre_response_dict의 None인 값은 question에서 영화 이름, 날짜, 시간, 지역의 값을 확인한다.  
-    4. 영화 이름, 날짜, 시간, 지역중 변경을 요청하는 명확한 내용이 question에 있으면 pre_response_dict에 변경 내용을 업데이트한다.
-    3. 구체적인 question은 기존 내용에 추가한다.
-    4. pre_response_dict는 이전의 결과이다.
-    pre_response_dict:"{pre_response_dict}"
-    5. 영화 이름 None일 경우에만 question에 영화 이름이 있는지 확인한다.
-    6. 만약 유사한 이름 또는 내용이 없다면 None로 넣는다.
-    7. 오늘 날짜는 {today}이고 요일은 {weekday}다.
-    8. 만약 요일만 있다면 이번주로 계산한다.
-    9. 날짜의 포멧은 YYYY-MM-DD으로 반환한다.
-    10. 안녕과 같은 인사 내용은 생략한다.
-    11. 영화 이름이 없다면 None을 넣는다.
-    12. None은 ""나 ''를 쓰지 않는다.
+        1.	pre_response_dict라는 사전(Dictionary)을 업데이트한다. 이를 위해, 주어진 question에서 영화 이름, 날짜, 시간, 장소를 추출한다.
+        2.	pre_response_dict에 이미 있는 영화, 날짜, 지역, 시간 정보를 사용한다.
+        3.	pre_response_dict의 값이 None인 경우, question에서 해당 정보를 찾아 업데이트한다.
+        4.	question에서 발견된 정보를 pre_response_dict에 반영하며, 기존 내용을 유지한 채 업데이트한다.
+        5.	만약 영화 이름이 None이라면, question에서 영화 이름을 확인하고 없으면 None으로 남긴다.
+        6.	유사한 이름이나 내용이 없을 경우에도 해당 값을 None으로 설정한다.
+        7.	오늘 날짜는 {today}이고, 오늘의 요일은 {weekday}이다. 요일만 언급된 경우, 해당 요일이 이번 주의 날짜로 계산되도록 한다.
+        8.	날짜는 YYYY-MM-DD 형식으로 반환한다.
+        9.	인사말 등 불필요한 정보는 생략한다.
+        10.	None은 문자열로 표현하지 않는다.
     
-    Question: pre_response_dict:"{pre_response_dict}"의 내용을 사용하고, None인 것은 question:"{question}"문장 안에 영화 이름, 장소, 날짜, 시간이 포함되어 있는지 확인해 줘.
-    영화는 movie : , 장소는 region: , 날짜는 date: , 시간은 time: , 문장에서 찾은 영화 이름은 Original:에 대입한다.
-
-    {{"movieName" : None, "region": None, "date": None, "time": None, "original": None, "similar": None}}
+        pre_response_dict: {pre_response_dict}
+        question: "{question}"	
+        1.	pre_response_dict를 사용하여 None인 key가 있는지 확인한다.
+        2.	None인 key의 값을 question에서 찾아서 업데이트한다.
+        3.	question에서 발견된 영화 이름은 original에 대입한다.
+        4.	question에 포함된 정보가 없거나 유사한 내용이 없는 경우, 해당 값은 None으로 유지한다.
+        
+        다음은 출력 형식이다.
+        
+    {{
+        "movieName": None,
+        "region": None,
+        "date": None,
+        "time": None,
+        "original": None,
+        "similar": None
+    }}
     '''
 
     ner_tpl_secondary = '''
@@ -175,7 +204,6 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
     prompt1 = ChatPromptTemplate.from_template(re_ner_tpl)
     prompt2 = ChatPromptTemplate.from_template(ner_tpl_secondary)
 
-
     chain1 = prompt1 | llm | StrOutputParser()
     chain2 = prompt2 | llm | StrOutputParser()
 
@@ -193,38 +221,55 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
         query_for_vector = query
     query_results = query_embedding(query_for_vector, k=5, embeddings_model=embeddings_model, vector_store=vector_store)
     response1 = chain1.invoke({
-        'context': format_docs(query_results[1]),
         'pre_response_dict': format_dict(pre_response_dict),
         'question': query,
         'today': today,
         'weekday': weekday
     })
-    response_dict = ast.literal_eval(response1)
+    # print("pass",response1)
+    try:
+        response_dict = ast.literal_eval(response1)
+        for key in base_entities:
+            if key not in response_dict:
+                response_dict[key] = response_dict[key]
+
+    except Exception as e:
+        response_dict = pre_response_dict
+        return response_dict, f"오류 발생: {e}"
     # response_dict = check_json_entities(response1)
     # print("r1",response_dict)
-    if response_dict["movieName"] in query_results[1]:
-        return
-    elif response_dict["similar"] is None and response_dict["movieName"] is not None:
-        movie_name_query = jamodict_search(response_dict["movieName"], jamodict)
-        response2 = chain2.invoke({
-            'context': movie_name_query,
-            'movie': response_dict["movieName"]
-        })
-        response_redict = json.loads(response2)
-        response_dict = rename_dict(response_dict, response_redict)
-        # print("r2",response_dict)
-    elif response_dict["similar"] and response_dict["movieName"] is None:
-        jamoQuestion = jamodict_search(query,jamodict)
-        response2 = chain2.invoke({
-            'context': jamoQuestion,
-            'movie': query
-        })
-        response_redict = json.loads(response2)
-        response_dict = rename_dict(response_dict, response_redict)
+    try:
+        if response_dict["movieName"] in query_results[1]:
+            return
+        elif response_dict["similar"] is None and response_dict["movieName"] is not None:
+            movie_name_query = jamodict_search(response_dict["movieName"], jamodict)
+            response2 = chain2.invoke({
+                'context': movie_name_query,
+                'movie': response_dict["movieName"]
+            })
+
+            response_redict = json.loads(response2)
+            response_dict = rename_dict(response_dict, response_redict)
+            # print("r2",response_dict)
+        elif response_dict["similar"] and response_dict["movieName"] is None:
+            jamoQuestion = jamodict_search(query,jamodict)
+            response2 = chain2.invoke({
+                'context': jamoQuestion,
+                'movie': query
+            })
+            response_redict = json.loads(response2)
+            response_dict = rename_dict(response_dict, response_redict)
+    except Exception as e:
+        return f"오류 발생: {e}"
+    try:
+        for key, new_value in response_dict.items():
+            previous_value = pre_response_dict.get(key)
+            if new_value is None:
+                response_dict[key] = previous_value
+    except Exception as e:
+        return f"오류 발생: {e}"
         # print("r3",response_dict)
     return json.dumps(response_dict)
-
-
 
 # api 호출
 def api_call(system_message, user_message):
@@ -240,7 +285,6 @@ def api_call(system_message, user_message):
         return completion.choices[0].message.content
     except Exception as e:
         return f"오류 발생: {e}"
-
 
 def generate_response(entities):
     system_message = (

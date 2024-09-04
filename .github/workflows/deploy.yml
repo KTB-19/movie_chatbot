@@ -31,7 +31,9 @@ jobs:
           distribution: 'adopt'
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: |
+          cd backend
+          ./gradlew build
 
       - name: Login to Docker Hub
         run: echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin

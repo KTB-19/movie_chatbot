@@ -18,6 +18,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 프로젝트 파일 복사
 COPY . .
 
+COPY .env .env
+
 # 데이터 저장을 위한 디렉토리 생성
 RUN mkdir -p /app/data
 

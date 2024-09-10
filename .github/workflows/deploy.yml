@@ -44,7 +44,7 @@ jobs:
         run: |
           cd frontend
           npm ci
-          echo "REACT_APP_ENDPOINT=${{ secrets.REACT_APP_ENDPOINT }}" >> .env
+          echo "REACT_APP_ENDPOINT=${{ secrets.REACT_APP_ENDPOINT_MAIN }}" >> .env
           CI=false npm run build
           aws s3 sync build/ s3://${{ secrets.S3_BUCKET }} --delete
           aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"

@@ -138,8 +138,8 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
 
 def query_reprocess(query,FAISS_name,jamo_name,pre_response):
     # 한국 시간대 설정
-    pre_response_dict = pre_response.dict()
-    # pre_response_dict = pre_response
+    # pre_response_dict = pre_response.dict()
+    pre_response_dict = pre_response
     today,weekday = kor_today()
     # print(today,question generationeekday)
 
@@ -272,8 +272,9 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
     return json.dumps(response_dict)
 
 # api 호출
-def api_call(system_message, user_message):
+def api_call(system_message, user_message,entities):
     try:
+        user_message = user_message + format_dict(entities)
         completion = client.chat.completions.create(
             model='gpt-4o-mini',
             messages=[
@@ -289,14 +290,15 @@ def api_call(system_message, user_message):
 def generate_response(entities):
     system_message = (
         "당신은 사용자에게 영화 예매 정보를 확인하는 고객지원 챗봇 '무비빔밥'입니다. "
-        "사용자가 입력한 영화 이름, 지역, 날짜, 시간에 대한 정보를 확인하고, 그 정보가 정확한지 물어보세요. "
         "단, 사용자에게 추가 정보를 제공하거나 다른 주제에 대해 대답하지 마세요. "
+
     )
 
     # 엔티티 정확한지 확인
     user_message, entities = check_entities(entities)
     # api 호출
-    chatbot_response = api_call(system_message, user_message)
+    chatbot_response = api_call(system_message, user_message,entities)
+    print("user_message",user_message)
 
     # 불필요한 origin, similar 엔티티 제거 후 response를 엔티티에 추가
     entities = {k: entities[k] for k in ['movieName', 'region', 'date', 'time'] if k in entities}
@@ -310,7 +312,7 @@ def generate_response(entities):
 def location_type(response_dict):
     # response_dict = json.loads(response)
     region_value = response_dict["region"]
-    with open("./services/region_text.txt", "r", encoding="utf-8") as file:
+    with open("./app/services/region_text.txt", "r", encoding="utf-8") as file:
         region_text = file.read()
     temperature = 0.3
     #print('temperature', temperature)

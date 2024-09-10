@@ -8,7 +8,6 @@ variable "environment" {
   type        = string
 }
 
-
 variable "public_subnet_count" {
   description = "The number of public subnets"
   type        = number
@@ -22,5 +21,5 @@ variable "private_subnet_count" {
 variable "availability_zone" {
   description = "AZ"
   type = list(string)
-  default = ["ap-northeast-2a"]
+  default = ["ap-northeast-2a","ap-northeast-2c"]
 }

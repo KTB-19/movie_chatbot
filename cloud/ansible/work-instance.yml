@@ -1,5 +1,5 @@
 - name: Deploy and run docker-compose on different hosts
-  hosts: backend, crawling
+  hosts: db, crawling
   become: yes
 
   tasks:
@@ -14,9 +14,9 @@
         src: "{{ item.src }}"
         dest: "{{ item.dest}}"
       with_items:
-        - { src: 'backend-docker-compose.yml', dest: '/home/ec2-user/docker-compose.yml'}
+        - { src: 'db-docker-compose.yml', dest: '/home/ec2-user/docker-compose.yml'}
         - { src: 'config.my-cnf', dest: '/home/ec2-user/config.my-cnf'}
-      when: "'backend' in group_names"
+      when: "'db' in group_names"
 
     - name: Copy docker-compose.yml and .env to crawling servers
       copy:

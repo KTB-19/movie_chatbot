@@ -30,7 +30,6 @@
     - name: Install docker-compose
       shell:
         cmd: curl -L "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-        warn: false
 
     - name: Chmod docker-compose 
       file:
@@ -42,7 +41,7 @@
         src: /usr/local/bin/docker-compose
         dest: /usr/bin/docker-compose
         state: link
-
+    # 시간 바꾸기
     - name: Set timezone to Asia/Seoul
       ansible.builtin.command: timedatectl set-timezone Asia/Seoul
 
@@ -53,3 +52,22 @@
     - name: Print the current timezone
       ansible.builtin.debug:
         var: timedatectl_output.stdout
+
+    # Node Exporter 설치
+    - name: Pull Node Exporter Docker image
+      ansible.builtin.docker_image:
+        name: quay.io/prometheus/node-exporter
+        tag: latest
+        source: pull
+
+    - name: Run Node Exporter container
+      ansible.builtin.docker_container:
+        name: node_exporter
+        image: quay.io/prometheus/node-exporter:latest
+        state: started
+        restart_policy: always
+        network_mode: host
+        pid_mode: host
+        volumes:
+          - /:/host:ro,rslave
+        command: --path.rootfs=/host

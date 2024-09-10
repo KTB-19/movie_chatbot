@@ -2,14 +2,18 @@ version: '3.8'
 
 services:
   movie-crawling:
-    image: prunsoli/movie-crawling:2.0.7
+    image: prunsoli/movie-crawling:latest
     container_name: movie-crawling
-
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Seoul
+      
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.49.1
     container_name: cadvisor
     ports:
-      - "9100:8080"
+      - "9090:8080"
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro

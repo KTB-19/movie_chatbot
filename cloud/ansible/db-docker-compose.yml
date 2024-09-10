@@ -8,12 +8,14 @@ services:
       - "3306:3306"
     networks:
       - export_network
+    volumes:
+      - /home/ec2-user/mysql:/var/lib/mysql
 
   mysqld-exporter:
     image: prom/mysqld-exporter:main
     container_name: mysql_exporter
     ports:
-      - "9100:9104"
+      - "9090:9104"
     volumes:
       - /home/ec2-user/config.my-cnf:/cfg/config-my.cnf
     command:

@@ -106,27 +106,29 @@
 <br>
 
 ## 아키텍처
+![Movie-chatbot1](https://github.com/user-attachments/assets/1e5d10f9-a22c-4588-90c4-65a51d475259)
+
 
 <br>
 
 ## 프로젝트 수행 결과
 
-- 풀스택
-- 클라우드
-- 인공지능
+- [풀스택](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%EA%B2%B0%EA%B3%BC_%ED%92%80%EC%8A%A4%ED%83%9D.md)
+- [클라우드](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%EA%B2%B0%EA%B3%BC_%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C.md)
+- [인공지능](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%EA%B2%B0%EA%B3%BC_%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5.md)
 
 <br>
 
 ## 트러블 슈팅
 
-- 풀스택
-- 클라우드
-- 인공지능
+- [풀스택](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85_%ED%92%80%EC%8A%A4%ED%83%9D.md)
+- [클라우드](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85_%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C.md)
+- [인공지능](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85_%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5.md)
 
 <br>
 
 ## 회고
 
-- 회고
+- [회고](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%9A%8C%EA%B3%A0.md)
 
 <br>

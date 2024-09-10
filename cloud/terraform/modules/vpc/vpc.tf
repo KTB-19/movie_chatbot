@@ -24,7 +24,7 @@ resource "aws_subnet" "private" {
 
   vpc_id            = aws_vpc.this.id
   cidr_block        = cidrsubnet(var.vpc_cidr,   8, var.public_subnet_count + count.index)
-  availability_zone = var.availability_zone[count.index]
+  availability_zone = var.availability_zone[count.index % length(var.availability_zone)]
 
   tags = {
     Name = "movie-chat-${var.environment}-private-subnet-${count.index + 1}"
@@ -86,6 +86,6 @@ resource "aws_eip" "movie-eip" {
 # Nat Gateway
 resource "aws_nat_gateway" "movie-nat-gw" {
   allocation_id = aws_eip.movie-eip.id
-  subnet_id = aws_subnet.public[1].id
+  subnet_id = aws_subnet.public[0].id
   connectivity_type = "public"
 }

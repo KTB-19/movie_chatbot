@@ -8,7 +8,6 @@ variable "environment" {
   type        = string
 }
 
-
 variable "public_subnet_count" {
   description = "The number of public subnets"
   type        = number

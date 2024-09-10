@@ -32,7 +32,7 @@ module "vpc" {
 module "backend" {
   source             = "../../modules/instance"
   ami_id             = "ami-0c2acfcb2ac4d02a0"
-  instance_type      = "t3.small"
+  instance_type      = "t3.large"
   ssh_key_name       = "kakao-tech-bootcamp"
   subnet_id          = module.vpc.private_subnet_ids[0]
   security_groups_id = [aws_security_group.ssh.id, aws_security_group.backend.id]

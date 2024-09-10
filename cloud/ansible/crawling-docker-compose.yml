@@ -6,7 +6,9 @@ services:
     container_name: movie-crawling
     env_file:
       - .env
-
+    environment:
+      - TZ=Asia/Seoul
+      
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.49.1
     container_name: cadvisor

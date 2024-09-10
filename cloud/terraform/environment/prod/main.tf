@@ -1,6 +1,5 @@
 ####기본적인 terraform setup을 위한 tf 파일
 # S3 버켓과 DynamoDB를 생성한다
-
 terraform {
   required_providers {
     aws = {
@@ -20,118 +19,150 @@ terraform {
   required_version = ">= 1.2.0"
 }
 
+
 module "vpc" {
-  source               = "../../modules/vpc"
-  vpc_cidr             = "192.168.0.0/16"
-  public_subnet_cidr   = "192.168.1.0/24"
-  private_subnet_cidr  = "192.168.2.0/24"
-  environment          = terraform.workspace
-  public_subnet_count  = 2
-  private_subnet_count = 2
+  source = "../../modules/vpc_v2"
 }
 
-
-## 인스턴스
-
-module "front" {
-  source             = "../../modules/instance"
-  ami_id             = "ami-0c2acfcb2ac4d02a0"
-  instance_type      = "t2.micro"
-  ssh_key_name       = "kakao-tech-bootcamp"
-  subnet_id          = module.vpc.public_subnet_ids[0]
-  security_groups_id = [aws_security_group.ssh.id]
-  workspace          = "${terraform.workspace}-front"
-}
-
-module "name" {
-  source             = "../../modules/instance"
-  ami_id             = "ami-0c2acfcb2ac4d02a0"
-  instance_type      = "t2.small"
-  ssh_key_name       = "kakao-tech-bootcamp"
-  subnet_id          = module.vpc.private_subnet_ids[0]
-  security_groups_id = [aws_security_group.ssh.id]
-  workspace          = "${terraform.workspace}-backend"
-}
-
-module "crawling" {
-  source = "../../modules/instance"
-  ami_id = "ami-0c2acfcb2ac4d02a0"
-  instance_type      = "t2.xlarge"
-  ssh_key_name       = "kakao-tech-bootcamp"
-  subnet_id          = module.vpc.public_subnet_ids[1]
-  security_groups_id = [aws_security_group.ssh.id]
-  workspace          = "${terraform.workspace}-crawling"
-}
-
-module "db" {
-  source             = "../../modules/instance"
-  ami_id             = "ami-0c2acfcb2ac4d02a0"
-  instance_type      = "t2.small"
-  ssh_key_name       = "kakao-tech-bootcamp"
-  subnet_id          = module.vpc.private_subnet_ids[1]
-  security_groups_id = [aws_security_group.mysql.id,aws_security_group.ssh.id]
-  workspace          = "${terraform.workspace}-db"
+module "security_groups" {
+  source = "../../modules/security_groups"
+  vpc_id = module.vpc.vpc_id
 }
 
 module "dev-host" {
-  source             = "../../modules/instance"
-  ami_id             = "ami-0c2acfcb2ac4d02a0"
-  instance_type      = "t2.xlarge"
-  ssh_key_name       = "kakao-tech-bootcamp"
-  subnet_id          = module.vpc.public_subnet_ids[1]
-  security_groups_id = [aws_security_group.ssh.id]
-  workspace          = "${terraform.workspace}-db"
+  source          = "../../modules/ec2"
+  subnets         = [module.vpc.public_subnets[0]]
+  instance_type   = "t3.small"
+  ami_image = "ami-05d768df76a2b8bd8"
+  private_ips     = ["192.168.1.23"]
+  instance_count  = 1
+  security_groups = [module.security_groups.movie_default_sg_id]
+  tags = "dev-host"
 }
 
+module "crawling" {
+  source          = "../../modules/ec2"
+  subnets         = [module.vpc.public_subnets[1]]
+  instance_type   = "c6i.large"
+  private_ips     = ["192.168.2.26"]
+  instance_count  = 1
+  security_groups = [module.security_groups.movie_default_sg_id]
+  tags = "crawling"
+}
 
+module "backend" {
+  source          = "../../modules/ec2"
+  subnets         = module.vpc.private_subnets
+  instance_type   = "t3.small"
+  private_ips     = ["192.168.3.233", "192.168.4.134"]
+  instance_count  = 2
+  security_groups = [module.security_groups.movie_default_sg_id, module.security_groups.movie_backend_sg_id]
+  tags = "backend"
+}
 
-# 보안 그룹
-resource "aws_security_group" "ssh" {
+module "db" {
+  source          = "../../modules/ec2"
+  subnets         = module.vpc.db_subnets
+  instance_type   = "t3.micro"
+  private_ips     = ["192.168.5.116"]
+  instance_count  = 1
+  security_groups = [module.security_groups.movie_default_sg_id, module.security_groups.movie_db_sg_id]
+  tags = "db"
+}
+
+module "alb" {
+  source = "../../modules/alb"
+  target_instances_ids = module.backend.instance_ids
   vpc_id = module.vpc.vpc_id
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  alb-subnets_ids = module.vpc.public_subnets
+  security_groups_ids = [module.security_groups.movie_alb_sg_id]
+}
+
+# Front 배포 
+resource "aws_s3_bucket" "react_website" {
+  bucket = "ktb-movie-bucket-${terraform.workspace}"
+}
+
+# S3 버킷의 공용 접근 차단 설정
+resource "aws_s3_bucket_public_access_block" "react_website_public_access_block" {
+  bucket = aws_s3_bucket.react_website.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_cloudfront_origin_access_control" "s3_oac" {
+  name                              = "ktb-movie-oac"
+  description                       = "OAC for ktb-movie S3 bucket"
+  origin_access_control_origin_type = "s3"
+
+  signing_behavior = "always"
+  signing_protocol = "sigv4"
+}
+
+resource "aws_cloudfront_distribution" "react_website_distribution" {
+  origin {
+    domain_name              = aws_s3_bucket.react_website.bucket_regional_domain_name
+    origin_id                = aws_s3_bucket.react_website.id
+    origin_access_control_id = aws_cloudfront_origin_access_control.s3_oac.id
+
   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+  enabled             = true
+  is_ipv6_enabled     = true
+  default_root_object = "index.html"
+
+  default_cache_behavior {
+    allowed_methods  = ["GET", "HEAD"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = aws_s3_bucket.react_website.id
+
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+
+    viewer_protocol_policy = "redirect-to-https"
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
   }
 
   tags = {
-    Name = "moive-${terraform.workspace}-sg-ssh"
+    Name = "React Website Distribution"
   }
 }
 
-resource "aws_security_group" "mysql" {
-  vpc_id = module.vpc.vpc_id
+resource "aws_s3_bucket_policy" "react_website_policy" {
+  bucket = aws_s3_bucket.react_website.id
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  
-  ingress {
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "moive-${terraform.workspace}-sg-mysql"
-  }
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "cloudfront.amazonaws.com"
+        }
+        Action = "s3:GetObject"
+        Resource = "${aws_s3_bucket.react_website.arn}/*"
+        Condition = {
+          StringEquals = {
+            "AWS:SourceArn" = aws_cloudfront_distribution.react_website_distribution.arn
+          }
+        }
+      }
+    ]
+  })
 }

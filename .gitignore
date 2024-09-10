@@ -23,6 +23,8 @@ out/
 # .tfstate files
 *.tfstate
 *.tfstate.*
+terraform.exe
+terraform
 
 # Crash log files
 crash.log

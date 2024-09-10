@@ -8,6 +8,8 @@ services:
       - "3306:3306"
     networks:
       - export_network
+    volumes:
+      - /home/ec2-user/mysql:/var/lib/mysql
 
   mysqld-exporter:
     image: prom/mysqld-exporter:main

@@ -240,7 +240,7 @@ function Chat() {
             let isRunningTimesQuery = false;
 
             if (movieNameRef.current && regionRef.current && dateRef.current) {
-                endpoint = `/api/v1/movie/running-times`;
+                endpoint = `${process.env.REACT_APP_ENDPOINT}/api/v1/movie/running-times`;
                 isRunningTimesQuery = true;
                 body = {
                     movieName: movieNameRef.current || "",
@@ -251,7 +251,7 @@ function Chat() {
             } 
             // else (movieNameRef.current || regionRef.current || dateRef.current) {
             else {
-                endpoint = `/api/v1/movie/query/additional`;
+                endpoint = `${process.env.REACT_APP_ENDPOINT}/api/v1/movie/query/additional`;
                 body = {
                     parsedQuery: {
                         ...(movieNameRef.current && { movieName: movieNameRef.current }),

@@ -1,0 +1,107 @@
+name: Deploy MovieChatBot to Main AWS
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+  DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+  BACKEND_EC2_INSTANCE: ${{ secrets.BACKEND_EC2_INSTANCE }}
+  BACKEND_EC2_INSTANCE2: ${{ secrets.BACKEND_EC2_INSTANCE2 }}
+  AWS_REGION: ap-northeast-2
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v2
+        with:
+          java-version: '21'
+          distribution: 'adopt'
+
+      - name: Build with Gradle
+        run: |
+          cd backend
+          ./gradlew build
+
+      - name: Login to Docker Hub
+        run: echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+
+      - name: Build and deploy Frontend
+        run: |
+          cd frontend
+          npm ci
+          echo "REACT_APP_ENDPOINT=${{ secrets.REACT_APP_ENDPOINT }}" >> .env
+          CI=false npm run build
+          aws s3 sync build/ s3://${{ secrets.S3_BUCKET }} --delete
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+
+      - name: Build and push Docker images
+        run: |
+          cd backend
+          docker build -t $DOCKER_HUB_USERNAME/backend:latest .
+          docker push $DOCKER_HUB_USERNAME/backend:latest
+
+          cd ../ai
+          docker build --build-arg OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" -t $DOCKER_HUB_USERNAME/ai:latest .
+          docker push $DOCKER_HUB_USERNAME/ai:latest
+
+      - name: Deploy Backend services
+        run: |
+          aws ssm send-command \
+            --instance-ids ${{ secrets.BACKEND_EC2_INSTANCE }} \
+            --document-name "AWS-RunShellScript" \
+            --parameters '{
+              "commands": [
+                "sudo docker stop backend ai || true",
+                "sudo docker rm backend ai || true",
+                "sudo docker image rm ${{ secrets.DOCKER_HUB_USERNAME }}/ai:latest",
+                "sudo docker image rm ${{ secrets.DOCKER_HUB_USERNAME }}/backend:latest",
+                "sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/backend:latest",
+                "sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/ai:latest",
+                "sudo docker run -d --name backend --network ec2-user_export_network -p 8080:8080 -e SPRING_DATASOURCE_URL=jdbc:mysql://${{ secrets.DATABASE_EC2_PRIVATE_IP }}:3306/moviedatabase?serverTimezone=Asia/Seoul -e SPRING_DATASOURCE_USERNAME=root -e SPRING_DATASOURCE_PASSWORD=qlalfqjsgh486 -e AI_SERVICE_URL=http://ai:8000/api/v1 ${{ secrets.DOCKER_HUB_USERNAME }}/backend:latest",
+                "sudo docker run -d --name ai --network ec2-user_export_network -p 8000:8000 -e PROJECT_NAME=ParseAI -e DATABASE_URL=mysql+aiomysql://root:qlalfqjsgh486@${{ secrets.DATABASE_EC2_PRIVATE_IP }}:3306/moviedatabase ${{ secrets.DOCKER_HUB_USERNAME }}/ai:latest"
+              ]
+            }'
+        env:
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DATABASE_EC2_PRIVATE_IP: ${{ secrets.DATABASE_EC2_PRIVATE_IP }}
+
+      - name: Deploy Backend 2 services
+        run: |
+          aws ssm send-command \
+            --instance-ids ${{ secrets.BACKEND_EC2_INSTANCE2 }} \
+            --document-name "AWS-RunShellScript" \
+            --parameters '{
+              "commands": [
+                "sudo docker stop backend ai || true",
+                "sudo docker rm backend ai || true",
+                "sudo docker image rm ${{ secrets.DOCKER_HUB_USERNAME }}/ai:latest",
+                "sudo docker image rm ${{ secrets.DOCKER_HUB_USERNAME }}/backend:latest",
+                "sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/backend:latest",
+                "sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/ai:latest",
+                "sudo docker run -d --name backend --network ec2-user_export_network -p 8080:8080 -e SPRING_DATASOURCE_URL=jdbc:mysql://${{ secrets.DATABASE_EC2_PRIVATE_IP }}:3306/moviedatabase?serverTimezone=Asia/Seoul -e SPRING_DATASOURCE_USERNAME=root -e SPRING_DATASOURCE_PASSWORD=qlalfqjsgh486 -e AI_SERVICE_URL=http://ai:8000/api/v1 ${{ secrets.DOCKER_HUB_USERNAME }}/backend:latest",
+                "sudo docker run -d --name ai --network ec2-user_export_network -p 8000:8000 -e PROJECT_NAME=ParseAI -e DATABASE_URL=mysql+aiomysql://root:qlalfqjsgh486@${{ secrets.DATABASE_EC2_PRIVATE_IP }}:3306/moviedatabase ${{ secrets.DOCKER_HUB_USERNAME }}/ai:latest"
+              ]
+            }'
+        env:
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DATABASE_EC2_PRIVATE_IP: ${{ secrets.DATABASE_EC2_PRIVATE_IP }}
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker logout

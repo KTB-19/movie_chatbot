@@ -1,0 +1,55 @@
+---
+- name: Install Docker on Amazon Linux
+  hosts: all_servers
+  become: yes  # root 권한
+  
+  tasks:
+    - name: Update the yum package index
+      yum:
+        name: "*"
+        state: latest
+        update_cache: yes
+
+    - name: Install Docker
+      yum:
+        name: docker
+        state: present
+
+    - name: Ensure Docker is started
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add the ec2-user to the docker group
+      user:
+        name: ec2-user
+        groups: docker
+        append: yes
+    
+    - name: Install docker-compose
+      shell:
+        cmd: curl -L "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        warn: false
+
+    - name: Chmod docker-compose 
+      file:
+        path: "/usr/local/bin/docker-compose"
+        mode: 0755
+
+    - name: Make link docker-compose
+      file:
+        src: /usr/local/bin/docker-compose
+        dest: /usr/bin/docker-compose
+        state: link
+
+    - name: Set timezone to Asia/Seoul
+      ansible.builtin.command: timedatectl set-timezone Asia/Seoul
+
+    - name: Ensure the correct timezone is set
+      ansible.builtin.command: timedatectl
+      register: timedatectl_output
+
+    - name: Print the current timezone
+      ansible.builtin.debug:
+        var: timedatectl_output.stdout

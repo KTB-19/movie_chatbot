@@ -1,4 +1,3 @@
-.env
 .pkl
 app/**/__pycache__/
 app/__pycache__/

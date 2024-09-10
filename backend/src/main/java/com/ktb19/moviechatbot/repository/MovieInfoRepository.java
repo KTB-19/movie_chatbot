@@ -16,7 +16,7 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfo, Long> {
             " from MovieInfo i" +
             " left join i.movie m" +
             " left join i.theater t" +
-            " where m.title = :movieName" +
+            " where m.title like :movieName%" +
             " and t.wideArea = :wideArea" +
             " and t.basicArea = :basicArea" +
             " and i.date = :date")
@@ -26,7 +26,7 @@ public interface MovieInfoRepository extends JpaRepository<MovieInfo, Long> {
             " from MovieInfo i" +
             " left join i.movie m" +
             " left join i.theater t" +
-            " where m.title = :movieName" +
+            " where m.title like :movieName%" +
             " and t.wideArea = :wideArea" +
             " and t.basicArea = :basicArea" +
             " and i.date = :date" +

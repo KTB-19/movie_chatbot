@@ -279,4 +279,41 @@ class MovieInfoRepositoryTest {
         assertThat(result.getFirst().getMovieInfo()).isEqualTo(savedMovieInfo2);
         assertThat(result.getLast().getMovieInfo()).isEqualTo(savedMovieInfo3);
     }
+
+
+    @Test
+    @DisplayName("유사한 movieName을 가진 info list를 반환한다.")
+    void findAllByQuery_similarMovieName() {
+        //Given
+        LocalDate date = LocalDate.of(2024, 9, 1);
+        LocalTime time = LocalTime.of(12, 0);
+
+        MovieInfo movieInfo1 = MovieInfo.builder()
+                .id(1)
+                .movie(movie1)
+                .theater(theater1)
+                .date(date)
+                .time(time)
+                .build();
+
+        MovieInfo movieInfo2 = MovieInfo.builder()
+                .id(2)
+                .movie(movie2)
+                .theater(theater1)
+                .date(date)
+                .time(time)
+                .build();
+
+        MovieInfo savedMovieInfo1 = movieInfoRepository.save(movieInfo1);
+        MovieInfo savedMovieInfo2 = movieInfoRepository.save(movieInfo2);
+
+        //When
+        String similarMovieName = "test title";
+        List<MovieInfoDetailsQueryDto> result = movieInfoRepository.findAllByQuery(similarMovieName, theater1.getWideArea(), theater1.getBasicArea(), date);
+
+        //Then
+        assertThat(result).hasSize(2);
+        assertThat(result.getFirst().getMovieInfo()).isEqualTo(savedMovieInfo1);
+        assertThat(result.getLast().getMovieInfo()).isEqualTo(savedMovieInfo2);
+    }
 }

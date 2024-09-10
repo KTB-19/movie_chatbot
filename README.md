@@ -1,10 +1,10 @@
 # 무비빔밥
-여러 영화관의 정보를 통합하여 제공하는 **지능형 고객 지원 챗봇**
+사용자 선호 및 위치 기반 영화관을 추천해주는 **지능형 고객 지원 챗봇**
 
 <img src="https://github.com/user-attachments/assets/342ac0ff-9b80-4e05-8504-551a7830d80e" width="400" height="400" />
 
 
-- 🔗 서비스 링크 :
+- 🔗 서비스 링크 : http://d14hn9nv9zhgf7.cloudfront.net/
 - 📅 개발 기간 : 2024.07.17 ~ 2024.09.03 (7주)
 
 <br>
@@ -101,7 +101,7 @@
 - Frontend : <img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&logo=react&logoColor=black">
 - Backend : <img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white">  <img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"> <img src="https://img.shields.io/badge/JPA-6DB33F?style=for-the-badge&logoColor=white"> <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> 
 - Cloud : <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white"> <img src="https://img.shields.io/badge/Terraform-844FBA?style=for-the-badge&logo=Terraform&logoColor=white"> <img src="https://img.shields.io/badge/Ansible-EE0000?style=for-the-badge&logo=Ansible&logoColor=white"> <img src="https://img.shields.io/badge/Github Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white"> <img src="https://img.shields.io/badge/prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white"> <img src="https://img.shields.io/badge/grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white"> <img src="https://img.shields.io/badge/AWS-FF9900?style=for-the-badge&logoColor=white">
-- AI : <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white"> 
+- AI : <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white"> <img src="https://img.shields.io/badge/chatgpt-000000?style=for-the-badge"> <img src="https://img.shields.io/badge/kobert-512BD4?style=for-the-badge"> <img src="https://img.shields.io/badge/faiss-DB6A26?style=for-the-badge"> <img src="https://img.shields.io/badge/langchain-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white"> 
 
 <br>
 
@@ -111,12 +111,22 @@
 
 ## 프로젝트 수행 결과
 
+- 풀스택
+- 클라우드
+- 인공지능
+
 <br>
 
 ## 트러블 슈팅
 
+- 풀스택
+- 클라우드
+- 인공지능
+
 <br>
 
 ## 회고
+
+- 회고
 
 <br>

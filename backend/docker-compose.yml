@@ -1,9 +1,16 @@
-version: '3.8'
-
-services:
-  db:
-    image: prunsoli/ktb-19-db:latest
-    container_name: movie-db-test
-    restart: always
-    ports:
-      - "3307:3306"
+#version: '3.8'
+#
+#services:
+#  db:
+#    image: prunsoli/ktb-19-db:1.2
+#    container_name: movie-db-test
+#    restart: always
+#    ports:
+#      - "3306:3306"
+#    command:
+#      - --character-set-server=utf8mb4
+#      - --collation-server=utf8mb4_unicode_ci
+#    environment:
+#      - LC_ALL=C.UTF-8  # LC_ALL 환경 변수 추가
+#    networks:
+#      - app-network

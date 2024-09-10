@@ -1,0 +1,67 @@
+@font-face {
+    font-family: 'BMHANNAPro';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_seven@1.0/BMHANNAPro.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    }
+    
+.aside {
+    /* width: 30%; */
+    height: 100vh;
+    background-color: #0f1e46;
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    padding-left: 12px; /* 사이드바 내부 좌우대칭 맞추기 */
+    box-sizing: border-box;
+}
+.logo-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+.logo {
+    display: flex;
+    height: 18vh;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    border-bottom: solid #394667;
+}
+.logo img {
+    max-height: 70%;
+    max-width: 70%;
+}
+.date-selector {
+    padding-top: 10%;
+    width: 100%;
+}
+
+#region-selector {
+    width: 100%;
+    /* margin-left: 5%;
+    margin-right: 5%; */
+    padding: 3vh 0;
+    /* padding-bottom: 3vh; */
+    border-bottom: solid #394667;
+}
+/* #region-selector > .region-label {
+    color: white;
+    margin-bottom: 5vh;
+} */
+#region-selector > .region-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#region-selector > .region-container > .wide-area,.basic-area {
+    flex: 1;
+    margin: 0 2.5%;
+    /* width: 40%; */
+    /* margin: 4%; */
+    padding: 5px;
+    border-radius: 4px;
+    box-sizing: border-box;
+}

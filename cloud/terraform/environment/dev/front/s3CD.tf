@@ -23,7 +23,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "react_website" {
-  bucket = "ktb-movie-bucket"
+  bucket = "ktb-movie-bucket-${workspace}"
 }
 
 # S3 버킷의 공용 접근 차단 설정

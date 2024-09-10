@@ -16,6 +16,7 @@ out/
 
 .jython_cache
 
+.vscode
 
 
 # Local .terraform directories
@@ -23,6 +24,7 @@ out/
 # .tfstate files
 *.tfstate
 *.tfstate.*
+terraform.exe
 
 # Crash log files
 crash.log

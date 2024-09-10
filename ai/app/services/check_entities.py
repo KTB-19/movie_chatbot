@@ -45,12 +45,14 @@ def check_entities(entities):
     # 엔티티가 하나라도 누락된 경우
     if missing_entities: 
         missing_str = ', '.join(missing_entities)       # 엔티티 연결은 모두 ','로
-        user_message = f"관람하고 싶은 {missing_str}을(를) 말씀해 주세요."
+        user_message = f"{missing_str}가(이) 누락되었습니다. 관람하고 싶은 {missing_str}을(를) 말씀해 주세요."
+
+        print("missing_str",missing_str)
     # 엔티티가 모두 채워진 경우
     else:
         time_str = f" {entities['time']}에" if entities.get("time") else ""
         user_message = f"{entities['date']}{time_str} {entities['region']}에서 {entities['movieName']}을(를) 관람하고 싶은 게 맞으신가요?"
-
+    print("entities",entities)
 
     return user_message, entities
 

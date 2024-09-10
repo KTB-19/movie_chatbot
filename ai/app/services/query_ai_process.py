@@ -138,8 +138,8 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
 
 def query_reprocess(query,FAISS_name,jamo_name,pre_response):
     # 한국 시간대 설정
-    # pre_response_dict = pre_response.dict()
-    pre_response_dict = pre_response
+    pre_response_dict = pre_response.dict()
+    # pre_response_dict = pre_response
     today,weekday = kor_today()
     # print(today,question generationeekday)
 

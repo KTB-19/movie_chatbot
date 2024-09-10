@@ -14,7 +14,7 @@ from app.services.datetime_format import kor_today
 from app.services.check_entities import check_entities, check_json_entities
 from app.services.embeddings import KoBERTEmbeddings, query_embedding, format_docs, jamodict_search, format_dict, rename_dict
 from app.services.datetime_format import kor_today, format_date_time, format_date, format_time, parse_am_pm
-from app.services.check_entities import check_entities
+from app.services.check_entities import check_entities, data_cleaning
 from app.services.vector_store import FAISS_vectorize_documents, jamo_vectorize_documents
 
 
@@ -103,7 +103,7 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
     })
     # 기존에 입력한 영화 이름을 original에, full name을 movieName과 similar에
     try:
-        response_dict = json.loads(response1)
+        response_dict = json.loads(data_cleaning(response1))
         for key in base_entities:
             if key not in response_dict:
                 response_dict[key] = response_dict[key]
@@ -120,7 +120,7 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
             'movie': response_dict["movieName"]
         })
         # print("f2a",response2)
-        response_redict = json.loads(response2)
+        response_redict = json.loads(data_cleaning(response2))
         response_dict = rename_dict(response_dict, response_redict)
         # print("f2",response_dict)
     elif response_dict["similar"] and response_dict["movieName"] is None:
@@ -129,7 +129,7 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
             'context': jamoQuestion,
             'movie': question
         })
-        response_redict = json.loads(response2)
+        response_redict = json.loads(data_cleaning(response2))
         response_dict = rename_dict(response_dict, response_redict)
         # print("f3",response_dict)
     return json.dumps(response_dict)
@@ -228,7 +228,7 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
     })
     # print("pass",response1)
     try:
-        response_dict = ast.literal_eval(response1)
+        response_dict = ast.literal_eval(data_cleaning(response1))
         for key in base_entities:
             if key not in response_dict:
                 response_dict[key] = response_dict[key]
@@ -248,7 +248,7 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
                 'movie': response_dict["movieName"]
             })
 
-            response_redict = json.loads(response2)
+            response_redict = json.loads(data_cleaning(response2))
             response_dict = rename_dict(response_dict, response_redict)
             # print("r2",response_dict)
         elif response_dict["similar"] and response_dict["movieName"] is None:
@@ -257,7 +257,7 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
                 'context': jamoQuestion,
                 'movie': query
             })
-            response_redict = json.loads(response2)
+            response_redict = json.loads(data_cleaning(response2))
             response_dict = rename_dict(response_dict, response_redict)
     except Exception as e:
         return f"오류 발생: {e}"

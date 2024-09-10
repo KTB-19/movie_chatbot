@@ -41,7 +41,7 @@ def process_documents_and_question(question,FAISS_name,jamo_name):
         "similar": None
     }
     # LLM 초기화
-    llm = ChatOpenAI(model='gpt-3.5-turbo-0125', temperature=0.3, max_tokens=200)
+    llm = ChatOpenAI(model='gpt-4o-mini', temperature=0.3, max_tokens=200)
 
     # LLMChain 설정
     ner_tpl = '''1. 너는 영화 예매를 도와주는 챗봇이다. 영화 이름, 날짜, 시간, 장소를 구분하는 역할을 수행한다.
@@ -141,7 +141,7 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
     pre_response_dict = pre_response.dict()
     # pre_response_dict = pre_response
     today,weekday = kor_today()
-    # print(today,weekday)
+    # print(today,question generationeekday)
 
     base_entities = {
         "movieName": None,
@@ -153,7 +153,7 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
     }
     # LLM 초기화
 
-    llm = ChatOpenAI(model='gpt-3.5-turbo-0125', temperature=0.3, max_tokens=200)
+    llm = ChatOpenAI(model='gpt-4o-mini', temperature=0.3, max_tokens=200)
 
     re_ner_tpl = '''
         1.	pre_response_dict라는 사전(Dictionary)을 업데이트한다. 이를 위해, 주어진 question에서 영화 이름, 날짜, 시간, 장소를 추출한다.
@@ -275,7 +275,7 @@ def query_reprocess(query,FAISS_name,jamo_name,pre_response):
 def api_call(system_message, user_message):
     try:
         completion = client.chat.completions.create(
-            model='gpt-3.5-turbo-0125',
+            model='gpt-4o-mini',
             messages=[
                 {"role": "system", "content": system_message},
                 {"role": "user", "content": user_message},
@@ -316,7 +316,7 @@ def location_type(response_dict):
     #print('temperature', temperature)
 
     # LLM 초기화
-    llm = ChatOpenAI(model='gpt-3.5-turbo-0125', temperature=temperature, max_tokens=200)
+    llm = ChatOpenAI(model='gpt-4o-mini', temperature=temperature, max_tokens=200)
 
     # LLMChain 설정
     location_tpl = f'''너는 지리에 정통한 챗봇으로, 입력된 지명이나 주소를 처리하는 일을 담당해. 아래의 가이드라인을 따를 거야:

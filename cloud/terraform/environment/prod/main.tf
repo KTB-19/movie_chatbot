@@ -53,7 +53,7 @@ module "crawling" {
 module "backend" {
   source          = "../../modules/ec2"
   subnets         = module.vpc.private_subnets
-  instance_type   = "t3.small"
+  instance_type   = "r7i.large"
   private_ips     = ["192.168.3.233", "192.168.4.134"]
   instance_count  = 2
   security_groups = [module.security_groups.movie_default_sg_id, module.security_groups.movie_backend_sg_id]
@@ -63,7 +63,7 @@ module "backend" {
 module "db" {
   source          = "../../modules/ec2"
   subnets         = module.vpc.db_subnets
-  instance_type   = "t3.micro"
+  instance_type   = "t3.small"
   private_ips     = ["192.168.5.116"]
   instance_count  = 1
   security_groups = [module.security_groups.movie_default_sg_id, module.security_groups.movie_db_sg_id]

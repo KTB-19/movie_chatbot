@@ -53,3 +53,10 @@ def check_entities(entities):
 
 
     return user_message, entities
+
+
+def data_cleaning(ref_text: str) -> str:
+    cleaned_data_json = ref_text.replace('json', '')
+    cleaned_data_back = cleaned_data_json.replace('```', '')
+    cleaned_data = cleaned_data_back.strip()
+    return cleaned_data

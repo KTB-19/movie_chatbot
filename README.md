@@ -140,7 +140,7 @@
   - Kobis에서 제공하는 지역별 및 날짜별 상영 스케줄 정보를 크롤링
   - DB 설계 및 데이터 저장
   - 크롤링 속도 개선을 위해 멀티프로세싱 적용
-- 클라우드 [자세히]((https://github.com/KTB-19/movie_chatbot/blob/main/docs/%EA%B2%B0%EA%B3%BC_%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C.md))
+- 클라우드 [자세히](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%EA%B2%B0%EA%B3%BC_%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C.md)
   - Terraform을 활용한 인프라 구성
   - Ansible을 활용하여 Docker, Docker-compose, Node_exporter를 세팅
   - Github Actions를 이용한 CI/CD

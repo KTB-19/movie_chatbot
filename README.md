@@ -125,18 +125,18 @@
 
 ## 💎 프로젝트 수행 결과
 
-- 프론트엔드 [자세히]()
+- 프론트엔드 [자세히](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%EA%B2%B0%EA%B3%BC_%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C.md)
   - React를 사용한 사용자 인터페이스 구축
   - 상태 관리 및 전역 상태 관리
   - 백엔드 API와의 통신
-- 백엔드 [자세히]()
+- 백엔드 [자세히](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%EA%B2%B0%EA%B3%BC_%EB%B0%B1%EC%97%94%EB%93%9C.md)
     - RESTful API 설계에 대한 이해 및 적용
     - BDDMockito, JUnit5를 사용한 단위 테스트 작성
     - ExceptionHandler을 통한 공통 예외 처리
     - Validation 과정을 통해 데이터 유효성 검증
     - Swagger를 사용한 API 명세서 작성
     - AI 워드 임베딩 과정 스케줄링
-- 크롤링 [자세히]()
+- 크롤링 [자세히](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%EA%B2%B0%EA%B3%BC_%ED%81%AC%EB%A1%A4%EB%A7%81.md)
   - Kobis에서 제공하는 지역별 및 날짜별 상영 스케줄 정보를 크롤링
   - DB 설계 및 데이터 저장
   - 크롤링 속도 개선을 위해 멀티프로세싱 적용
@@ -154,12 +154,12 @@
 
 ## ⚠️ 트러블 슈팅
 
-- 프론트엔드 [자세히]()
+- 프론트엔드 [자세히](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85_%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C.md)
   - useRef를 사용한 상태 반영
-- 백엔드 [자세히]()
+- 백엔드 [자세히](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85_%EB%B0%B1%EC%97%94%EB%93%9C.md)
   - AI 코드 구동을 위한 효율적인 아키텍처
   - stream을 활용한 복잡한 로직 단순화
-- 크롤링 [자세히]()
+- 크롤링 [자세히](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85_%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5.md)
   - 멀티 프로세싱을 사용한 크롤링 시간 단축
 - 클라우드 [자세히](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85_%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C.md)
   - Mysql 도커 이미지로 EC2에서 Endtrypoint 에러

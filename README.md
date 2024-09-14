@@ -125,22 +125,73 @@
 
 ## 💎 프로젝트 수행 결과
 
-- [풀스택](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%EA%B2%B0%EA%B3%BC_%ED%92%80%EC%8A%A4%ED%83%9D.md)
-- [클라우드](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%EA%B2%B0%EA%B3%BC_%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C.md)
-- [인공지능](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%EA%B2%B0%EA%B3%BC_%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5.md)
+- 프론트엔드 [자세히]()
+  - React를 사용한 사용자 인터페이스 구축
+  - 상태 관리 및 전역 상태 관리
+  - 백엔드 API와의 통신
+- 백엔드 [자세히]()
+    - RESTful API 설계에 대한 이해 및 적용
+    - BDDMockito, JUnit5를 사용한 단위 테스트 작성
+    - ExceptionHandler을 통한 공통 예외 처리
+    - Validation 과정을 통해 데이터 유효성 검증
+    - Swagger를 사용한 API 명세서 작성
+    - AI 워드 임베딩 과정 스케줄링
+- 크롤링 [자세히]()
+  - Kobis에서 제공하는 지역별 및 날짜별 상영 스케줄 정보를 크롤링
+  - DB 설계 및 데이터 저장
+  - 크롤링 속도 개선을 위해 멀티프로세싱 적용
+- 클라우드 [자세히]((https://github.com/KTB-19/movie_chatbot/blob/main/docs/%EA%B2%B0%EA%B3%BC_%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C.md))
+  - Terraform을 활용한 인프라 구성
+  - Ansible을 활용하여 Docker, Docker-compose, Node_exporter를 세팅
+  - Github Actions를 이용한 CI/CD
+  - Prometheus, Grafana를 통해 모니터링
+  - 컨테이너 배포 후 연결 및 배포환경 api 연결
+- 인공지능 [자세히](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%EA%B2%B0%EA%B3%BC_%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5.md)
+  - RAG 활용한 영화관 추천 전문 고객지원 챗봇 커스텀
+  - ChatGPT API 프롬프트 엔지니어링을 통해 응답 생성
 
 <br>
 
 ## ⚠️ 트러블 슈팅
 
-- [풀스택](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85_%ED%92%80%EC%8A%A4%ED%83%9D.md)
-- [클라우드](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85_%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C.md)
-- [인공지능](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85_%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5.md)
+- 프론트엔드 [자세히]()
+  - useRef를 사용한 상태 반영
+- 백엔드 [자세히]()
+  - AI 코드 구동을 위한 효율적인 아키텍처
+  - stream을 활용한 복잡한 로직 단순화
+- 크롤링 [자세히]()
+  - 멀티 프로세싱을 사용한 크롤링 시간 단축
+- 클라우드 [자세히](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85_%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C.md)
+  - Mysql 도커 이미지로 EC2에서 Endtrypoint 에러
+  - Python Crawling 이미지 생성 중 chrome browser 설치 문제
+  - 크롤링 인스턴스의 적절한 type 설정
+  - 크롤링 이외의 시간에 사용되지 않는 인스턴스
+  - 인스턴스와 서브넷 등의 네트워크 관계에 대한 공부의 필요성
+  - CI/CD는 모든 상황에서 필요한 것인가?
+  - Docker container 배포시 각 컨테이너의 연결 방법에 대한 고민
+- 인공지능 [자세히](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85_%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5.md)
+  - chatgpt api를 활용한 최적의 응답 생성 방법
+  - 가공을 위한 정형화된 아웃풋
+  - chatgpt api를 활용한 엔티티 추출 방식
 
 <br>
 
 ## 🥳 회고
 
-- [회고](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%9A%8C%EA%B3%A0.md)
+- 종합 회고
+  - 성과
+    - 👍 초기 계획한 최소 기능 구현 완료
+    - 👎 처음부터 기획 기능을 명확히 설계했다면, 시간 절약했을 듯
+    - 👎 실 서비스 사용 테스트를 통해 예외 처리 개선 필요
+  - 배움
+    - 👍 서로 다른 직무 간 협업 방식을 익힘
+    - 👍 실무에 필요한 기술 습득
+  - 협업
+    - 👍 매일 스크럼을 통해 진행상황과 문제점 공유
+    - 👍 애자일 방식 도입을 통해 즉각적으로 논의 및 수정
+    - 👎 일정 딜레이와 스프린트 진행 방식 변경이 아쉬움
+    - 👎 태스크 관리 및 문서화 할 수 있는 환경 필요
+- [개인별 회고](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%9A%8C%EA%B3%A0.md)
+
 
 <br>

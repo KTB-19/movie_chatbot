@@ -195,3 +195,10 @@
 
 
 <br>
+
+## 📌 시연
+
+- 메인 화면
+<img src="https://github.com/user-attachments/assets/54a43b61-b472-4d52-9544-8ebd5c2d2163" width=600>
+<img src="https://github.com/user-attachments/assets/8bda2c90-fe6b-4f97-8991-441c6fb80440" width=600>
+

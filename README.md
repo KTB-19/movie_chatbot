@@ -135,8 +135,8 @@
     - ExceptionHandler을 통한 공통 예외 처리
     - Validation 과정을 통해 데이터 유효성 검증
     - Swagger를 사용한 API 명세서 작성
-      - [Spring 애플리케이션]()
-      - [FastAPI]()
+      - [Spring 애플리케이션](https://github.com/KTB-19/movie_chatbot/blob/main/docs/API_%EB%AA%85%EC%84%B8%EC%84%9C_Spring.md)
+      - [FastAPI](https://github.com/KTB-19/movie_chatbot/blob/main/docs/API_%EB%AA%85%EC%84%B8%EC%84%9C_FastAPI.md)
     - AI 워드 임베딩 과정 스케줄링
 - 크롤링 [자세히](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%EA%B2%B0%EA%B3%BC_%ED%81%AC%EB%A1%A4%EB%A7%81.md)
   - Kobis에서 제공하는 지역별 및 날짜별 상영 스케줄 정보를 크롤링

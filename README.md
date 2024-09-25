@@ -132,7 +132,7 @@
 - 백엔드 [자세히](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%EA%B2%B0%EA%B3%BC_%EB%B0%B1%EC%97%94%EB%93%9C.md)
     - RESTful API 설계에 대한 이해 및 적용
     - Service, Repository 검증을 위해 BDDMockito를 사용해 단위 테스트, 통합 테스트 작성
-      - [테스트 작성에 대한 문서화]()
+      - [테스트 작성에 대한 문서화](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%85%8C%EC%8A%A4%ED%8A%B8_%EC%9E%91%EC%84%B1_%EB%AC%B8%EC%84%9C%ED%99%94.md)
     - ExceptionHandler을 통한 공통 예외 처리
     - Validation 과정을 통해 데이터 유효성 검증
     - Swagger를 사용한 API 명세서 작성

@@ -160,7 +160,7 @@
 - 프론트엔드 [자세히](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85_%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C.md)
   - useRef를 사용한 상태 반영
 - 백엔드 [자세히](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85_%EB%B0%B1%EC%97%94%EB%93%9C.md)
-  - AI 코드 구동을 위한 효율적인 아키텍처
+  - 아키텍처 구조 변경을 통해 Jython 한계 문제 해결
   - stream을 활용한 복잡한 로직 단순화
 - 크롤링 [자세히](https://github.com/KTB-19/movie_chatbot/blob/main/docs/%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85_%ED%81%AC%EB%A1%A4%EB%A7%81.md)
   - 멀티 프로세싱을 사용한 크롤링 시간 단축
